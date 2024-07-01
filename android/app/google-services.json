@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "711634788382",
+    "project_id": "dronaidapp-ce56e",
+    "storage_bucket": "dronaidapp-ce56e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:711634788382:android:a169168eb7115b48d14e0f",
+        "android_client_info": {
+          "package_name": "com.example.dronaid_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTeNCFyzwe71v6HlyeF7h8OPuXq6cfRWY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

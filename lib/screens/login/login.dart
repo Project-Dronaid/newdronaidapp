@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../utils/colors.dart'; // Import the colors.dart file
+import '../../utils/colors.dart'; 
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -14,20 +14,20 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Align items to the start
+          crossAxisAlignment: CrossAxisAlignment.start, 
           children: [
-            SizedBox(height: size.height * 0.05), // Adjusted the top padding
+            SizedBox(height: size.height * 0.05), 
             Center(
               child: SvgPicture.asset(
                 'lib/assets/icons/login.svg',
-                height: size.height * 0.5, // Increased the image height
+                height: size.height * 0.5, 
               ),
             ),
-            SizedBox(height: size.height * 0.02), // Reduced space between image and text
+            SizedBox(height: size.height * 0.02), 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start
+                crossAxisAlignment: CrossAxisAlignment.start, 
                 children: [
                   Text(
                     "LOGIN",
@@ -62,7 +62,7 @@ class LoginScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.02),
               child: ElevatedButton(
                 onPressed: () {
-                  // Add your login logic here
+                  
                 },
                 child: Text(
                   "LOGIN",
@@ -78,7 +78,7 @@ class LoginScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.02),
               child: GestureDetector(
                 onTap: () {
-                  Get.toNamed('/signup'); // Use GetX to navigate to signup screen
+                  Get.toNamed('/signup'); 
                 },
                 child: Center(
                   child: Text(

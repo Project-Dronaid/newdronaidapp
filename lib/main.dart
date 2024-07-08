@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'screens/signUp/signUp.dart';
 import 'screens/login/login.dart';
-import 'utils/colors.dart'; // Import the colors.dart file
+import 'utils/colors.dart'; 
 
 void main() {
   runApp(MyApp());
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'DronAid App',
       theme: ThemeData(
-        primarySwatch: deepPurple, // Use the custom deepPurple color
+        primarySwatch: deepPurple, 
       ),
       home: SignUpScreen(),
       getPages: [

@@ -14,20 +14,20 @@ class SignUpScreen extends StatelessWidget {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Align items to the start
+          crossAxisAlignment: CrossAxisAlignment.start, 
           children: [
-            SizedBox(height: size.height * 0.05), // Adjusted the top padding
+            SizedBox(height: size.height * 0.05), 
             Center(
               child: SvgPicture.asset(
                 'lib/assets/icons/signup.svg',
-                height: size.height * 0.5, // Increased the image height
+                height: size.height * 0.5, 
               ),
             ),
-            SizedBox(height: size.height * 0.02), // Reduced space between image and form
+            SizedBox(height: size.height * 0.02), 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start
+                crossAxisAlignment: CrossAxisAlignment.start, 
                 children: [
                   Text(
                     "SIGN UP",
@@ -80,7 +80,7 @@ class SignUpScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.02),
               child: GestureDetector(
                 onTap: () {
-                  Get.to(() => LoginScreen()); // Use GetX to navigate to login screen
+                  Get.to(() => LoginScreen()); 
                 },
                 child: Center(
                   child: Text(

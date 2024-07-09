@@ -1,5 +1,9 @@
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:dronaid_app/utils/constants.dart';
+
+import 'OrderPage.dart';
+import 'ProfilePage.dart';
 
 class EmergencyPage extends StatefulWidget {
   const EmergencyPage({super.key});
@@ -12,7 +16,7 @@ class _EmergencyPageState extends State<EmergencyPage> {
   TextEditingController _emergencyController = TextEditingController();
   int selectedPriority = 0;
 
-  void selectPriority(int index){
+  void selectPriority(int index) {
     setState(() {
       selectedPriority = index;
     });
@@ -25,9 +29,13 @@ class _EmergencyPageState extends State<EmergencyPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFFEEEFF5),
         leading: const Icon(Icons.menu),
-        title: const Text('Home'),
+        title: const Text(
+          'Home',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
-      body: Column(
+      body:
+      Column(
         children: [
           Container(
             margin: EdgeInsets.all(18),
@@ -40,7 +48,7 @@ class _EmergencyPageState extends State<EmergencyPage> {
                 Text(
                   'Hospital Location:',
                   style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 16,
                       color: kPrimaryColor,
                       fontWeight: FontWeight.bold),
                 ),
@@ -71,7 +79,9 @@ class _EmergencyPageState extends State<EmergencyPage> {
               ),
               Text(
                 'Enter Emergency details:',
-                style: TextStyle(fontSize: 16, ),
+                style: TextStyle(
+                  fontSize: 16,
+                ),
               ),
             ],
           ),
@@ -84,7 +94,7 @@ class _EmergencyPageState extends State<EmergencyPage> {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15), color: Colors.white),
             child: TextField(
-              maxLines: 3,
+              maxLines: 4,
               controller: _emergencyController,
               decoration: InputDecoration(
                 hintText: 'Example: O+ Blood needed',
@@ -97,9 +107,16 @@ class _EmergencyPageState extends State<EmergencyPage> {
               ),
             ),
           ),
-          SizedBox(height: 10,),
-          Text('Select Priority Level:', style: TextStyle(fontSize: 16),),
-          SizedBox(height: 40,),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            'Select Priority Level:',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(
+            height: 40,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -108,12 +125,17 @@ class _EmergencyPageState extends State<EmergencyPage> {
                 child: Container(
                   height: 50,
                   width: 50,
-                  child: Center(child: Text('1', style: TextStyle(fontSize: 20),)),
+                  child: Center(
+                      child: Text(
+                    '1',
+                    style: TextStyle(fontSize: 20),
+                  )),
                   decoration: BoxDecoration(
-                      color: selectedPriority == 1 ? kPrimaryLightColor : Colors.transparent,
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(color: kPrimaryColor)
-                  ),
+                      color: selectedPriority == 1
+                          ? Color(0xFFC3B1E1)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(25),
+                      border: Border.all(color: kPrimaryColor, width: 2)),
                 ),
               ),
               GestureDetector(
@@ -121,12 +143,17 @@ class _EmergencyPageState extends State<EmergencyPage> {
                 child: Container(
                   height: 50,
                   width: 50,
-                  child: Center(child: Text('2', style: TextStyle(fontSize: 20),)),
+                  child: Center(
+                      child: Text(
+                    '2',
+                    style: TextStyle(fontSize: 20),
+                  )),
                   decoration: BoxDecoration(
-                    color: selectedPriority == 2 ? kPrimaryLightColor : Colors.transparent,
+                      color: selectedPriority == 2
+                          ? Color(0xFFC3B1E1)
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(25),
-                      border: Border.all(color: kPrimaryColor)
-                  ),
+                      border: Border.all(color: kPrimaryColor, width: 2),),
                 ),
               ),
               GestureDetector(
@@ -134,12 +161,17 @@ class _EmergencyPageState extends State<EmergencyPage> {
                 child: Container(
                   height: 50,
                   width: 50,
-                  child: Center(child: Text('3', style: TextStyle(fontSize: 20),)),
+                  child: Center(
+                      child: Text(
+                    '3',
+                    style: TextStyle(fontSize: 20),
+                  )),
                   decoration: BoxDecoration(
-                    color: selectedPriority == 3 ? kPrimaryLightColor : Colors.transparent,
+                      color: selectedPriority == 3
+                          ? Color(0xFFC3B1E1)
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(25),
-                      border: Border.all(color: kPrimaryColor)
-                  ),
+                      border: Border.all(color: kPrimaryColor, width: 2)),
                 ),
               )
             ],
@@ -151,19 +183,18 @@ class _EmergencyPageState extends State<EmergencyPage> {
               margin: EdgeInsets.only(left: 18, right: 18, bottom: 25),
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.purple.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(10)
-              ),
-              child: const Center(child: Text('Submit Request',style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),)),
+                  color: kPrimaryColor,
+                  borderRadius: BorderRadius.circular(10)),
+              child: const Center(
+                  child: Text(
+                'Submit Request',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              )),
             ),
           )
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.request_page_outlined), label: 'Requests'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
         ],
       ),
     );

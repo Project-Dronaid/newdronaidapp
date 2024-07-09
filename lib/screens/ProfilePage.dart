@@ -1,3 +1,4 @@
+import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -10,21 +11,21 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 128, 127, 127),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            //Back Button
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => ),
-            // );
-          },
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-        ),
+        // leading: IconButton(
+        //   onPressed: () {
+        //     //Back Button
+        //     // Navigator.push(
+        //     //   context,
+        //     //   MaterialPageRoute(builder: (context) => ),
+        //     // );
+        //   },
+        //   icon: const Icon(Icons.arrow_back, color: Colors.black),
+        // ),
         title: const Text(
-          'Account',
-          style: TextStyle(color: Colors.black),
+          'Profile',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -70,7 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.person),
+                    leading: const Icon(Icons.person,),
                     title: const Text('Hospital Data'),
                     onTap: () {
                       print('Hospital Data tapped');

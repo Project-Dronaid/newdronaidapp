@@ -39,6 +39,7 @@ dependencies:
   cloud_firestore: ^5.0.2
   google_fonts: ^6.2.1
   carousel_slider: ^4.2.1
+  google_maps_flutter: ^2.7.0
 
 
 dev_dependencies:

@@ -1,24 +1,6 @@
-import 'package:dronaid_app/OrderDetails.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const OrderPage(),
-    );
-  }
-}
+import 'package:dronaid_new_app/screens/orderdetails.dart';
+import 'package:dronaid_new_app/utils/colors.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({Key? key}) : super(key: key);
@@ -27,7 +9,7 @@ class OrderPage extends StatefulWidget {
   State<OrderPage> createState() => _OrderPageState();
 }
 
-class _OrderPageState extends State<OrderPage> {
+class _OrderPageState extends State<OrderPage> with TickerProviderStateMixin {
   final List<Map<String, dynamic>> activeOrders = [
     {'name': 'Product A', 'quantity': 3},
     {'name': 'Product B', 'quantity': 2},
@@ -43,7 +25,24 @@ class _OrderPageState extends State<OrderPage> {
     {'name': 'Product W', 'quantity': 4},
     {'name': 'Product V', 'quantity': 5},
   ];
-  String index1="", index2="";
+
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,32 +62,29 @@ class _OrderPageState extends State<OrderPage> {
           const Padding(
             padding: EdgeInsets.fromLTRB(18, 10, 0, 0),
           ),
-          // const SizedBox(
-          //   height: 10,
-          // ),
           DefaultTabController(
-            animationDuration: Durations.medium1,
+            animationDuration: Duration(milliseconds: 400),
             length: 2,
             child: Expanded(
               child: Column(
                 children: [
                   const TabBar(
-                    overlayColor: WidgetStatePropertyAll(Colors.transparent),
+                    overlayColor: MaterialStatePropertyAll(Colors.transparent),
                     labelStyle: TextStyle(
                       fontSize: 16,
-                      color: Color.fromRGBO(25, 118, 210, 1),
-                      fontWeight: FontWeight.bold
+                      color: blueColor,
+                      fontWeight: FontWeight.bold,
                     ),
-                    indicatorColor:     Color.fromRGBO(25, 118, 210, 1),
+                    indicatorColor: blueColor,
                     tabs: [
                       Tab(
-                        text: 'Active Orders',
+                        text: 'Active Requests',
                       ),
-                      Tab(text: 'Pending Orders'),
+                      Tab(text: 'Pending Requests'),
                     ],
                   ),
                   const SizedBox(
-                    height: 15,
+                    height: 20,
                   ),
                   Expanded(
                     child: TabBarView(
@@ -97,18 +93,45 @@ class _OrderPageState extends State<OrderPage> {
                         ListView.builder(
                           itemCount: activeOrders.length,
                           itemBuilder: (context, index) {
-                           // index1=activeOrders.length;
+                            final animation = Tween<Offset>(
+                              begin: Offset(1, 0),
+                              end: Offset(0, 0),
+                            ).animate(
+                              CurvedAnimation(
+                                parent: _controller,
+                                curve: Interval(
+                                  (1 / activeOrders.length) * index,
+                                  1,
+                                  curve: Curves.easeOut,
+                                ),
+                              ),
+                            );
+
                             return buildOrderListItem(
-                                activeOrders[index], index);
+                                activeOrders[index], index, animation);
                           },
                         ),
+
                         // Tab 2: Pending Orders
                         ListView.builder(
                           itemCount: pendingOrders.length,
                           itemBuilder: (context, index) {
-                            //index2=pendingOrders.length;
+                            final animation = Tween<Offset>(
+                              begin: Offset(1, 0),
+                              end: Offset(0, 0),
+                            ).animate(
+                              CurvedAnimation(
+                                parent: _controller,
+                                curve: Interval(
+                                  (1 / pendingOrders.length) * index,
+                                  1,
+                                  curve: Curves.easeOut,
+                                ),
+                              ),
+                            );
+
                             return buildOrderListItem(
-                                pendingOrders[index], index);
+                                pendingOrders[index], index, animation);
                           },
                         ),
                       ],
@@ -121,68 +144,74 @@ class _OrderPageState extends State<OrderPage> {
         ],
       ),
     );
-
   }
 
-  Widget buildOrderListItem(Map<String, dynamic> order, int index) {
+  Widget buildOrderListItem(
+      Map<String, dynamic> order, int index, Animation<Offset> animation) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 15),
       child: GestureDetector(
         onTap: () {
-
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const OrderDetails()));
-          print('${index + 1} is tapped');
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => const OrderDetails()));
         },
-        child: Card(
-          color: Color.fromRGBO(25, 118-index*10, 210-index*20, 1),
-          elevation: 20,
-          child: ListTile(
-            title:Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Order ${index + 1}',
-                  style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-                const Icon(Icons.arrow_forward_ios,
-                color: Colors.white,)
-              ],
+        child: SlideTransition(
+          position: animation,
+          child: Card(
+            color: Color.fromRGBO(25, 118 - index * 10, 210 - index * 20, 1),
+            elevation: 20,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
             ),
-
-            subtitle: Column(
-              children:[
-                const SizedBox(height: 5,),
-                Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    '${order['name']}\n${order['name']}\n${order['name']}',
-                    overflow: TextOverflow.visible,
+            child: ListTile(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Order ${index + 1}',
                     style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: primaryColor,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  '   ${order['quantity']}\n   ${order['quantity']}\n   ${order['quantity']}',
-                  style: const TextStyle(
+                  const Icon(
+                    Icons.arrow_forward_ios,
+                    color: primaryColor,
+                    size: 14,
+                  ),
+                ],
+              ),
+              subtitle: Column(children: [
+                const SizedBox(height: 5),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${order['name']}\n${order['name']}\n${order['name']}',
+                        overflow: TextOverflow.visible,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      '   ${order['quantity']}\n   ${order['quantity']}\n   ${order['quantity']}',
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white),
-
+                        color: primaryColor,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+                const SizedBox(height: 5),
+              ]),
             ),
-                const SizedBox(height: 5,)
-          ]
-          )
           ),
         ),
       ),

@@ -47,27 +47,55 @@ class _HomePage2State extends State<HomePage2> {
                         bottomRight: Radius.circular(200),
                       ),
                     ),
-                    child: Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          print('object');
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(color: secondaryColor, blurRadius: 10.0)
-                            ],
-                            color: primaryColor,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(30),
+                    child: Container(
+                      padding: EdgeInsets.only(top: 140),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            title: Text(
+                              'Contact Us',
+                              style: GoogleFonts.abel(
+                                fontSize: 50,
+                                color: primaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                          child: Icon(
-                            Icons.local_hospital,
-                            size: 200,
-                            color: dronaidblue,
+                          ListTile(
+                            title: Text(
+                              'Email Address',
+                              style: GoogleFonts.abel(
+                                fontSize: 25,
+                                color: primaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
+                              'info@dronaid.in',
+                              style: GoogleFonts.abel(
+                                fontSize: 20,
+                                color: primaryColor,
+                              ),
+                            ),
                           ),
-                        ),
+                          ListTile(
+                            title: Text(
+                              'Address info',
+                              style: GoogleFonts.abel(
+                                fontSize: 25,
+                                color: primaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
+                              'Dronaid WS, MIT Campus, Manipal, KA, IN 576104',
+                              style: GoogleFonts.abel(
+                                fontSize: 20,
+                                color: primaryColor,
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ),
                   ),

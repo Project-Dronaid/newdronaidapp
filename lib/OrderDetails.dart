@@ -1,12 +1,6 @@
-import 'dart:typed_data';
-
-import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
-import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'dart:math' as Math;
-import "constants.dart";
 
 class OrderDetails extends StatefulWidget {
   const OrderDetails({super.key});
@@ -23,7 +17,7 @@ class _OrderDetailsState extends State<OrderDetails> {
       target: LatLng(13.3461, 74.7965),
       zoom: 13);
   late GoogleMapController _googleMapController;
-  Set<Marker> _markers = {};
+  final Set<Marker> _markers = {};
 
 
 
@@ -45,7 +39,7 @@ class _OrderDetailsState extends State<OrderDetails> {
           scrolledUnderElevation: 5,
           surfaceTintColor: Colors.white,
           title: const Text(
-            'Order Details', style: TextStyle(fontWeight: FontWeight.bold),),
+            'Request Details', style: TextStyle(fontWeight: FontWeight.bold),),
         ),
         body: Stack(
             children: [

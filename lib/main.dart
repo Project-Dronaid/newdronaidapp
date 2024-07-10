@@ -1,9 +1,9 @@
+import 'package:dronaid_app/OrderPage.dart';
 import 'package:dronaid_app/screens/emergency_page.dart';
 import 'package:dronaid_app/screens/home_page2.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-import 'screens/OrderPage.dart';
 import 'screens/ProfilePage.dart';
 
 void main() {
@@ -11,7 +11,6 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-
   const MyApp({super.key});
 
   @override
@@ -39,15 +38,19 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-         body:  _widgetOptions.elementAt(_selectedIndex),
+        body: _widgetOptions.elementAt(_selectedIndex),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home,),
+              icon: Icon(
+                Icons.home,
+              ),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.request_page_outlined,),
+              icon: Icon(
+                Icons.request_page_outlined,
+              ),
               label: 'Requests',
             ),
             BottomNavigationBarItem(

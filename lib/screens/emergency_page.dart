@@ -2,7 +2,7 @@ import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:dronaid_app/utils/constants.dart';
 
-import 'OrderPage.dart';
+import 'package:dronaid_app/OrderPage.dart';
 import 'ProfilePage.dart';
 
 class EmergencyPage extends StatefulWidget {
@@ -34,8 +34,7 @@ class _EmergencyPageState extends State<EmergencyPage> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body:
-      Column(
+      body: Column(
         children: [
           Container(
             margin: EdgeInsets.all(18),
@@ -149,11 +148,12 @@ class _EmergencyPageState extends State<EmergencyPage> {
                     style: TextStyle(fontSize: 20),
                   )),
                   decoration: BoxDecoration(
-                      color: selectedPriority == 2
-                          ? Color(0xFFC3B1E1)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(color: kPrimaryColor, width: 2),),
+                    color: selectedPriority == 2
+                        ? Color(0xFFC3B1E1)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(25),
+                    border: Border.all(color: kPrimaryColor, width: 2),
+                  ),
                 ),
               ),
               GestureDetector(

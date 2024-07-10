@@ -12,7 +12,7 @@ class HomePage2 extends StatefulWidget {
 
 class _HomePage2State extends State<HomePage2> {
   int _currentCarouselImage = 0;
-
+  int currentpage = 0;
 
   final List<String> imgList = [
     'assets/asset1.jpg',
@@ -23,19 +23,6 @@ class _HomePage2State extends State<HomePage2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // bottomNavigationBar: NavigationBar(
-      //   destinations: [
-      //     NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-      //     NavigationDestination(icon: Icon(Icons.pin_drop), label: 'Supplies'),
-      //     NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
-      //   ],
-      //   onDestinationSelected: (int index) {
-      //     setState(() {
-      //       currentpage = index;
-      //     });
-      //   },
-      //   selectedIndex: currentpage,
-      // ),
       body: Material(
         child: Container(
           height: MediaQuery.of(context).size.height,

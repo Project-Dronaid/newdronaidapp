@@ -3,7 +3,7 @@ import 'package:dronaid_app/screens/home_page2.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-import 'screens/OrderPage.dart';
+import 'screens/request_page.dart';
 import 'screens/ProfilePage.dart';
 
 void main() {
@@ -23,7 +23,7 @@ class _MyAppState extends State<MyApp> {
 
   final List<Widget> _widgetOptions = <Widget>[
     EmergencyPage(),
-    OrderPage(),
+    RequestPage(),
     HomePage2(),
     ProfilePage(),
   ];

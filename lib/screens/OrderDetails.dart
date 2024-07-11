@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'dart:math' as Math;
-import "constants.dart";
+import "../utils/constants.dart";
 
 class OrderDetails extends StatefulWidget {
   const OrderDetails({super.key});

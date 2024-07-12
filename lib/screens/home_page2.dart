@@ -12,7 +12,7 @@ class HomePage2 extends StatefulWidget {
 
 class _HomePage2State extends State<HomePage2> {
   int _currentCarouselImage = 0;
-
+  int currentpage = 0;
 
   final List<String> imgList = [
     'assets/asset1.jpg',
@@ -23,19 +23,6 @@ class _HomePage2State extends State<HomePage2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // bottomNavigationBar: NavigationBar(
-      //   destinations: [
-      //     NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-      //     NavigationDestination(icon: Icon(Icons.pin_drop), label: 'Supplies'),
-      //     NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
-      //   ],
-      //   onDestinationSelected: (int index) {
-      //     setState(() {
-      //       currentpage = index;
-      //     });
-      //   },
-      //   selectedIndex: currentpage,
-      // ),
       body: Material(
         child: Container(
           height: MediaQuery.of(context).size.height,
@@ -48,39 +35,67 @@ class _HomePage2State extends State<HomePage2> {
                     height: MediaQuery.of(context).size.height / 1.6,
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      color: Colors.blue[100],
+                      color: kPrimaryLightColor,
                     ),
                   ),
                   Container(
                     height: MediaQuery.of(context).size.height / 1.8,
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      color: dronaidblue,
+                      color: kPrimaryColor,
                       borderRadius: BorderRadius.only(
                         bottomRight: Radius.circular(200),
                       ),
                     ),
-                    child: Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          print('object');
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(color: secondaryColor, blurRadius: 10.0)
-                            ],
-                            color: primaryColor,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(30),
+                    child: Container(
+                      padding: EdgeInsets.only(top: 140),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            title: Text(
+                              'Contact Us',
+                              style: GoogleFonts.abel(
+                                fontSize: 50,
+                                color: primaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                          child: Icon(
-                            Icons.local_hospital,
-                            size: 200,
-                            color: dronaidblue,
+                          ListTile(
+                            title: Text(
+                              'Email Address',
+                              style: GoogleFonts.abel(
+                                fontSize: 25,
+                                color: primaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
+                              'info@dronaid.in',
+                              style: GoogleFonts.abel(
+                                fontSize: 20,
+                                color: primaryColor,
+                              ),
+                            ),
                           ),
-                        ),
+                          ListTile(
+                            title: Text(
+                              'Address info',
+                              style: GoogleFonts.abel(
+                                fontSize: 25,
+                                color: primaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
+                              'Dronaid WS, MIT Campus, Manipal, KA, IN 576104',
+                              style: GoogleFonts.abel(
+                                fontSize: 20,
+                                color: primaryColor,
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ),
                   ),
@@ -104,7 +119,7 @@ class _HomePage2State extends State<HomePage2> {
                   height: MediaQuery.of(context).size.height / 2.245,
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
-                    color: dronaidblue,
+                    color: kPrimaryColor,
                     borderRadius: BorderRadius.only(
                       topRight: Radius.circular(80),
                     ),
@@ -149,16 +164,21 @@ class _HomePage2State extends State<HomePage2> {
                         items: imgList
                             .map(
                               (e) => Center(
-                                child: Container(
-                                  decoration: BoxDecoration(boxShadow: [
-                                    BoxShadow(
-                                      color: secondaryColor,
-                                      blurRadius: 40,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    print('object');
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(boxShadow: [
+                                      BoxShadow(
+                                        color: secondaryColor,
+                                        blurRadius: 40,
+                                      ),
+                                    ]),
+                                    child: ClipRRect(
+                                      child: Image.asset(e),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
-                                  ]),
-                                  child: ClipRRect(
-                                    child: Image.asset(e),
-                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                 ),
                               ),

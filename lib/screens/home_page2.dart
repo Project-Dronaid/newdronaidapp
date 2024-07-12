@@ -164,16 +164,21 @@ class _HomePage2State extends State<HomePage2> {
                         items: imgList
                             .map(
                               (e) => Center(
-                                child: Container(
-                                  decoration: BoxDecoration(boxShadow: [
-                                    BoxShadow(
-                                      color: secondaryColor,
-                                      blurRadius: 40,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    print('object');
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(boxShadow: [
+                                      BoxShadow(
+                                        color: secondaryColor,
+                                        blurRadius: 40,
+                                      ),
+                                    ]),
+                                    child: ClipRRect(
+                                      child: Image.asset(e),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
-                                  ]),
-                                  child: ClipRRect(
-                                    child: Image.asset(e),
-                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                 ),
                               ),

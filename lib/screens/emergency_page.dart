@@ -112,10 +112,10 @@ class _EmergencyPageState extends State<EmergencyPage> {
           ),
           Text(
             'Select Priority Level:',
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           SizedBox(
-            height: 40,
+            height: 30,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -176,11 +176,20 @@ class _EmergencyPageState extends State<EmergencyPage> {
               )
             ],
           ),
+          SizedBox(height: 15,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.info_outline, color: kPrimaryColor,size: 20,),
+              SizedBox(width: 5,),
+              Text('Higher the Priority Level, higher the actual priority', style: TextStyle(fontWeight: FontWeight.w300),),
+            ],
+          ),
           Spacer(),
           GestureDetector(
             onTap: () {},
             child: Container(
-              margin: EdgeInsets.only(left: 18, right: 18, bottom: 25),
+              margin: EdgeInsets.only(left: 18, right: 18, bottom: 20),
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                   color: kPrimaryColor,

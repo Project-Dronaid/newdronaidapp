@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../utils/colors.dart'; 
+import '../../utils/colors.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -14,27 +14,27 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, 
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: size.height * 0.05), 
+            SizedBox(height: size.height * 0.05),
             Center(
               child: SvgPicture.asset(
-                'lib/assets/icons/login.svg',
-                height: size.height * 0.5, 
+                'assets/login.svg',
+                height: size.height * 0.5,
               ),
             ),
-            SizedBox(height: size.height * 0.02), 
+            SizedBox(height: size.height * 0.02),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, 
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "LOGIN",
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: deepPurple,
+                      color: kPrimaryColor,
                     ),
                   ),
                   SizedBox(height: size.height * 0.03),
@@ -62,14 +62,14 @@ class LoginScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.02),
               child: ElevatedButton(
                 onPressed: () {
-                  
+                  // Login action
                 },
                 child: Text(
                   "LOGIN",
-                  style: TextStyle(fontSize: 18, color: buttonTextColor),
+                  style: TextStyle(fontSize: 18, color: primaryColor),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: deepPurple,
+                  backgroundColor: kPrimaryColor,
                   minimumSize: Size(size.width * 0.8, 50),
                 ),
               ),
@@ -78,12 +78,12 @@ class LoginScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.02),
               child: GestureDetector(
                 onTap: () {
-                  Get.toNamed('/signup'); 
+                  Get.toNamed('/signup');
                 },
                 child: Center(
                   child: Text(
                     "Not registered? Sign Up",
-                    style: TextStyle(color: deepPurple, fontSize: 16),
+                    style: TextStyle(color: kPrimaryColor, fontSize: 16),
                   ),
                 ),
               ),
@@ -101,9 +101,9 @@ class LoginScreen extends StatelessWidget {
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: deepPurple),
+          prefixIcon: Icon(icon, color: kPrimaryColor),
           hintText: hintText,
-          hintStyle: TextStyle(color: hintTextColor),
+          hintStyle: TextStyle(color: secondaryColor),
           suffixIcon: isPassword ? IconButton(
             icon: Icon(obscureText ? Icons.visibility : Icons.visibility_off),
             onPressed: () {

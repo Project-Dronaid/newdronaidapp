@@ -38,6 +38,11 @@ dependencies:
   firebase_core: ^3.1.1
   firebase_auth: ^5.1.1
   cloud_firestore: ^5.0.2
+  google_fonts: ^6.2.1
+  carousel_slider: ^4.2.1
+  google_maps_flutter: ^2.7.0
+  get: ^4.6.6
+  flutter_svg: ^2.0.10+1
 
 dev_dependencies:
   flutter_test:
@@ -62,9 +67,18 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+      - assets/asset1.jpg
+      - assets/asset2.jpg
+      - assets/asset3.jpg
+      - assets/about_us.jpg
+      - assets/drone_hex.jpeg
+      - assets/minister_interaction.png
+      - assets/contact_us.png
+      - assets/logo.png
+      - assets/logo_nobg.png
+      - assets/login.svg
+      - assets/signup.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

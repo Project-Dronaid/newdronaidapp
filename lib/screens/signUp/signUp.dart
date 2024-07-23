@@ -19,7 +19,7 @@ class SignUpScreen extends StatelessWidget {
             SizedBox(height: size.height * 0.05), 
             Center(
               child: SvgPicture.asset(
-                'lib/assets/icons/signup.svg',
+                'assets/signup.svg',
                 height: size.height * 0.5, 
               ),
             ),
@@ -34,7 +34,7 @@ class SignUpScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: deepPurple,
+                      color: kPrimaryColor,
                     ),
                   ),
                   SizedBox(height: size.height * 0.03),
@@ -68,10 +68,10 @@ class SignUpScreen extends StatelessWidget {
                   signupController.signup();
                 },
                 child: signupController.isLoading.value
-                    ? CircularProgressIndicator(color: buttonTextColor)
-                    : Text("SIGN UP", style: TextStyle(fontSize: 18, color: buttonTextColor)),
+                    ? CircularProgressIndicator(color: primaryColor)
+                    : Text("SIGN UP", style: TextStyle(fontSize: 18, color: primaryColor)),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: deepPurple,
+                  backgroundColor: kPrimaryColor,
                   minimumSize: Size(size.width * 0.8, 50),
                 ),
               )),
@@ -85,7 +85,7 @@ class SignUpScreen extends StatelessWidget {
                 child: Center(
                   child: Text(
                     "Already has an account? LOGIN",
-                    style: TextStyle(color: deepPurple, fontSize: 16),
+                    style: TextStyle(color: kPrimaryColor, fontSize: 16),
                   ),
                 ),
               ),
@@ -103,9 +103,9 @@ class SignUpScreen extends StatelessWidget {
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: deepPurple),
+          prefixIcon: Icon(icon, color: kPrimaryColor),
           hintText: hintText,
-          hintStyle: TextStyle(color: hintTextColor),
+          hintStyle: TextStyle(color: secondaryColor),
           suffixIcon: isPassword ? IconButton(
             icon: Icon(obscureText ? Icons.visibility : Icons.visibility_off),
             onPressed: () {

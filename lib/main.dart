@@ -1,6 +1,7 @@
 import 'package:dronaid_app/screens/emergency_page.dart';
 import 'package:dronaid_app/screens/home_page2.dart';
 import 'package:dronaid_app/utils/colors.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'screens/signUp/signUp.dart';
@@ -8,6 +9,7 @@ import 'screens/login/login.dart';
 import 'utils/colors.dart';
 import 'screens/request_page.dart';
 import 'screens/ProfilePage.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -72,10 +74,6 @@ class _MyAppState extends State<MyApp> {
           onTap: _onItemTapped,
         ),
       ),
-      getPages: [
-        GetPage(name: '/login', page: () => LoginScreen()),
-        GetPage(name: '/signup', page: () => SignUpScreen()),
-      ],
     );
   }
 }

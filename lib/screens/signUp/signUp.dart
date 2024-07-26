@@ -1,4 +1,8 @@
+import 'package:dronaid_app/screens/emergency_page.dart';
+import 'package:dronaid_app/screens/home.dart';
 import 'package:flutter/material.dart';
+import '../../firebase/auth_methods.dart';
+import '../../utils/utils.dart';
 import '../login/login.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../utils/colors.dart';
@@ -18,17 +22,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool isLoading = false;
   bool obscureText = true;
 
-  void signup() {
+  void signUp() async {
     setState(() {
       isLoading = true;
     });
-
-    // Perform signup logic here...
+    String res = await AuthMethods().signUpUser(
+      email: emailController.text,
+      password: passwordController.text,
+      address: addressController.text,
+      phone_no: phoneController.text,
+      hospital_name: hospitalNameController.text,
+    );
 
     setState(() {
       isLoading = false;
     });
+
+    if (res != 'Success') {
+      showSnackBar(res, context);
+    } else {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EmergencyPage()));
+    }
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +107,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.02),
               child: ElevatedButton(
-                onPressed: isLoading ? null : signup,
+                onPressed: () {
+                  setState(() {
+                    signUp();
+                  });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  );
+                },
                 child: isLoading
                     ? CircularProgressIndicator(color: primaryColor)
                     : Text("SIGN UP", style: TextStyle(fontSize: 18, color: primaryColor)),

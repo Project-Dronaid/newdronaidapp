@@ -22,24 +22,24 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Track Order',
-          style: TextStyle(fontWeight: FontWeight.bold,fontSize: 28),),
+          style: TextStyle(fontWeight: FontWeight.bold,fontSize: 22),),
         backgroundColor: Colors.white,
       ),
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0), // Add padding here
+            padding: const EdgeInsets.all(0.0), // Add padding here
             child: GoogleMapWidget(onMapTap: toggleMapVisibility),
           ),
           const Positioned(
-            top: 60,
-            right: 50,
+            top: 20,
+            right: 20,
             child: EstimatedTimeWidget(),
           ),
           Positioned(
-            bottom: 40,
-            left: 40,
-            right: 40,
+            bottom: 30,
+            left: 20,
+            right: 20,
             child: isMapVisible
                 ? const OrderDetailsWidget()
                 : Container(), // Hide OrderDetailsWidget when map is not visible
@@ -60,7 +60,7 @@ class GoogleMapWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () => onMapTap(),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16.0),
+        // borderRadius: BorderRadius.circular(16.0),
         child: GoogleMap(
           initialCameraPosition: const CameraPosition(
             target: LatLng(13.3524, 74.7868), // Example coordinates
@@ -88,39 +88,61 @@ class OrderDetailsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 43, 64, 109),
+        color: Color(0xFFF1E6FF),
         borderRadius: BorderRadius.circular(14.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.5),
-            spreadRadius: 10,
-            blurRadius: 30,
-            offset: const Offset(0, 3), // Position of shadow
-          ),
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withOpacity(0.5),
+        //     spreadRadius: 10,
+        //     blurRadius: 30,
+        //     offset: const Offset(0, 3), // Position of shadow
+        //   ),
+        // ],
       ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            'Order Details',
-            style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-          
-          SizedBox(height: 8.0,),
-          
-          Text('Order ID: 123456', 
-            style: TextStyle(fontSize: 16.0, color: Colors.white),
-          ),
-          
-          Text('Product: Blood O+',
-            style: TextStyle(fontSize: 16.0, color: Colors.white),
-          ),
-          Text('Quantity: 2 litres',
-            style: TextStyle(fontSize: 16.0, color: Colors.white),
-          ),
-          
-        ],
+      child:  Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+        
+          children: [
+            
+            const Text(
+              'Order Details',
+              style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold, color: Colors.black),
+            ),
+            
+            // const SizedBox(height: 6.0,),
+            const Divider(
+              color: Colors.deepPurple,
+            ),
+            const Text('Order ID: 123456', 
+              style: TextStyle(fontSize: 14.0, color: Colors.black),
+            ),
+            
+            const Text('Product: Blood O+',
+              style: TextStyle(fontSize: 14.0, color: Colors.black),
+            ),
+            const Text('Quantity: 2 litres',
+              style: TextStyle(fontSize: 14.0, color: Colors.black
+              ),
+            ),
+            const SizedBox(height: 5,),
+            RichText(
+              text: const TextSpan(
+                text:'Status: ',
+                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.black),
+                children: [
+                    TextSpan(
+                      text: 'Delivered',
+                      style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                    )
+                ]
+              ),
+              
+            ),
+            const SizedBox(height: 5,)
+          ],
+        ),
       ),
     );
   }
@@ -136,14 +158,14 @@ class EstimatedTimeWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: const Offset(0, 3), // Position of shadow
-          ),
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withOpacity(0.3),
+        //     spreadRadius: 1,
+        //     blurRadius: 10,
+        //     offset: const Offset(0, 3), // Position of shadow
+        //   ),
+        // ],
       ),
       child: const Column(
         children: [

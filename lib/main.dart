@@ -1,4 +1,6 @@
-import 'package:dronaid_app/screens/OrderDelivered.dart';
+import 'package:dronaid_app/screens/OrderConfirm.dart';
+import 'package:dronaid_app/screens/RequestDelivered.dart';
+import 'package:dronaid_app/screens/SplashScreen.dart';
 import 'package:dronaid_app/screens/emergency_page.dart';
 import 'package:dronaid_app/screens/home_page2.dart';
 import 'package:dronaid_app/utils/colors.dart';
@@ -46,7 +48,7 @@ class _MyAppState extends State<MyApp> {
         primaryColor: kPrimaryColor,
       ),
       home: Scaffold(
-        body: RequestConfirmedPage(),
+        body: _widgetOptions.elementAt(_selectedIndex),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(

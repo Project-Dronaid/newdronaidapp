@@ -1,3 +1,5 @@
+import 'package:dronaid_app/screens/fetched_emergency.dart';
+import 'package:dronaid_app/screens/fetched_requests.dart';
 import 'package:dronaid_app/screens/request_page.dart';
 import 'package:flutter/material.dart';
 
@@ -17,8 +19,8 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   final List<Widget> _widgetOptions = <Widget>[
-    EmergencyPage(),
-    RequestPage(),
+    FetchedEmergency(),
+    FetchedRequests(),
     HomePage2(),
     ProfilePage(),
   ];
@@ -34,15 +36,19 @@ class _HomePageState extends State<HomePage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body:  _widgetOptions.elementAt(_selectedIndex),
+        body: _widgetOptions.elementAt(_selectedIndex),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home,),
+              icon: Icon(
+                Icons.home,
+              ),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.request_page_outlined,),
+              icon: Icon(
+                Icons.request_page_outlined,
+              ),
               label: 'Requests',
             ),
             BottomNavigationBarItem(
@@ -63,5 +69,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-  }
-
+}

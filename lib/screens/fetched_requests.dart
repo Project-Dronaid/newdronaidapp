@@ -59,9 +59,13 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                       children: requests.map((doc) {
                         final data = doc.data() as Map<String, dynamic>;
                         final hospitalName = data['hospitalName'] ?? 'Unknown';
-                        final timestamp = data['dateTime'] as Timestamp;
-                        final dateTime = DateFormat('hh:mma, dd MMMM')
-                            .format(timestamp.toDate());
+                        final Timestamp? timestamp =
+                            data['dateTime'] as Timestamp?;
+                        final String dateTime = timestamp != null
+                            ? DateFormat('hh:mma, dd MMMM')
+                                .format(timestamp.toDate())
+                            : 'Unknown Date';
+
                         final emergencyText =
                             data['emergencyText'] ?? 'Unknown';
 

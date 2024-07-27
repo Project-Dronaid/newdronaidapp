@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:dronaid_app/utils/colors.dart';
 import 'package:dronaid_app/utils/constants.dart';
-import 'request_page.dart';
-import 'ProfilePage.dart';
 
 class FetchedEmergency extends StatefulWidget {
   const FetchedEmergency({super.key});
@@ -17,14 +15,15 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
   TextEditingController _emergencyController = TextEditingController();
   int selectedPriority = 0;
   String hospitalAddress = 'Loading...';
+  String hospitalName = 'Loading...';
 
   @override
   void initState() {
     super.initState();
-    _fetchUserAddress();
+    _fetchUserDetails();
   }
 
-  Future<void> _fetchUserAddress() async {
+  Future<void> _fetchUserDetails() async {
     try {
       // Get the current user
       User? user = FirebaseAuth.instance.currentUser;
@@ -40,18 +39,68 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
           setState(() {
             hospitalAddress =
                 userDoc.data()?['address'] ?? 'No address available';
+            hospitalName =
+                userDoc.data()?['hospital_name'] ?? 'Unknown Hospital';
           });
         }
       } else {
         setState(() {
           hospitalAddress = 'User not logged in';
+          hospitalName = 'Unknown Hospital';
         });
       }
     } catch (e) {
-      print('Error fetching user address: $e');
+      print('Error fetching user details: $e');
       setState(() {
         hospitalAddress = 'Error fetching address';
+        hospitalName = 'Error fetching hospital name';
       });
+    }
+  }
+
+  Future<void> _submitRequest() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final userId = user.uid;
+        final requestId =
+            FirebaseFirestore.instance.collection('hospitalRequests').doc().id;
+        final dateTime = DateTime.now();
+
+        await FirebaseFirestore.instance
+            .collection('hospitalRequests')
+            .doc(requestId)
+            .set({
+          'address': hospitalAddress,
+          'emergencyText': _emergencyController.text,
+          'emergencyImage':
+              '', // Assuming no image is attached; handle this accordingly
+          'hospitalName': hospitalName,
+          'priorityLevel': selectedPriority,
+          'dateTime': dateTime,
+          'requestId': requestId,
+          'userId': userId,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Request submitted successfully!')),
+        );
+
+        // Optionally, clear the input fields or navigate to another screen
+        _emergencyController.clear();
+        setState(() {
+          selectedPriority = 0;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User not logged in')),
+        );
+      }
+    } catch (e) {
+      print('Error submitting request: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error submitting request')),
+      );
     }
   }
 
@@ -237,7 +286,7 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
           ),
           Spacer(),
           GestureDetector(
-            onTap: () {},
+            onTap: _submitRequest,
             child: Container(
               margin: EdgeInsets.only(left: 18, right: 18, bottom: 20),
               padding: EdgeInsets.all(20),

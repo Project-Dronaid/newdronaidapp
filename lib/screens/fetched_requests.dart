@@ -12,6 +12,56 @@ class FetchedRequests extends StatefulWidget {
 class _FetchedRequestsState extends State<FetchedRequests> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<void> _rejectRequest(String requestId) async {
+    try {
+      final requestDoc =
+          _firestore.collection('hospitalRequests').doc(requestId);
+
+      // Fetch the request data
+      final requestSnapshot = await requestDoc.get();
+      if (requestSnapshot.exists) {
+        final requestData = requestSnapshot.data() as Map<String, dynamic>;
+
+        // Add to closedRequests collection
+        await _firestore
+            .collection('closedRequests')
+            .doc(requestId)
+            .set(requestData);
+
+        // Delete from hospitalRequests collection
+        await requestDoc.delete();
+      }
+    } catch (e) {
+      // Handle any errors
+      print('Error rejecting request: $e');
+    }
+  }
+
+  Future<void> _acceptRequest(String requestId) async {
+    try {
+      final requestDoc =
+          _firestore.collection('hospitalRequests').doc(requestId);
+
+      // Fetch the request data
+      final requestSnapshot = await requestDoc.get();
+      if (requestSnapshot.exists) {
+        final requestData = requestSnapshot.data() as Map<String, dynamic>;
+
+        // Add to closedRequests collection with an updated status
+        await _firestore.collection('closedRequests').doc(requestId).set({
+          ...requestData,
+          'status': 'accepted', // Add status field
+        });
+
+        // Delete from hospitalRequests collection
+        await requestDoc.delete();
+      }
+    } catch (e) {
+      // Handle any errors
+      print('Error accepting request: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -38,19 +88,24 @@ class _FetchedRequestsState extends State<FetchedRequests> {
           ),
         ),
         body: TabBarView(children: [
+          // Active Requests Tab
           SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 StreamBuilder<QuerySnapshot>(
-                  stream: _firestore.collection('hospitalRequests').snapshots(),
+                  stream: _firestore
+                      .collection('hospitalRequests')
+                      .orderBy('priorityLevel',
+                          descending: true) // Order by priority level
+                      .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     }
 
                     if (!snapshot.hasData) {
-                      return Center(child: Text('No Requests Found'));
+                      return Center(child: Text('No Active Requests Found'));
                     }
 
                     final requests = snapshot.data!.docs;
@@ -113,13 +168,6 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                     left: 46, right: 10, bottom: 10),
                                 child: Text(emergencyText),
                               ),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    width: 40,
-                                  ),
-                                ],
-                              ),
                               SizedBox(
                                 height: 5,
                               ),
@@ -128,30 +176,45 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  Container(
-                                    padding: EdgeInsets.all(10),
-                                    margin: EdgeInsets.symmetric(vertical: 10),
-                                    decoration: BoxDecoration(
-                                        color: Colors.green,
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                    child: Text(
-                                      'Accept Request',
-                                      style: TextStyle(color: Colors.white),
+                                  GestureDetector(
+                                    onTap: () {
+                                      final requestId =
+                                          doc.id; // Get the document ID
+                                      _acceptRequest(requestId);
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      margin:
+                                          EdgeInsets.symmetric(vertical: 10),
+                                      decoration: BoxDecoration(
+                                          color: Colors.green,
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: Text(
+                                        'Accept Request',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
                                     ),
                                   ),
                                   SizedBox(
                                     width: 30,
                                   ),
-                                  Container(
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                        color: Colors.red,
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                    child: Text(
-                                      'Reject Request',
-                                      style: TextStyle(color: Colors.white),
+                                  GestureDetector(
+                                    onTap: () {
+                                      final requestId =
+                                          doc.id; // Get the document ID
+                                      _rejectRequest(requestId);
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: Text(
+                                        'Reject Request',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -166,8 +229,107 @@ class _FetchedRequestsState extends State<FetchedRequests> {
               ],
             ),
           ),
-          // Add Closed Requests tab content similarly
-          Container(),
+          // Closed Requests Tab
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                StreamBuilder<QuerySnapshot>(
+                  stream: _firestore
+                      .collection('closedRequests')
+                      .orderBy('priorityLevel',
+                          descending: true) // Order by priority level
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+
+                    if (!snapshot.hasData) {
+                      return Center(child: Text('No Closed Requests Found'));
+                    }
+
+                    final requests = snapshot.data!.docs;
+
+                    return Column(
+                      children: requests.map((doc) {
+                        final data = doc.data() as Map<String, dynamic>;
+                        final hospitalName = data['hospitalName'] ?? 'Unknown';
+                        final Timestamp? timestamp =
+                            data['dateTime'] as Timestamp?;
+                        final String dateTime = timestamp != null
+                            ? DateFormat('hh:mma, dd MMMM')
+                                .format(timestamp.toDate())
+                            : 'Unknown Date';
+
+                        final emergencyText =
+                            data['emergencyText'] ?? 'Unknown';
+                        final status = data['status'] ?? 'Unknown';
+
+                        return Container(
+                          margin: EdgeInsets.all(15),
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.transparent,
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                        'https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGhvc3BpdGFsJTIwYnVpbGRpbmd8ZW58MHx8MHx8fDA%3D'),
+                                  ),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  Text(
+                                    hospitalName,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 15),
+                                  ),
+                                  Spacer(),
+                                  Text(
+                                    dateTime,
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w300),
+                                  ),
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 46, right: 10, bottom: 10),
+                                child: Text(emergencyText),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                status == 'accepted'
+                                    ? 'Request was accepted'
+                                    : 'Request was rejected',
+                                style: TextStyle(
+                                  color: status == 'accepted'
+                                      ? Colors.green
+                                      : Colors.red,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
         ]),
       ),
     );

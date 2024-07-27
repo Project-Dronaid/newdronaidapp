@@ -1,19 +1,24 @@
 import 'package:dronaid_app/screens/emergency_page.dart';
+import 'package:dronaid_app/screens/home.dart';
 import 'package:dronaid_app/screens/home_page2.dart';
+import 'package:dronaid_app/screens/login/login.dart';
+import 'package:dronaid_app/screens/signUp/signUp.dart';
 import 'package:dronaid_app/utils/colors.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'screens/signUp/signUp.dart';
-import 'screens/login/login.dart';
-import 'utils/colors.dart';
+
+import 'firebase/firebase_options.dart';
 import 'screens/request_page.dart';
 import 'screens/ProfilePage.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+
   const MyApp({super.key});
 
   @override
@@ -38,44 +43,37 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'DronAid App',
-      theme: ThemeData(
-        primaryColor: kPrimaryColor,
-      ),
       home: Scaffold(
-        body: _widgetOptions.elementAt(_selectedIndex),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.request_page_outlined),
-              label: 'Requests',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.info_outline),
-              label: 'Info',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              label: 'Profile',
-            ),
-          ],
-          unselectedItemColor: Colors.black.withOpacity(0.6),
-          showUnselectedLabels: true,
-          currentIndex: _selectedIndex,
-          selectedItemColor: kPrimaryColor,
-          onTap: _onItemTapped,
-        ),
+        body: SignUpScreen(),
+        // body:  _widgetOptions.elementAt(_selectedIndex),
+        // bottomNavigationBar: BottomNavigationBar(
+        //   items: const <BottomNavigationBarItem>[
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.home,),
+        //       label: 'Home',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.request_page_outlined,),
+        //       label: 'Requests',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.info_outline),
+        //       label: 'Info',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.person_outline),
+        //       label: 'Profile',
+        //     ),
+        //   ],
+        //   unselectedItemColor: Colors.black.withOpacity(0.6),
+        //   showUnselectedLabels: true,
+        //   currentIndex: _selectedIndex,
+        //   selectedItemColor: kPrimaryColor,
+        //   onTap: _onItemTapped,
+        // ),
       ),
-      getPages: [
-        GetPage(name: '/login', page: () => LoginScreen()),
-        GetPage(name: '/signup', page: () => SignUpScreen()),
-      ],
     );
   }
 }

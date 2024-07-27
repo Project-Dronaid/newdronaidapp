@@ -1,12 +1,53 @@
+import 'package:dronaid_app/screens/emergency_page.dart';
+import 'package:dronaid_app/screens/home.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import '../../firebase/auth_methods.dart';
+import '../../utils/utils.dart';
 import '../login/login.dart';
-import 'signup_controller.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../utils/colors.dart';
 
-class SignUpScreen extends StatelessWidget {
-  final SignupController signupController = Get.put(SignupController());
+class SignUpScreen extends StatefulWidget {
+  @override
+  _SignUpScreenState createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController hospitalNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+
+  bool isLoading = false;
+  bool obscureText = true;
+
+  void signUp() async {
+    setState(() {
+      isLoading = true;
+    });
+    String res = await AuthMethods().signUpUser(
+      email: emailController.text,
+      password: passwordController.text,
+      address: addressController.text,
+      phone_no: phoneController.text,
+      hospital_name: hospitalNameController.text,
+    );
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (res != 'Success') {
+      showSnackBar(res, context);
+    } else {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EmergencyPage()));
+    }
+  }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -14,20 +55,20 @@ class SignUpScreen extends StatelessWidget {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, 
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: size.height * 0.05), 
+            SizedBox(height: size.height * 0.05),
             Center(
               child: SvgPicture.asset(
                 'assets/signup.svg',
-                height: size.height * 0.5, 
+                height: size.height * 0.5,
               ),
             ),
-            SizedBox(height: size.height * 0.02), 
+            SizedBox(height: size.height * 0.02),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, 
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "SIGN UP",
@@ -41,20 +82,22 @@ class SignUpScreen extends StatelessWidget {
                   Form(
                     child: Column(
                       children: [
-                        _buildTextField(signupController.hospitalNameController, "Hospital Name", Icons.local_hospital),
-                        _buildTextField(signupController.emailController, "Email", Icons.email),
-                        Obx(() => _buildTextField(
-                            signupController.passwordController,
-                            "Password",
-                            Icons.lock,
-                            isPassword: true,
-                            obscureText: signupController.obscureText.value,
-                            toggleObscureText: () {
-                              signupController.obscureText.value = !signupController.obscureText.value;
-                            }
-                        )),
-                        _buildTextField(signupController.addressController, "Address", Icons.location_on),
-                        _buildTextField(signupController.phoneController, "Phone Number", Icons.phone),
+                        _buildTextField(hospitalNameController, "Hospital Name", Icons.local_hospital),
+                        _buildTextField(emailController, "Email", Icons.email),
+                        _buildTextField(
+                          passwordController,
+                          "Password",
+                          Icons.lock,
+                          isPassword: true,
+                          obscureText: obscureText,
+                          toggleObscureText: () {
+                            setState(() {
+                              obscureText = !obscureText;
+                            });
+                          },
+                        ),
+                        _buildTextField(addressController, "Address", Icons.location_on),
+                        _buildTextField(phoneController, "Phone Number", Icons.phone),
                       ],
                     ),
                   ),
@@ -63,24 +106,30 @@ class SignUpScreen extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.02),
-              child: Obx(() => ElevatedButton(
-                onPressed: signupController.isLoading.value ? null : () {
-                  signupController.signup();
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    signUp();
+                  });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  );
                 },
-                child: signupController.isLoading.value
+                child: isLoading
                     ? CircularProgressIndicator(color: primaryColor)
                     : Text("SIGN UP", style: TextStyle(fontSize: 18, color: primaryColor)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kPrimaryColor,
                   minimumSize: Size(size.width * 0.8, 50),
                 ),
-              )),
+              ),
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.02),
               child: GestureDetector(
                 onTap: () {
-                  Get.to(() => LoginScreen()); 
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
                 },
                 child: Center(
                   child: Text(
@@ -106,12 +155,14 @@ class SignUpScreen extends StatelessWidget {
           prefixIcon: Icon(icon, color: kPrimaryColor),
           hintText: hintText,
           hintStyle: TextStyle(color: secondaryColor),
-          suffixIcon: isPassword ? IconButton(
+          suffixIcon: isPassword
+              ? IconButton(
             icon: Icon(obscureText ? Icons.visibility : Icons.visibility_off),
             onPressed: () {
               if (toggleObscureText != null) toggleObscureText();
             },
-          ) : null,
+          )
+              : null,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
       ),

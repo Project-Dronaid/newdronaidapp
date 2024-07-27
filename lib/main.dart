@@ -16,6 +16,7 @@ void main() {
   runApp(MyApp());
 }
 
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -24,6 +25,24 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp
+    (
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(),
+    );
+  }
+}
+
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPage();
+}
+
+class _MainPage extends State<MainPage> {
   int _selectedIndex = 0;
 
   final List<Widget> _widgetOptions = <Widget>[

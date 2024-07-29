@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HospitalRequest {
@@ -6,27 +7,33 @@ class HospitalRequest {
   final DateTime dateTime;
   final String requestId;
   final String emergencyText;
-  final String? emergencyImage;
+  final Uint8List? emergencyImage;
+  final int priorityLevel;
+  final String userId;
+  final String? status;
 
-  const HospitalRequest({
-    required this.hospitalName,
-    required this.address,
-    required this.dateTime,
-    required this.requestId,
-    required this.emergencyText,
-    this.emergencyImage,
-  });
-
+  const HospitalRequest(
+      {required this.hospitalName,
+      required this.address,
+      required this.dateTime,
+      required this.requestId,
+      required this.userId,
+      required this.emergencyText,
+      required this.priorityLevel,
+      this.emergencyImage,
+      this.status});
 
   Map<String, dynamic> toJson() => {
-    'hospitalName': hospitalName,
-    'address': address,
-    'dateTime': Timestamp.fromDate(dateTime),
-    'requestId': requestId,
-    'emergencyText': emergencyText,
-    'emergencyImage': emergencyImage,
-  };
-
+        'hospitalName': hospitalName,
+        'address': address,
+        'dateTime': Timestamp.fromDate(dateTime),
+        'requestId': requestId,
+        'emergencyText': emergencyText,
+        'emergencyImage': emergencyImage,
+        'priorityLevel': priorityLevel,
+        'userId': userId,
+        'status': status,
+      };
 
   static HospitalRequest fromSnap(DocumentSnapshot snap) {
     var snapshot = snap.data() as Map<String, dynamic>;
@@ -38,6 +45,9 @@ class HospitalRequest {
       requestId: snapshot['requestId'],
       emergencyText: snapshot['emergencyText'],
       emergencyImage: snapshot['emergencyImage'],
+      priorityLevel: snapshot['priorityLevel'],
+      userId: snapshot['userId'],
+      status: snapshot['status'],
     );
   }
 }

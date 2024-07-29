@@ -1,8 +1,15 @@
+import 'dart:ffi';
+import 'dart:typed_data';
+import 'package:dronaid_app/models/user.dart' as user_1;
+import 'package:dronaid_app/provider/user_provider.dart';
 import 'package:dronaid_app/utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:dronaid_app/utils/constants.dart';
-import 'request_page.dart';
-import 'ProfilePage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import '../firebase/firestore_methods.dart';
+import '../utils/utils.dart';
+
 
 class EmergencyPage extends StatefulWidget {
   const EmergencyPage({super.key});
@@ -13,7 +20,11 @@ class EmergencyPage extends StatefulWidget {
 
 class _EmergencyPageState extends State<EmergencyPage> {
   TextEditingController _emergencyController = TextEditingController();
+  Uint8List? _file;
   int selectedPriority = 0;
+  bool _isLoading = false;
+  String hospitalAddress = 'Loading...';
+  String hospitalName = 'Loading...';
 
   void selectPriority(int index) {
     setState(() {
@@ -21,8 +32,87 @@ class _EmergencyPageState extends State<EmergencyPage> {
     });
   }
 
+  void postRequest(String userId, String hospitalName, String address, int priorityLevel) async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      String res = await FirestoreMethods().uploadRequest(
+          hospitalName, _file!, _emergencyController.text, address, priorityLevel, userId);
+
+      if (res == "success") {
+        setState(() {
+          _isLoading = true;
+        });
+        showSnackBar('Request Sent!', context);
+        clearImage();
+      } else {
+        setState(() {
+          _isLoading = true;
+        });
+        showSnackBar('Sending...', context);
+      }
+    } catch (e) {
+      showSnackBar(e.toString(), context);
+    }
+  }
+
+  _selectImage(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text('Create a Request'),
+            children: [
+              SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: const Text('Take a photo'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  Uint8List file = await pickImage(
+                    ImageSource.camera,
+                  );
+                  setState(() {
+                    _file = file;
+                  });
+                },
+              ),
+              SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: const Text('Choose from gallery'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  Uint8List file = await pickImage(
+                    ImageSource.gallery,
+                  );
+                  setState(() {
+                    _file = file;
+                  });
+                },
+              ),
+              SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: const Text('Cancel'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void clearImage(){
+    setState(() {
+      _file = null;
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
+   final user_1.User user = Provider.of<UserProvider>(context).getUser;
+
     return Scaffold(
       backgroundColor: const Color(0xFFEEEFF5),
       appBar: AppBar(
@@ -100,7 +190,7 @@ class _EmergencyPageState extends State<EmergencyPage> {
                 contentPadding: EdgeInsets.all(10),
                 border: InputBorder.none,
                 suffixIcon: IconButton(
-                  onPressed: () {},
+                  onPressed: () => _selectImage(context),
                   icon: Icon(Icons.photo_library_outlined),
                 ),
               ),
@@ -186,7 +276,7 @@ class _EmergencyPageState extends State<EmergencyPage> {
           ),
           Spacer(),
           GestureDetector(
-            onTap: () {},
+            onTap: () => postRequest(user.uid, user.hospital_name, user.address, selectedPriority),
             child: Container(
               margin: EdgeInsets.only(left: 18, right: 18, bottom: 20),
               padding: EdgeInsets.all(20),

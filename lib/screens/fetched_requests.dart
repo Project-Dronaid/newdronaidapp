@@ -55,6 +55,12 @@ class _FetchedRequestsState extends State<FetchedRequests> {
 
         // Delete from hospitalRequests collection
         await requestDoc.delete();
+        setState(() {
+          FirebaseFirestore.instance
+              .collection('drone')
+              .doc('drone1')
+              .update({'orderFlag': 1});
+        });
       }
     } catch (e) {
       // Handle any errors
@@ -165,8 +171,9 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(
-                                    left: 46, right: 10, bottom: 10),
-                                child: Text(emergencyText),
+                                    left: 46, right: 10, bottom: 5, top: 10),
+                                child: Align(alignment: Alignment.centerLeft,
+                                    child: Text(emergencyText)),
                               ),
                               SizedBox(
                                 height: 5,

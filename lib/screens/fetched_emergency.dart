@@ -80,6 +80,7 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
           'dateTime': dateTime,
           'requestId': requestId,
           'userId': userId,
+          'status': 'pending',
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -90,6 +91,10 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
         _emergencyController.clear();
         setState(() {
           selectedPriority = 0;
+          FirebaseFirestore.instance
+              .collection('drone')
+              .doc('drone1')
+              .update({'orderFlag': 0});
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

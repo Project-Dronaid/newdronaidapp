@@ -25,8 +25,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     await Future.delayed(Duration(seconds: 3), () {});
     // Navigator.pushReplacement(
     //   context,
-    //   MaterialPageRoute(builder: (context) => MainPage()),
+    //   MaterialPageRoute(builder: (context) => ()),
     // );
+    //navigate to emergency screen...
   }
 
 @override

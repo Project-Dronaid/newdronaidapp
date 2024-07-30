@@ -1,12 +1,41 @@
+import 'package:dronaid_app/screens/emergency_page.dart';
+import 'package:dronaid_app/screens/home.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../firebase/auth_methods.dart';
 import '../../utils/colors.dart';
+import '../../utils/utils.dart';
+import '../signUp/signUp.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final RxBool obscureText = true.obs;
+  bool obscureText = true;
+  bool _isLoading = false;
+
+
+  void loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().loginUser(
+        email: emailController.text, password: passwordController.text);
+
+    if (res == 'Success') {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+    } else {
+      showSnackBar(res, context);
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,16 +71,18 @@ class LoginScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         _buildTextField(emailController, "Email", Icons.email),
-                        Obx(() => _buildTextField(
-                            passwordController,
-                            "Password",
-                            Icons.lock,
-                            isPassword: true,
-                            obscureText: obscureText.value,
-                            toggleObscureText: () {
-                              obscureText.value = !obscureText.value;
-                            }
-                        )),
+                        _buildTextField(
+                          passwordController,
+                          "Password",
+                          Icons.lock,
+                          isPassword: true,
+                          obscureText: obscureText,
+                          toggleObscureText: () {
+                            setState(() {
+                              obscureText = !obscureText;
+                            });
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -62,7 +93,7 @@ class LoginScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.02),
               child: ElevatedButton(
                 onPressed: () {
-                  // Login action
+                  loginUser();
                 },
                 child: Text(
                   "LOGIN",
@@ -78,7 +109,7 @@ class LoginScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.02),
               child: GestureDetector(
                 onTap: () {
-                  Get.toNamed('/signup');
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
                 },
                 child: Center(
                   child: Text(
@@ -104,12 +135,14 @@ class LoginScreen extends StatelessWidget {
           prefixIcon: Icon(icon, color: kPrimaryColor),
           hintText: hintText,
           hintStyle: TextStyle(color: secondaryColor),
-          suffixIcon: isPassword ? IconButton(
+          suffixIcon: isPassword
+              ? IconButton(
             icon: Icon(obscureText ? Icons.visibility : Icons.visibility_off),
             onPressed: () {
               if (toggleObscureText != null) toggleObscureText();
             },
-          ) : null,
+          )
+              : null,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
       ),

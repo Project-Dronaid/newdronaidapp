@@ -11,7 +11,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFEEEFF5),
       appBar: AppBar(
         // leading: IconButton(
         //   onPressed: () {
@@ -27,7 +27,8 @@ class _ProfilePageState extends State<ProfilePage> {
           'Profile',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFFEEEFF5),
+        surfaceTintColor: Color(0xFFEEEFF5),
         elevation: 0,
         centerTitle: true,
       ),
@@ -48,6 +49,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           elevation: 10,
                           shape: CircleBorder(),
                           child: CircleAvatar(
+                            backgroundColor: Colors.white,
                             //add image here.
                             // backgroundImage: AssetImage("assets/images/download.png"),
                             radius: 40,

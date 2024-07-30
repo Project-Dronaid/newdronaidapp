@@ -1,199 +1,394 @@
-import 'dart:typed_data';
-
-import 'package:flutter/cupertino.dart';
-import "package:flutter/material.dart";
-import 'package:flutter/widgets.dart';
+import 'package:dronaid_app/utils/colors.dart';
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'dart:math' as Math;
-import "../utils/constants.dart";
+class OrderTrackingPage extends StatefulWidget {
+  const OrderTrackingPage({super.key});
 
-class OrderDetails extends StatefulWidget {
-  const OrderDetails({super.key});
 
+  
   @override
-  State<OrderDetails> createState() => _OrderDetailsState();
+  _OrderTrackingPageState createState() => _OrderTrackingPageState();
 }
 
-class _OrderDetailsState extends State<OrderDetails> {
-
-  final list = orders;
-  final LatLng _center = const LatLng(13.3461, 74.7965);
-  static const _initialCameraPosition = CameraPosition(
-      target: LatLng(13.3461, 74.7965),
-      zoom: 13);
-  late GoogleMapController _googleMapController;
-  Set<Marker> _markers = {};
-
-
-
-
-
+class _OrderTrackingPageState extends State<OrderTrackingPage> {
+  bool isMapVisible = true;
   @override
-  void dispose(){
-    _googleMapController.dispose();
-    //print('Disposin...');
-    super.dispose();
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // _showModalBottomSheet(context);
+    });
   }
+
+  void toggleMapVisibility() {
+    setState(() {
+      isMapVisible = !isMapVisible;
+    });
+  }
+  // void _showModalBottomSheet(BuildContext context) {
+  //   showModalBottomSheet(
+  //     isDismissible: false,
+  //     enableDrag: false,
+  //     clipBehavior: Clip.none,
+  //     isScrollControlled: true,
+  //     shape: const RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.only(
+  //         topLeft: Radius.circular(20),
+  //         topRight: Radius.circular(20)
+  //       )
+  //     ),
+  //     context: context,
+  //      builder: (context)=>
+  //    WillPopScope(
+  //     onWillPop: () async => false,
+  //      child: DraggableScrollableSheet(
+  //       expand: false,
+  //       initialChildSize: 0.4,
+  //       maxChildSize: 0.9,
+  //        builder: (context, scrollController)=> Container(
+  //          child: SingleChildScrollView(
+  //           controller:scrollController ,
+  //           child: OrderDetailsWidget(),
+  //              ),
+  //        ),
+  //      ),
+  //    ));
+  // }
+
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-        appBar: AppBar(
-          elevation: 5,
-          backgroundColor: Colors.white,
-          scrolledUnderElevation: 5,
-          surfaceTintColor: Colors.white,
-          title: const Text(
-            'Order Details', style: TextStyle(fontWeight: FontWeight.bold),),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        leading: Padding(
+          padding: const EdgeInsets.fromLTRB(10,5,5,5),
+          child: CircleAvatar(
+            backgroundColor: Colors.white,
+            child: IconButton(
+            
+              onPressed: (){}, icon: Icon(Icons.arrow_back), color: Colors.black,),
+          ),
         ),
-        body: Stack(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height,
-                child: Stack(
-                    children:[ GoogleMap(
-                      markers: _markers,
-                      mapType: MapType.normal,
-                      myLocationEnabled: true,
-                      initialCameraPosition: _initialCameraPosition,
-                      onMapCreated: (GoogleMapController controller){
-                        _googleMapController=controller;
-                        //adds marker after creating map
-                        setState(() {
-                          _markers.add(Marker(
-                              markerId: MarkerId('1'),
-                              position: _center,
-                              infoWindow: InfoWindow(
-                                  title: 'Source',
-                                  snippet: 'details here*'
-                              )
-                          )
-                          );
-                        });
-                      },
-                    ),
-                      Positioned(
-                        bottom: 210,
-                        right: 20,
-                        child: FloatingActionButton(
-                          shape: CircleBorder(),
-                          backgroundColor: Colors.lightBlue,
-                          foregroundColor: Colors.white,
-                          onPressed: (){
-                            _googleMapController.animateCamera(CameraUpdate.newCameraPosition(_initialCameraPosition));
-                          },
-                          child: const Icon(Icons.center_focus_strong,),),
-                      )
-                    ]
-                ),
+      ),
+              backgroundColor: Colors.transparent,
+      
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(0.0), // Add padding here
+            child: GoogleMapWidget(onMapTap: toggleMapVisibility),
+          ),
+          const Positioned(
+            top: 30,
+            right: 10,
+            child: EstimatedTimeWidget(),
+          ),
+          DraggableScrollableSheet(
+            initialChildSize: 0.3,
+            minChildSize: 0.3,
+            maxChildSize: 0.65,
+            builder: (BuildContext context, scrollController){
+            return Container(
+              decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            spreadRadius: 1,
+            blurRadius: 10,
+            offset: const Offset(0, 3), // Position of shadow
+          ),
+        ],
+      ),
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: const OrderDetailsWidget()),
+            );
+          } )
+        ],
+      ),
+    );
+  }
+}
+class OrderDetailsWidget extends StatelessWidget {
+  const OrderDetailsWidget({super.key});
 
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14.0),
+        
+      ),
+      child:  Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+        
+          children: [
+          //   Padding(
+          //     padding: const EdgeInsets.fromLTRB(87,20,80,0),
+          //     child: Divider(
+                
+          //       height: 1,
+          //     color: const Color.fromARGB(255, 210, 205, 205),
+          //     ),
+          //   ),
+          //  Padding(
+          //     padding: EdgeInsets.all(16.0),
+          //     child: Column(
+          //       children: [
+          //         Row(
+          //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //           children: [
+          //             Container(
+                       
+          //               width: 70,
+          //               height: 80,
+          //               child: Column(
+          //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //                 children: [
+          //                   Icon(Icons.shopping_bag_outlined, color: Colors.black, size: 30,),
+          //                   Text('Order Received', textAlign: TextAlign.center,)
+          //                 ],
+          //               ),
+          //             ),
+          //             Container(
+          //               width: 70,
+          //               height: 80,
+          //               child: Column(
+          //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //                 children: [
+          //                   Icon(Icons.flight, size: 30,color: Colors.black,),
+          //                   Text('Delivery', textAlign: TextAlign.center,)
+          //                 ],
+          //               ),
+          //             ),
+          //               Container(
+          //                 width: 70,
+          //                 height: 80,
+          //                 child: Column(
+          //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //                 children: [
+          //                   Icon(Icons.sentiment_very_satisfied_outlined, color: Colors.black, size: 30,),
+          //                   Text('Dont eat it!', textAlign: TextAlign.center,)
+          //                 ],
+          //                                       ),
+          //               ),
+          //           ],
+          //         )
+          //       ],
+          //     ),
+          //   ),
+          Container(child: OrderTracking(),),
+            Divider(
+              height: 1,
+              color: Color.fromARGB(255, 210, 205, 205)
+            ),
+            SizedBox(height: 10,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                 Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text('Arrived estimation', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),),
+                    SizedBox(height: 10,),
+                    Container(child: Text('08:00 PM - 08:12 PM', style: TextStyle(fontSize: 15, color: Color.fromARGB(255, 122, 121, 121)),)),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: OutlinedButton(onPressed: (){}, child: Text('23 Min', style: TextStyle(color: Colors.black),)),
+                )
+              ],
+            ),
+                        SizedBox(height: 10,),
+            Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
+                        SizedBox(height: 10,),
+            Text('Address', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),),
+                        SizedBox(height: 10,),
+            Text('1234 NW Bobcat Lane, St. Robert, MO 65584-5678'),
+                        SizedBox(height: 10,),
+
+            Divider(height: 1,color: Color.fromARGB(255, 210, 205, 205)),
+                        SizedBox(height: 10,),
+            Text('Order Details', style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.w900),),
+            Text('Order ID: #1234'),
+            Text('x2 Heart           1200')
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class GoogleMapWidget extends StatelessWidget {
+  final Function onMapTap;
+
+  GoogleMapWidget({super.key, required this.onMapTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => onMapTap(),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(0.0),
+        child: LayoutBuilder(
+          builder: (context, constraints) => 
+          SizedBox(
+            height: constraints.maxHeight*0.71,
+            child: GoogleMap(
+              initialCameraPosition: const CameraPosition(
+                target: LatLng(13.3524, 74.7868), // Example coordinates
+                zoom: 10.0,
               ),
-              Positioned(
-                bottom: 0,
-                child: Container(
-                  height: 200,
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30)),
-                      color: Colors.white,
-                      boxShadow: [BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 3,
-                        blurRadius: 10,
-                      )
-                      ]
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8, 8),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Column(
-                            children: [
-                              Text('Order No: xx',
-                                  style: TextStyle(fontSize: 20)),
-                              Text('Order Details here',
-                                  style: TextStyle(fontSize: 20)),
-                              Text('More Order Details here',
-                                  style: TextStyle(fontSize: 20)),
-                            ],
-                          ),
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment
-                                .spaceEvenly,
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: SizedBox(
-                                    height: 60,
-                                    child: ElevatedButton(
-                                      onPressed: () {},
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Color.fromRGBO(
-                                            57, 161, 18, 1.0),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius
-                                              .circular(50),
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        "Confirm Order",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: SizedBox(
-                                    height: 60,
-                                    child: ElevatedButton(
-                                      onPressed: () {},
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius
-                                              .circular(50),
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        "Cancel",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+              markers: {
+                const Marker(
+                  markerId: MarkerId('deliveryLocation'),
+                  position: LatLng(13.3524, 74.7868),
                 ),
-              )
-            ]
-        )
+              },
+              mapType: MapType.normal, // or MapType.satellite
+              myLocationEnabled: true,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EstimatedTimeWidget extends StatelessWidget {
+  const EstimatedTimeWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.0),
+
+boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            spreadRadius: 1,
+            blurRadius: 10,
+            offset: const Offset(0, 3), // Position of shadow
+          ),
+        ],
+      ),
+      child: const Column(
+        children: [
+          Text(
+            'Estimated Time',
+            style: TextStyle(fontSize: 14.0, color: Colors.grey),
+          ),
+          SizedBox(height: 4.0),
+          Text(
+            '5-10 min',
+            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+        ],
+
+      ),
+    );
+  }
+}
+class OrderTracking extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TrackingStep(
+              icon: Icons.shopping_bag,
+              label: 'Order\nreceived',
+              isActive: true,
+            ),
+            Expanded(
+              child: Container(
+                height: 1.0,
+                color: Colors.grey,
+              ),
+            ),
+            TrackingStep(
+              icon: Icons.local_shipping,
+              label: 'Delivery',
+              isActive: false,
+            ),
+            Expanded(
+              child: Container(
+                height: 1.0,
+                color: Colors.grey,
+              ),
+            ),
+            TrackingStep(
+              icon: Icons.emoji_emotions,
+              label: 'Enjoy your\nmeal!',
+              isActive: false,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class TrackingStep extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isActive;
+
+  TrackingStep({required this.icon, required this.label, this.isActive = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        children: [
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              CircleAvatar(
+                radius: 10,
+                backgroundColor: Colors.white,
+                child: Container(), // Empty container to ensure alignment
+              ),
+              CircleAvatar(
+                radius: 5,
+                backgroundColor: isActive ? Colors.red : Colors.grey,
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          Icon(
+            icon,
+            color: Colors.black,
+            size: 25,
+          ),
+          SizedBox(height: 5),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

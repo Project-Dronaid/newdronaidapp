@@ -1,3 +1,4 @@
+import 'package:dronaid_app/screens/OrderDetails.dart';
 import 'package:dronaid_app/screens/emergency_page.dart';
 import 'package:dronaid_app/screens/home.dart';
 import 'package:dronaid_app/screens/home_page2.dart';
@@ -18,7 +19,6 @@ void main() async{
 }
 
 class MyApp extends StatefulWidget {
-
   const MyApp({super.key});
 
   @override
@@ -46,33 +46,8 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: SignUpScreen(),
-        // body:  _widgetOptions.elementAt(_selectedIndex),
-        // bottomNavigationBar: BottomNavigationBar(
-        //   items: const <BottomNavigationBarItem>[
-        //     BottomNavigationBarItem(
-        //       icon: Icon(Icons.home,),
-        //       label: 'Home',
-        //     ),
-        //     BottomNavigationBarItem(
-        //       icon: Icon(Icons.request_page_outlined,),
-        //       label: 'Requests',
-        //     ),
-        //     BottomNavigationBarItem(
-        //       icon: Icon(Icons.info_outline),
-        //       label: 'Info',
-        //     ),
-        //     BottomNavigationBarItem(
-        //       icon: Icon(Icons.person_outline),
-        //       label: 'Profile',
-        //     ),
-        //   ],
-        //   unselectedItemColor: Colors.black.withOpacity(0.6),
-        //   showUnselectedLabels: true,
-        //   currentIndex: _selectedIndex,
-        //   selectedItemColor: kPrimaryColor,
-        //   onTap: _onItemTapped,
-        // ),
+        body: OrderTrackingPage(),
+     
       ),
     );
   }

@@ -44,12 +44,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EmergencyPage()));
     }
   }
-
-
-
-
-
-  @override
+@override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(

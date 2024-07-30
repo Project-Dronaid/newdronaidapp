@@ -17,7 +17,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // _showModalBottomSheet(context);
     });
   }
 
@@ -26,36 +25,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
       isMapVisible = !isMapVisible;
     });
   }
-  // void _showModalBottomSheet(BuildContext context) {
-  //   showModalBottomSheet(
-  //     isDismissible: false,
-  //     enableDrag: false,
-  //     clipBehavior: Clip.none,
-  //     isScrollControlled: true,
-  //     shape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.only(
-  //         topLeft: Radius.circular(20),
-  //         topRight: Radius.circular(20)
-  //       )
-  //     ),
-  //     context: context,
-  //      builder: (context)=>
-  //    WillPopScope(
-  //     onWillPop: () async => false,
-  //      child: DraggableScrollableSheet(
-  //       expand: false,
-  //       initialChildSize: 0.4,
-  //       maxChildSize: 0.9,
-  //        builder: (context, scrollController)=> Container(
-  //          child: SingleChildScrollView(
-  //           controller:scrollController ,
-  //           child: OrderDetailsWidget(),
-  //              ),
-  //        ),
-  //      ),
-  //    ));
-  // }
-
 
   @override
   Widget build(BuildContext context) {
@@ -132,60 +101,6 @@ class OrderDetailsWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
         
           children: [
-          //   Padding(
-          //     padding: const EdgeInsets.fromLTRB(87,20,80,0),
-          //     child: Divider(
-                
-          //       height: 1,
-          //     color: const Color.fromARGB(255, 210, 205, 205),
-          //     ),
-          //   ),
-          //  Padding(
-          //     padding: EdgeInsets.all(16.0),
-          //     child: Column(
-          //       children: [
-          //         Row(
-          //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //           children: [
-          //             Container(
-                       
-          //               width: 70,
-          //               height: 80,
-          //               child: Column(
-          //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //                 children: [
-          //                   Icon(Icons.shopping_bag_outlined, color: Colors.black, size: 30,),
-          //                   Text('Order Received', textAlign: TextAlign.center,)
-          //                 ],
-          //               ),
-          //             ),
-          //             Container(
-          //               width: 70,
-          //               height: 80,
-          //               child: Column(
-          //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //                 children: [
-          //                   Icon(Icons.flight, size: 30,color: Colors.black,),
-          //                   Text('Delivery', textAlign: TextAlign.center,)
-          //                 ],
-          //               ),
-          //             ),
-          //               Container(
-          //                 width: 70,
-          //                 height: 80,
-          //                 child: Column(
-          //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //                 children: [
-          //                   Icon(Icons.sentiment_very_satisfied_outlined, color: Colors.black, size: 30,),
-          //                   Text('Dont eat it!', textAlign: TextAlign.center,)
-          //                 ],
-          //                                       ),
-          //               ),
-          //           ],
-          //         )
-          //       ],
-          //     ),
-          //   ),
           Container(child: OrderTracking(),),
             Divider(
               height: 1,

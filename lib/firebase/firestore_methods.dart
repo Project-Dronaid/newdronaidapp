@@ -1,12 +1,16 @@
 
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dronaid_app/firebase/auth_methods.dart';
 import 'package:dronaid_app/models/hospitalrequests.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:uuid/uuid.dart';
 
 class FirestoreMethods{
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<String> uploadRequest(
       String hospitalName,
@@ -54,4 +58,24 @@ class FirestoreMethods{
     }
   }
 
+  Future<void> getLatLong(String address) async{
+    User currentUser = _auth.currentUser!;
+    DocumentSnapshot snap = await _firestore.collection('users').doc(currentUser.uid).get();
+    // String address = (snap.data()! as dynamic)['address'];
+
+    List<Location> locations = await locationFromAddress(address);
+
+    double lat = locations[0].latitude;
+    double long = locations[0].longitude;
+
+    print(lat);
+    print(long);
+
+    DocumentReference droneReference = FirebaseFirestore.instance.collection('drone').doc('drone1').collection('location').doc('destination');
+
+    await droneReference.update({
+      'latitude': lat,
+      'longitude': long,
+    });
+  }
 }

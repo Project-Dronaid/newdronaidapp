@@ -1,5 +1,6 @@
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class OrderTrackingPage extends StatefulWidget {
@@ -30,8 +31,10 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         leading: Padding(
+          
           padding: const EdgeInsets.fromLTRB(10,5,5,5),
           child: CircleAvatar(
             backgroundColor: Colors.white,
@@ -61,7 +64,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
             builder: (BuildContext context, scrollController){
             return Container(
               decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFEEEFF5),
         borderRadius: BorderRadius.circular(16.0),
         boxShadow: [
           BoxShadow(
@@ -90,7 +93,7 @@ class OrderDetailsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color.fromARGB(255, 236, 237, 240),
         borderRadius: BorderRadius.circular(14.0),
         
       ),
@@ -111,15 +114,16 @@ class OrderDetailsWidget extends StatelessWidget {
               children: [
                  Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Arrived estimation', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),),
+                    Text('Arrival estimation', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),),
                     SizedBox(height: 10,),
-                    Container(child: Text('08:00 PM - 08:12 PM', style: TextStyle(fontSize: 15, color: Color.fromARGB(255, 122, 121, 121)),)),
+                    Text('08:00 PM - 08:12 PM', style: TextStyle(fontSize: 15, color: Color.fromARGB(255, 122, 121, 121)),),
                   ],
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: OutlinedButton(onPressed: (){}, child: Text('23 Min', style: TextStyle(color: Colors.black),)),
+                  child: OutlinedButton(onPressed: (){},child:  Text('23 Min', style: TextStyle(color: Colors.black),)),
                 )
               ],
             ),
@@ -133,14 +137,66 @@ class OrderDetailsWidget extends StatelessWidget {
 
             Divider(height: 1,color: Color.fromARGB(255, 210, 205, 205)),
                         SizedBox(height: 10,),
-            Text('Order Details', style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.w900),),
-            Text('Order ID: #1234'),
-            Text('x2 Heart           1200')
-          ],
+            Text('Order Details',style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0,10,0,20),
+              child: OrderItemsTable(),
+            ),
+             Divider(height: 1,color: Color.fromARGB(255, 210, 205, 205)),
+                        SizedBox(height: 10,),
+
+          ]
         ),
       ),
     );
   }
+}
+class OrderItemsTable extends StatelessWidget {
+  final List<OrderItem> items = [
+    OrderItem(name: 'Heart', quantity: 10, weight: 1.2),
+    OrderItem(name: 'O+ Blood 5L', quantity: 1, weight: 1.1),
+    OrderItem(name: 'Liver', quantity: 1, weight: 1.5),
+    OrderItem(name: 'Lungs', quantity: 1, weight: 2.0),
+    OrderItem(name: 'Nuts', quantity: 2, weight: 0.8),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+  
+      scrollDirection: Axis.horizontal,
+      
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30)
+        ),
+        child: DataTable(
+          
+          columns: [
+            DataColumn(label: Text('Name')),
+            DataColumn(label: Text('Quantity')),
+            DataColumn(label: Text('Weight (kg)')),
+          ],
+          rows: items.map((item) {
+            return DataRow(cells: [
+              DataCell(Text(item.name)),
+              DataCell(Text(item.quantity.toString())),
+              DataCell(Text(item.weight.toString())),
+            ]);
+          }).toList(),
+        ),
+      ),
+    );
+  }
+}
+
+class OrderItem {
+  final String name;
+  final int quantity;
+  final double weight;
+
+  OrderItem({required this.name, required this.quantity, required this.weight});
 }
 
 class GoogleMapWidget extends StatelessWidget {
@@ -187,8 +243,8 @@ class EstimatedTimeWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.0),
+        color: Color.fromARGB(255, 236, 237, 240),
+        borderRadius: BorderRadius.circular(10.0),
 
 boxShadow: [
           BoxShadow(
@@ -203,9 +259,8 @@ boxShadow: [
         children: [
           Text(
             'Estimated Time',
-            style: TextStyle(fontSize: 14.0, color: Colors.grey),
+            style: TextStyle(fontSize: 13.0, color: Colors.grey),
           ),
-          SizedBox(height: 4.0),
           Text(
             '5-10 min',
             style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.black),

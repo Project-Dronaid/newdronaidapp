@@ -1,69 +1,79 @@
+import 'package:dronaid_app/screens/emergency_page.dart';
+import 'package:dronaid_app/screens/fetched_emergency.dart';
+import 'package:dronaid_app/screens/home.dart';
+import 'package:dronaid_app/screens/home_page2.dart';
+import 'package:dronaid_app/screens/login/login.dart';
+import 'package:dronaid_app/screens/signUp/signUp.dart';
+import '../firebase/firestore_methods.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'firebase/firebase_options.dart';
+import 'screens/request_page.dart';
+import 'screens/ProfilePage.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _widgetOptions = <Widget>[
+    FetchedEmergency(),
+    RequestPage(),
+    HomePage2(),
+    ProfilePage(),
+  ];
+
+
+  @override
+  void initState() {
+    super.initState();
+    FirestoreMethods().initializeFlags();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: SignUpScreen(),
+        // body:  _widgetOptions.elementAt(_selectedIndex),
+        // bottomNavigationBar: BottomNavigationBar(
+        //   items: const <BottomNavigationBarItem>[
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.home,),
+        //       label: 'Home',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.request_page_outlined,),
+        //       label: 'Requests',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.info_outline),
+        //       label: 'Info',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.person_outline),
+        //       label: 'Profile',
+        //     ),
+        //   ],
+        //   unselectedItemColor: Colors.black.withOpacity(0.6),
+        //   showUnselectedLabels: true,
+        //   currentIndex: _selectedIndex,
+        //   selectedItemColor: kPrimaryColor,
+        //   onTap: _onItemTapped,
+        // ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), 
     );
   }
 }

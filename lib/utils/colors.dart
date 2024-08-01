@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 const mobileBackgroundColor = Color.fromRGBO(84, 244, 255, 1);
 const dronaidblue = Color.fromARGB(255, 13, 57, 93);
 const dronaidblue2 = Color.fromARGB(255, 48, 82, 109);

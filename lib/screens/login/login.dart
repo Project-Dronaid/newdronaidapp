@@ -1,6 +1,10 @@
+import 'package:dronaid_app/screens/emergency_page.dart';
+import 'package:dronaid_app/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../firebase/auth_methods.dart';
 import '../../utils/colors.dart';
+import '../../utils/utils.dart';
 import '../signUp/signUp.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,6 +16,26 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool obscureText = true;
+  bool _isLoading = false;
+
+
+  void loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().loginUser(
+        email: emailController.text, password: passwordController.text);
+
+    if (res == 'Success') {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+    } else {
+      showSnackBar(res, context);
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.02),
               child: ElevatedButton(
                 onPressed: () {
-                  // Login action
+                  loginUser();
                 },
                 child: Text(
                   "LOGIN",

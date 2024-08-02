@@ -61,7 +61,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
           FirebaseFirestore.instance
               .collection('drone')
               .doc('drone1')
-              .update({'orderFlag': 1});
+              .update({'orderFlag': 1, 'droneFlag': 1});
         });
       }
     } catch (e) {

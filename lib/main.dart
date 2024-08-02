@@ -1,8 +1,10 @@
+import 'package:dronaid_app/screens/OrderDetails.dart';
 import 'package:dronaid_app/screens/emergency_page.dart';
 import 'package:dronaid_app/screens/fetched_emergency.dart';
 import 'package:dronaid_app/screens/home.dart';
 import 'package:dronaid_app/screens/home_page2.dart';
 import 'package:dronaid_app/screens/login/login.dart';
+import 'package:dronaid_app/screens/map_page.dart';
 import 'package:dronaid_app/screens/signUp/signUp.dart';
 import '../firebase/firestore_methods.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -47,6 +49,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        // body: ConfirmDetails(),
         body: LoginScreen(),
         // body:  _widgetOptions.elementAt(_selectedIndex),
         // bottomNavigationBar: BottomNavigationBar(

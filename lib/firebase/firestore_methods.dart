@@ -59,8 +59,8 @@ class FirestoreMethods{
   }
 
   Future<void> getLatLong(String address) async{
-    User currentUser = _auth.currentUser!;
-    DocumentSnapshot snap = await _firestore.collection('users').doc(currentUser.uid).get();
+    // User currentUser = _auth.currentUser!;
+    // DocumentSnapshot snap = await _firestore.collection('users').doc(currentUser.uid).get();
     // String address = (snap.data()! as dynamic)['address'];
 
     List<Location> locations = await locationFromAddress(address);

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dronaid_app/firebase/firestore_methods.dart';
+import 'package:dronaid_app/screens/map_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:dronaid_app/utils/colors.dart';
@@ -170,8 +171,9 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                     IconButton(
                       onPressed: () {
                         setState(() {
-                          _isEditing = !_isEditing;
-                          FirestoreMethods().getLatLong(_locationController.text);
+                          // _isEditing = !_isEditing;
+                          // FirestoreMethods().getLatLong(_locationController.text);
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ConfirmDetails() ));
                         });
                       },
                       icon: Icon(

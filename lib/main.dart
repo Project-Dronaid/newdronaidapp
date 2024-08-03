@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         // body: ConfirmDetails(),
-        body: LoginScreen(),
+        body: SignUpScreen(),
         // body:  _widgetOptions.elementAt(_selectedIndex),
         // bottomNavigationBar: BottomNavigationBar(
         //   items: const <BottomNavigationBarItem>[
@@ -81,3 +81,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+
+

@@ -69,8 +69,8 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
       User? user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
-        if(_emergencyController.text.isNotEmpty){
-          if(selectedPriority == 0){
+        if (_emergencyController.text.isNotEmpty) {
+          if (selectedPriority == 0) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Please select priority')),
             );
@@ -78,8 +78,10 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
           }
 
           final userId = user.uid;
-          final requestId =
-              FirebaseFirestore.instance.collection('hospitalRequests').doc().id;
+          final requestId = FirebaseFirestore.instance
+              .collection('hospitalRequests')
+              .doc()
+              .id;
           final dateTime = DateTime.now();
 
           await FirebaseFirestore.instance
@@ -89,7 +91,7 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
             'address': hospitalAddress,
             'emergencyText': _emergencyController.text,
             'emergencyImage':
-            '', // Assuming no image is attached; handle this accordingly
+                '', // Assuming no image is attached; handle this accordingly
             'hospitalName': hospitalName,
             'priorityLevel': selectedPriority,
             'dateTime': dateTime,
@@ -111,12 +113,11 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                 .doc('drone1')
                 .update({'orderFlag': 0});
           });
-        }else{
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Enter Emergency text')),
           );
         }
-
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('User not logged in')),
@@ -173,29 +174,28 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                         setState(() {
                           // _isEditing = !_isEditing;
                           // FirestoreMethods().getLatLong(_locationController.text);
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ConfirmDetails() ));
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ConfirmDetails()));
                         });
                       },
                       icon: Icon(
-                        _isEditing ? Icons.check :Icons.edit_outlined,
+                        _isEditing ? Icons.check : Icons.edit_outlined,
                         size: 17,
                         color: kPrimaryColor,
                       ),
                     )
                   ],
                 ),
-                 _isEditing
+                _isEditing
                     ? TextField(
-                  controller: _locationController,
-                  style: TextStyle(fontSize: 15),
-                  decoration: InputDecoration(
-                    border: InputBorder.none
-                  ),
-                )
+                        controller: _locationController,
+                        style: TextStyle(fontSize: 15),
+                        decoration: InputDecoration(border: InputBorder.none),
+                      )
                     : Text(
-                  _locationController.text,
-                  style: TextStyle(fontSize: 15),
-                ),
+                        _locationController.text,
+                        style: TextStyle(fontSize: 15),
+                      ),
                 // Text(
                 //   _locationController.text,
                 //   style: TextStyle(
@@ -260,7 +260,7 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
             ),
           ),
           SizedBox(
-            height: MediaQuery.of(context).size.height*0.01,
+            height: MediaQuery.of(context).size.height * 0.01,
           ),
           Text(
             'Select Priority Level:',
@@ -353,7 +353,11 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
           GestureDetector(
             onTap: _submitRequest,
             child: Container(
-              margin: EdgeInsets.only(left: 18, right: 18, bottom: 20,),
+              margin: EdgeInsets.only(
+                left: 18,
+                right: 18,
+                bottom: 20,
+              ),
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                   color: kPrimaryColor,

@@ -6,33 +6,34 @@ class User {
   final String address;
   final String phone_no;
   final String uid;
+  final String? deliveryAddress;
 
+  const User(
+      {required this.hospital_name,
+      required this.email,
+      required this.address,
+      required this.phone_no,
+      required this.uid,
+      this.deliveryAddress});
 
-  const User({
-    required this.hospital_name,
-    required this.email,
-    required this.address,
-    required this.phone_no,
-    required this.uid
-  });
+  Map<String, dynamic> toJson() => {
+        "hospital_name": hospital_name,
+        "email": email,
+        "address": address,
+        "phone_no": phone_no,
+        "uid": uid,
+        "deliveryAddress": deliveryAddress
+      };
 
-  Map<String,dynamic> toJson() => {
-    "hospital_name" : hospital_name,
-    "email" : email,
-    "address" : address,
-    "phone_no" : phone_no,
-    "uid" : uid,
-  };
-
-  static User fromSnap(DocumentSnapshot snap){
+  static User fromSnap(DocumentSnapshot snap) {
     var snapshot = snap.data() as Map<String, dynamic>;
 
     return User(
-      hospital_name: snapshot['hospital_name'],
-      email: snapshot['email'],
-      address: snapshot['address'],
-      phone_no: snapshot['phone_no'],
-      uid: snapshot['uid'],
-    );
+        hospital_name: snapshot['hospital_name'],
+        email: snapshot['email'],
+        address: snapshot['address'],
+        phone_no: snapshot['phone_no'],
+        uid: snapshot['uid'],
+        deliveryAddress: snapshot['deliveryAddress']);
   }
 }

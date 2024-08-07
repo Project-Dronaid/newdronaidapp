@@ -1,4 +1,3 @@
-import 'package:dronaid_app/screens/emergency_page.dart';
 import 'package:dronaid_app/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,7 +17,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool obscureText = true;
   bool _isLoading = false;
 
-
   void loginUser() async {
     setState(() {
       _isLoading = true;
@@ -27,7 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
         email: emailController.text, password: passwordController.text);
 
     if (res == 'Success') {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => HomePage()));
     } else {
       showSnackBar(res, context);
     }
@@ -35,7 +34,6 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = false;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +88,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.02),
+              padding: EdgeInsets.symmetric(
+                  horizontal: size.width * 0.1, vertical: size.height * 0.02),
               child: ElevatedButton(
                 onPressed: () {
                   loginUser();
@@ -106,10 +105,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.02),
+              padding: EdgeInsets.symmetric(
+                  horizontal: size.width * 0.1, vertical: size.height * 0.02),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => SignUpScreen()));
                 },
                 child: Center(
                   child: Text(
@@ -125,7 +126,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hintText, IconData icon, {bool isPassword = false, bool obscureText = false, Function? toggleObscureText}) {
+  Widget _buildTextField(
+      TextEditingController controller, String hintText, IconData icon,
+      {bool isPassword = false,
+      bool obscureText = false,
+      Function? toggleObscureText}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextFormField(
@@ -137,11 +142,12 @@ class _LoginScreenState extends State<LoginScreen> {
           hintStyle: TextStyle(color: secondaryColor),
           suffixIcon: isPassword
               ? IconButton(
-            icon: Icon(obscureText ? Icons.visibility : Icons.visibility_off),
-            onPressed: () {
-              if (toggleObscureText != null) toggleObscureText();
-            },
-          )
+                  icon: Icon(
+                      obscureText ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () {
+                    if (toggleObscureText != null) toggleObscureText();
+                  },
+                )
               : null,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),

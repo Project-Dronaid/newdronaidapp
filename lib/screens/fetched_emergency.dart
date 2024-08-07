@@ -54,7 +54,7 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
           hospitalName = 'Unknown Hospital';
         });
       }
-      FirestoreMethods().getLatLong(hospitalAddress);
+      // FirestoreMethods().getLatLong(hospitalAddress);
     } catch (e) {
       print('Error fetching user details: $e');
       setState(() {

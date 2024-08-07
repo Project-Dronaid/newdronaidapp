@@ -138,7 +138,8 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                             ? InkWell(
                                 onTap: () => Navigator.of(context).push(
                                     MaterialPageRoute(
-                                        builder: (context) => OrderDetails())),
+                                        builder: (context) =>
+                                            OrderTrackingPage())),
                                 child: Container(
                                   margin: EdgeInsets.all(15),
                                   padding: EdgeInsets.all(10),

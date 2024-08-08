@@ -12,17 +12,14 @@ class _CreateNewPageState extends State<CreateNewPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
-  
-
-  
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-          surfaceTintColor: Colors.transparent,
+          surfaceTintColor:
+           Colors.transparent,
           centerTitle: true,
           backgroundColor: Colors.grey[100],
           title: const Text(

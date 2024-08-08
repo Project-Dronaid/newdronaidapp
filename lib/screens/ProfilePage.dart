@@ -1,5 +1,5 @@
-import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -13,16 +13,6 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        // leading: IconButton(
-        //   onPressed: () {
-        //     //Back Button
-        //     // Navigator.push(
-        //     //   context,
-        //     //   MaterialPageRoute(builder: (context) => ),
-        //     // );
-        //   },
-        //   icon: const Icon(Icons.arrow_back, color: Colors.black),
-        // ),
         title: const Text(
           'Profile',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
@@ -48,8 +38,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           elevation: 10,
                           shape: CircleBorder(),
                           child: CircleAvatar(
-                            //add image here.
-                            // backgroundImage: AssetImage("assets/images/download.png"),
                             radius: 40,
                           ),
                         ),
@@ -63,6 +51,30 @@ class _ProfilePageState extends State<ProfilePage> {
                           color: Colors.black,
                         ),
                       ),
+                      SizedBox(height: 8),
+                      Text(
+                        "Address: 1234 Street Name, City, State",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Contact: (123) 456-7890",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Email: contact@xyzhospital.com",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -70,38 +82,70 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 24),
               Column(
                 children: [
-                  ListTile(
-                    leading: const Icon(Icons.person,),
-                    title: const Text('Hospital Data'),
-                    onTap: () {
-                      print('Hospital Data tapped');
-                    },
+                  Card(
+                    color: Color.fromARGB(255, 255, 255, 255),
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Hospital Information',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Address: 1234 Street Name, City, State',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Contact: (123) 456-7890',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Email: contact@xyzhospital.com',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          Divider(),
+                          SizedBox(height: 4),
+                          Text(
+                            'Departments: Cardiology, Neurology, Orthopedics',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Timings: Mon-Fri, 9:00 AM - 5:00 PM',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.history),
-                    title: const Text('Medical History'),
-                    onTap: () {
-                      print('Medical History tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.list),
-                    title: const Text('Request History'),
-                    onTap: () {
-                      print('Request History tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.settings),
-                    title: const Text('Settings'),
-                    onTap: () {
-                      print('Settings tapped');
-                    },
-                  ),
-                  const Divider(),
+                  const Divider(thickness: 2,),
                   ListTile(
                     leading: const Icon(Icons.question_answer),
                     title: const Text('FAQ'),
@@ -109,30 +153,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       print('FAQ tapped');
                     },
                   ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.group),
-                    title: const Text('Community'),
-                    onTap: () {
-                      print('Community tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.vpn_key),
-                    title: const Text('License'),
-                    onTap: () {
-                      print('License tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.help),
-                    title: const Text('Feel Free To Ask. We are Ready to Help'),
-                    onTap: () {
-                      print('Help tapped');
-                    },
-                  ),
+                  const SizedBox(height: 24),
+                  
                 ],
               ),
             ],

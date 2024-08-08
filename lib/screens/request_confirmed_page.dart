@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import 'package:dronaid_app/screens/emergency_page.dart';
+=======
+>>>>>>> upstream/main
 import 'package:dronaid_app/screens/home_page2.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/gestures.dart';
@@ -104,5 +107,10 @@ void TrackOrder() {
 }
 
 void GoToHomePage() {
+<<<<<<< HEAD
   // Home Page 
 }
+=======
+  // Home Page
+}
+>>>>>>> upstream/main

@@ -17,13 +17,13 @@ class AuthMethods {
     return model.User.fromSnap(snap);
   }
 
-  Future<String> signUpUser({
-    required String email,
-    required String password,
-    required String address,
-    required String hospital_name,
-    required String phone_no,
-  }) async {
+  Future<String> signUpUser(
+      {required String email,
+      required String password,
+      required String address,
+      required String hospital_name,
+      required String phone_no,
+      String? deliveryAddress}) async {
     String res = "Some Error occured";
     try {
       if (email.isNotEmpty ||
@@ -35,12 +35,12 @@ class AuthMethods {
             email: email, password: password);
 
         model.User user = model.User(
-          hospital_name: hospital_name,
-          uid: cred.user!.uid,
-          email: email,
-          address: address,
-          phone_no: phone_no,
-        );
+            hospital_name: hospital_name,
+            uid: cred.user!.uid,
+            email: email,
+            address: address,
+            phone_no: phone_no,
+            deliveryAddress: deliveryAddress);
 
         await _firestore
             .collection('users')

@@ -87,7 +87,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
 }
 class OrderDetailsWidget extends StatelessWidget {
   const OrderDetailsWidget({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -157,7 +156,7 @@ class OrderItemsTable extends StatelessWidget {
     OrderItem(name: 'O+ Blood 5L', quantity: 1, weight: 1.1),
     OrderItem(name: 'Liver', quantity: 1, weight: 1.5),
     OrderItem(name: 'Lungs', quantity: 1, weight: 2.0),
-    OrderItem(name: 'Nuts', quantity: 2, weight: 0.8),
+    OrderItem(name: 'XYZ', quantity: 2, weight: 0.8),
   ];
 
   @override

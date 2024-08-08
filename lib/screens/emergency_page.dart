@@ -1,5 +1,9 @@
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:typed_data';
+import 'package:dronaid_app/testingg/notificationButton.dart';
+import 'package:http/http.dart' as http;
+import 'package:dronaid_app/firebase/notification_service.dart';
 import 'package:dronaid_app/models/user.dart' as user_1;
 import 'package:dronaid_app/provider/user_provider.dart';
 import 'package:dronaid_app/utils/colors.dart';
@@ -19,6 +23,8 @@ class EmergencyPage extends StatefulWidget {
 }
 
 class _EmergencyPageState extends State<EmergencyPage> {
+
+  NotificationService notificationService=NotificationService();
   TextEditingController _emergencyController = TextEditingController();
   Uint8List? _file;
   int selectedPriority = 0;
@@ -276,21 +282,24 @@ class _EmergencyPageState extends State<EmergencyPage> {
           ),
           Spacer(),
           GestureDetector(
-            onTap: () => postRequest(user.uid, user.hospital_name, user.address, selectedPriority),
+            onTap: () {
+               postRequest(user.uid, user.hospital_name, user.address, selectedPriority);
+               },
             child: Container(
               margin: EdgeInsets.only(left: 18, right: 18, bottom: 20),
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                   color: kPrimaryColor,
                   borderRadius: BorderRadius.circular(10)),
-              child: const Center(
-                  child: Text(
-                'Submit Request',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              )),
+                  child: NotificationButton(),
+              // child: const Center(
+              //     child: Text(
+              //   'Submit Request',
+              //   style: TextStyle(
+              //       fontSize: 16,
+              //       fontWeight: FontWeight.bold,
+              //       color: Colors.white),
+              // )),
             ),
           )
         ],

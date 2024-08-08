@@ -1,4 +1,9 @@
+import 'dart:convert';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dronaid_app/firebase/notification_service.dart';
+import 'package:dronaid_app/testingg/notificationButton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:dronaid_app/utils/colors.dart';
@@ -12,6 +17,34 @@ class FetchedEmergency extends StatefulWidget {
 }
 
 class _FetchedEmergencyState extends State<FetchedEmergency> {
+
+  FirebaseMessaging _firebaseMessaging= FirebaseMessaging.instance;
+  String? _token;
+
+  NotificationService notificationService=NotificationService();
+
+
+   Future<void> sendNotification() async{
+    final String serverURl='http://10.53.9.253:3000/send-notification';
+    final response= await http.post(
+      Uri.parse(serverURl),
+      headers: <String,String>{
+        'Content-Type':'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'title': 'Helloooo from another world',
+        'body': 'This is notification from another world',
+        'senderToken': _token!
+      })
+    );
+
+
+    if(response.statusCode== 200){
+      print('Notification sent successfully');
+    } else {
+      print('Failed to send notification');
+    }
+  }
   TextEditingController _emergencyController = TextEditingController();
   int selectedPriority = 0;
   String hospitalAddress = 'Loading...';
@@ -21,6 +54,18 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
   void initState() {
     super.initState();
     _fetchUserDetails();
+    _getToken();
+  }
+
+    void _getToken() async{
+    _token= await _firebaseMessaging.getToken();
+    if(_token!=null){
+      await FirebaseFirestore.instance
+      .collection('tokens')
+      .doc(_token)
+      .set({'token': _token});
+      print('token set on firebase');
+    }
   }
 
   Future<void> _fetchUserDetails() async {
@@ -209,96 +254,96 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
           SizedBox(
             height: 30,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              GestureDetector(
-                onTap: () => selectPriority(1),
-                child: Container(
-                  height: 50,
-                  width: 50,
-                  child: Center(
-                      child: Text(
-                    '1',
-                    style: TextStyle(fontSize: 20),
-                  )),
-                  decoration: BoxDecoration(
-                      color: selectedPriority == 1
-                          ? Color(0xFFC3B1E1)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(color: kPrimaryColor, width: 2)),
-                ),
-              ),
-              GestureDetector(
-                onTap: () => selectPriority(2),
-                child: Container(
-                  height: 50,
-                  width: 50,
-                  child: Center(
-                      child: Text(
-                    '2',
-                    style: TextStyle(fontSize: 20),
-                  )),
-                  decoration: BoxDecoration(
-                    color: selectedPriority == 2
-                        ? Color(0xFFC3B1E1)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(color: kPrimaryColor, width: 2),
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () => selectPriority(3),
-                child: Container(
-                  height: 50,
-                  width: 50,
-                  child: Center(
-                      child: Text(
-                    '3',
-                    style: TextStyle(fontSize: 20),
-                  )),
-                  decoration: BoxDecoration(
-                      color: selectedPriority == 3
-                          ? Color(0xFFC3B1E1)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(color: kPrimaryColor, width: 2)),
-                ),
-              )
-            ],
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.info_outline,
-                color: kPrimaryColor,
-                size: 20,
-              ),
-              SizedBox(
-                width: 5,
-              ),
-              Text(
-                'Higher the Priority Level, higher the actual priority',
-                style: TextStyle(fontWeight: FontWeight.w300),
-              ),
-            ],
-          ),
-          Spacer(),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //   children: [
+          //     GestureDetector(
+          //       onTap: () => selectPriority(1),
+          //       child: Container(
+          //         height: 50,
+          //         width: 50,
+          //         child: Center(
+          //             child: Text(
+          //           '1',
+          //           style: TextStyle(fontSize: 20),
+          //         )),
+          //         decoration: BoxDecoration(
+          //             color: selectedPriority == 1
+          //                 ? Color(0xFFC3B1E1)
+          //                 : Colors.transparent,
+          //             borderRadius: BorderRadius.circular(25),
+          //             border: Border.all(color: kPrimaryColor, width: 2)),
+          //       ),
+          //     ),
+          //     GestureDetector(
+          //       onTap: () => selectPriority(2),
+          //       child: Container(
+          //         height: 50,
+          //         width: 50,
+          //         child: Center(
+          //             child: Text(
+          //           '2',
+          //           style: TextStyle(fontSize: 20),
+          //         )),
+          //         decoration: BoxDecoration(
+          //           color: selectedPriority == 2
+          //               ? Color(0xFFC3B1E1)
+          //               : Colors.transparent,
+          //           borderRadius: BorderRadius.circular(25),
+          //           border: Border.all(color: kPrimaryColor, width: 2),
+          //         ),
+          //       ),
+          //     ),
+          //     GestureDetector(
+          //       onTap: () => selectPriority(3),
+          //       child: Container(
+          //         height: 50,
+          //         width: 50,
+          //         child: Center(
+          //             child: Text(
+          //           '3',
+          //           style: TextStyle(fontSize: 20),
+          //         )),
+          //         decoration: BoxDecoration(
+          //             color: selectedPriority == 3
+          //                 ? Color(0xFFC3B1E1)
+          //                 : Colors.transparent,
+          //             borderRadius: BorderRadius.circular(25),
+          //             border: Border.all(color: kPrimaryColor, width: 2)),
+          //       ),
+          //     )
+          //   ],
+          // ),
+          // SizedBox(
+          //   height: 15,
+          // ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     Icon(
+          //       Icons.info_outline,
+          //       color: kPrimaryColor,
+          //       size: 20,
+          //     ),
+          //     SizedBox(
+          //       width: 5,
+          //     ),
+          //     Text(
+          //       'Higher the Priority Level, higher the actual priority',
+          //       style: TextStyle(fontWeight: FontWeight.w300),
+          //     ),
+          //   ],
+          // ),
+          // Spacer(),
           GestureDetector(
-            onTap: _submitRequest,
+            onTap: sendNotification,
             child: Container(
               margin: EdgeInsets.only(left: 18, right: 18, bottom: 20),
-              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                   color: kPrimaryColor,
                   borderRadius: BorderRadius.circular(10)),
-              child: const Center(
+                  child:
+               const Center(
                   child: Text(
                 'Submit Request',
                 style: TextStyle(

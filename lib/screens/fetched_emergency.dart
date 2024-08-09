@@ -192,9 +192,14 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                         style: TextStyle(fontSize: 15),
                         decoration: InputDecoration(border: InputBorder.none),
                       )
-                    : Text(
-                        _locationController.text,
-                        style: TextStyle(fontSize: 15),
+                    : Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          _locationController.text,
+                          style: TextStyle(
+                            fontSize: 15,
+                          ),
+                        ),
                       ),
                 // Text(
                 //   _locationController.text,

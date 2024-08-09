@@ -1,3 +1,4 @@
+import 'package:dronaid_app/screens/tracking.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,7 +51,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(0.0), // Add padding here
-            child: GoogleMapWidget(onMapTap: toggleMapVisibility),
+            // child: GoogleMapWidget(onMapTap: toggleMapVisibility),
+            child: Tracking(),
           ),
           const Positioned(
             top: 30,

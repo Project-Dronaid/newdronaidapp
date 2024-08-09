@@ -1,4 +1,3 @@
-import 'package:dronaid_app/screens/emergency_page.dart';
 import 'package:dronaid_app/screens/home_page2.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/gestures.dart';
@@ -104,5 +103,5 @@ void TrackOrder() {
 }
 
 void GoToHomePage() {
-  // Home Page 
+  // Home Page
 }

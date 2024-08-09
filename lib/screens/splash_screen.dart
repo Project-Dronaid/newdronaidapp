@@ -1,5 +1,3 @@
-import 'package:dronaid_app/main.dart';
-import 'package:dronaid_app/screens/emergency_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -29,10 +27,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     // );
   }
 
-@override
-void dispose(){
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
-}
+  @override
+  void dispose(){
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+  }
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
@@ -43,10 +41,10 @@ void dispose(){
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // SizedBox(height: 100,),
-           Image.asset(
-            width: 400,
-            height: 200,
-            'assets/logo-2.jpg'),
+            Image.asset(
+                width: 400,
+                height: 200,
+                'assets/logo-2.jpg'),
             Container(
               width: 220,
               height: 220,

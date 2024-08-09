@@ -1,4 +1,5 @@
 import 'package:dronaid_app/screens/OrderDetails.dart';
+import 'package:dronaid_app/screens/request_confirmed_page.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -220,6 +221,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                               final requestId =
                                                   doc.id; // Get the document ID
                                               _acceptRequest(requestId);
+                                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => RequestConfirmedPage()));
                                             },
                                             child: Center(
                                               child: Container(

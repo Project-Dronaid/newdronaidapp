@@ -1,4 +1,6 @@
+import 'package:dronaid_app/screens/OrderDetails.dart';
 import 'package:dronaid_app/screens/home_page2.dart';
+import 'package:dronaid_app/screens/tracking.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -51,11 +53,11 @@ class RequestConfirmedPage extends StatelessWidget {
               const SizedBox(height: 10),
               RichText(
                 text: const TextSpan(
-                  text: 'Get delivery by ',
+                  text: 'Your request will be delivered ',
                   style: TextStyle(color: Colors.grey, fontSize: 14),
                   children: [
                     TextSpan(
-                      text: 'Mon, 06 Feb - Thu, 09 Feb',
+                      text: 'as soon as possible.',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.grey,
@@ -65,8 +67,10 @@ class RequestConfirmedPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 5),
-              const TextButton(
-                onPressed: TrackOrder,
+               TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => OrderTrackingPage()));
+                },
                 child: Text(
                   'Track My Order',
                   style: TextStyle(color: kPrimaryColor),
@@ -98,9 +102,7 @@ class RequestConfirmedPage extends StatelessWidget {
   }
 }
 
-void TrackOrder() {
-  // Tanishq Track Order Page
-}
+void TrackOrder() {}
 
 void GoToHomePage() {
   // Home Page

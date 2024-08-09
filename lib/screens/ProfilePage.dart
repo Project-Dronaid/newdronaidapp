@@ -1,3 +1,5 @@
+import 'package:dronaid_app/screens/login/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -62,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Card(
                     color: Colors.white,
-                    elevation: 5,
+                    elevation: 4,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -79,7 +81,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               Text(
                                 'Hospital Information',
                                 style: TextStyle(
-                                  
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -132,16 +133,63 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ],
                           ),
-                        
-                          
-                          
                           const SizedBox(height: 10),
-                          
+                          const SizedBox(
+                            height: 20,
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 48),
+                  Center(
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        try {
+                          await FirebaseAuth.instance.signOut();
+                          // After signing out, navigate to the login screen
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                        } catch (e) {
+                          print('Error signing out: $e');
+                          // Optionally, show an error message to the user
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('Failed to sign out. Please try again.'),
+                            ),
+                          );
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.logout,
+                        color: Colors
+                            .red, // Red icon color to match the sign-out action
+                      ),
+                      label: const Text(
+                        'Sign Out',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red, // Matching text color
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(
+                            200, 40), // Adjusted size for better balance
+                        backgroundColor: Colors.white, // White background
+                        elevation:
+                            5, // Maintain elevation for the raised effect
+                        side: const BorderSide(
+                            color: Colors.red, width: 2), // Red border
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(14), // Rounded corners
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 24), // Increased padding
+                      ),
+                    ),
+                  )
                 ],
               ),
             ],

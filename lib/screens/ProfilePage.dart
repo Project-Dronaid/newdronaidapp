@@ -52,29 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       SizedBox(height: 8),
-                      Text(
-                        "Address: 1234 Street Name, City, State",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                        ),
-                      ),
                       SizedBox(height: 4),
-                      Text(
-                        "Contact: (123) 456-7890",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        "Email: contact@xyzhospital.com",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -83,78 +61,87 @@ class _ProfilePageState extends State<ProfilePage> {
               Column(
                 children: [
                   Card(
-                    color: Color.fromARGB(255, 255, 255, 255),
+                    color: Colors.white,
                     elevation: 5,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(12.0),
+                      padding: const EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Hospital Information',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          const Row(
+                            children: [
+                              Icon(Icons.local_hospital,
+                                  color: Colors.blue, size: 28),
+                              SizedBox(width: 8),
+                              Text(
+                                'Hospital Information',
+                                style: TextStyle(
+                                  
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Address: 1234 Street Name, City, State',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[800],
-                            ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Icon(Icons.location_on, color: Colors.grey[600]),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  '1234 Street Name, City, State',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[800],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Contact: (123) 456-7890',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[800],
-                            ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(Icons.phone, color: Colors.grey[600]),
+                              const SizedBox(width: 12),
+                              Text(
+                                '(123) 456-7890',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[800],
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Email: contact@xyzhospital.com',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[800],
-                            ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(Icons.email, color: Colors.grey[600]),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'contact@xyzhospital.com',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[800],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          Divider(),
-                          SizedBox(height: 4),
-                          Text(
-                            'Departments: Cardiology, Neurology, Orthopedics',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Timings: Mon-Fri, 9:00 AM - 5:00 PM',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[800],
-                            ),
-                          ),
+                        
+                          
+                          
+                          const SizedBox(height: 10),
+                          
                         ],
                       ),
                     ),
                   ),
-                  const Divider(thickness: 2,),
-                  ListTile(
-                    leading: const Icon(Icons.question_answer),
-                    title: const Text('FAQ'),
-                    onTap: () {
-                      print('FAQ tapped');
-                    },
-                  ),
                   const SizedBox(height: 24),
-                  
                 ],
               ),
             ],

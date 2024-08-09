@@ -3,7 +3,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dronaid_app/firebase/notification_service.dart';
-import 'package:dronaid_app/testingg/notificationButton.dart';
 
 import 'package:dronaid_app/firebase/firestore_methods.dart';
 import 'package:dronaid_app/screens/map_page.dart';

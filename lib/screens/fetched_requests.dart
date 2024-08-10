@@ -18,8 +18,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
 
   Future<void> _rejectRequest(String requestId) async {
     try {
-      final requestDoc =
-          _firestore.collection('hospitalRequests').doc(requestId);
+      final requestDoc = _firestore.collection('hospitalRequests').doc(requestId);
 
       // Fetch the request data
       final requestSnapshot = await requestDoc.get();
@@ -27,10 +26,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
         final requestData = requestSnapshot.data() as Map<String, dynamic>;
 
         // Add to closedRequests collection
-        await _firestore
-            .collection('closedRequests')
-            .doc(requestId)
-            .set(requestData);
+        await _firestore.collection('closedRequests').doc(requestId).set(requestData);
 
         // Delete from hospitalRequests collection
         await requestDoc.delete();
@@ -43,8 +39,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
 
   Future<void> _acceptRequest(String requestId) async {
     try {
-      final requestDoc =
-          _firestore.collection('hospitalRequests').doc(requestId);
+      final requestDoc = _firestore.collection('hospitalRequests').doc(requestId);
 
       // Fetch the request data
       final requestSnapshot = await requestDoc.get();
@@ -52,6 +47,12 @@ class _FetchedRequestsState extends State<FetchedRequests> {
         final requestData = requestSnapshot.data() as Map<String, dynamic>;
 
         // Add to closedRequests collection with an updated status
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => RequestConfirmedPage()));
+
+        await FirebaseFirestore.instance
+            .collection('drone')
+            .doc('drone1')
+            .update({'orderFlag': 1, 'droneFlag': 1});
         await _firestore.collection('closedRequests').doc(requestId).set({
           ...requestData,
           'status': 'accepted', // Add status field
@@ -59,12 +60,6 @@ class _FetchedRequestsState extends State<FetchedRequests> {
 
         // Delete from hospitalRequests collection
         // await requestDoc.delete();
-        setState(() {
-          FirebaseFirestore.instance
-              .collection('drone')
-              .doc('drone1')
-              .update({'orderFlag': 1, 'droneFlag': 1});
-        });
       }
     } catch (e) {
       // Handle any errors
@@ -106,8 +101,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                 StreamBuilder<QuerySnapshot>(
                   stream: _firestore
                       .collection('hospitalRequests')
-                      .orderBy('priorityLevel',
-                          descending: true) // Order by priority level
+                      .orderBy('priorityLevel', descending: true) // Order by priority level
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -124,23 +118,17 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                       children: requests.map((doc) {
                         final data = doc.data() as Map<String, dynamic>;
                         final hospitalName = data['hospitalName'] ?? 'Unknown';
-                        final Timestamp? timestamp =
-                            data['dateTime'] as Timestamp?;
+                        final Timestamp? timestamp = data['dateTime'] as Timestamp?;
                         final String dateTime = timestamp != null
-                            ? DateFormat('hh:mma, dd MMMM')
-                                .format(timestamp.toDate())
+                            ? DateFormat('hh:mma, dd MMMM').format(timestamp.toDate())
                             : 'Unknown Date';
 
-                        final emergencyText =
-                            data['emergencyText'] ?? 'Unknown';
+                        final emergencyText = data['emergencyText'] ?? 'Unknown';
 
-                        return data['userId'] !=
-                                FirebaseAuth.instance.currentUser!.uid
+                        return data['userId'] != FirebaseAuth.instance.currentUser!.uid
                             ? InkWell(
                                 onTap: () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            OrderTrackingPage())),
+                                    MaterialPageRoute(builder: (context) => OrderTrackingPage())),
                                 child: Container(
                                   margin: EdgeInsets.all(15),
                                   padding: EdgeInsets.all(10),
@@ -165,27 +153,20 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                           Text(
                                             hospitalName,
                                             style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 15),
+                                                fontWeight: FontWeight.w600, fontSize: 15),
                                           ),
                                           Spacer(),
                                           Text(
                                             dateTime,
                                             style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w300),
+                                                fontSize: 12, fontWeight: FontWeight.w300),
                                           ),
-                                          IconButton(
-                                              onPressed: () {},
-                                              icon: Icon(Icons.more_vert)),
+                                          IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
                                         ],
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 46,
-                                            right: 10,
-                                            bottom: 5,
-                                            top: 10),
+                                            left: 46, right: 10, bottom: 5, top: 10),
                                         child: Align(
                                             alignment: Alignment.centerLeft,
                                             child: Text(emergencyText)),
@@ -195,41 +176,28 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                       ),
                                       Divider(),
                                       Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: [
                                           GestureDetector(
                                             onTap: () {
-                                              final requestId =
-                                                  doc.id; // Get the document ID
+                                              final requestId = doc.id; // Get the document ID
                                               _acceptRequest(requestId);
-                                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => RequestConfirmedPage()));
                                             },
                                             child: Center(
                                               child: Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.83,
-                                                height: MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.05,
+                                                width: MediaQuery.of(context).size.width * 0.83,
+                                                height: MediaQuery.of(context).size.height * 0.05,
                                                 padding: EdgeInsets.all(10),
-                                                margin: EdgeInsets.symmetric(
-                                                    vertical: 10),
+                                                margin: EdgeInsets.symmetric(vertical: 10),
                                                 decoration: BoxDecoration(
                                                     color: kPrimaryColor,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
+                                                    borderRadius: BorderRadius.circular(10)),
                                                 child: Center(
                                                   child: Text(
                                                     'Accept Request',
                                                     style: TextStyle(
                                                         color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold),
+                                                        fontWeight: FontWeight.bold),
                                                   ),
                                                 ),
                                               ),
@@ -281,8 +249,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                 StreamBuilder<QuerySnapshot>(
                   stream: _firestore
                       .collection('closedRequests')
-                      .orderBy('priorityLevel',
-                          descending: true) // Order by priority level
+                      .orderBy('priorityLevel', descending: true) // Order by priority level
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -299,15 +266,12 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                       children: requests.map((doc) {
                         final data = doc.data() as Map<String, dynamic>;
                         final hospitalName = data['hospitalName'] ?? 'Unknown';
-                        final Timestamp? timestamp =
-                            data['dateTime'] as Timestamp?;
+                        final Timestamp? timestamp = data['dateTime'] as Timestamp?;
                         final String dateTime = timestamp != null
-                            ? DateFormat('hh:mma, dd MMMM')
-                                .format(timestamp.toDate())
+                            ? DateFormat('hh:mma, dd MMMM').format(timestamp.toDate())
                             : 'Unknown Date';
 
-                        final emergencyText =
-                            data['emergencyText'] ?? 'Unknown';
+                        final emergencyText = data['emergencyText'] ?? 'Unknown';
                         final status = data['status'] ?? 'Unknown';
 
                         return Container(
@@ -333,25 +297,20 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                   ),
                                   Text(
                                     hospitalName,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 15),
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
                                   ),
                                   Spacer(),
                                   Text(
                                     dateTime,
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w300),
+                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
                                   ),
                                 ],
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 46, right: 10, bottom: 5, top: 10),
+                                padding:
+                                    const EdgeInsets.only(left: 46, right: 10, bottom: 5, top: 10),
                                 child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(emergencyText)),
+                                    alignment: Alignment.centerLeft, child: Text(emergencyText)),
                               ),
                               Divider(),
                               SizedBox(
@@ -362,9 +321,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                     ? 'Request was accepted'
                                     : 'Request was rejected',
                                 style: TextStyle(
-                                  color: status == 'accepted'
-                                      ? Colors.green
-                                      : Colors.red,
+                                  color: status == 'accepted' ? Colors.green : Colors.red,
                                 ),
                               ),
                             ],

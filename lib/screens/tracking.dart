@@ -92,12 +92,23 @@ class _TrackingState extends State<Tracking> {
       markerId: const MarkerId("Destination"),
       position: LatLng(destinationLatitude!, destinationLongitude!),
     ));
+
+  }
+
+  void addCustomIcon() {
+    BitmapDescriptor.asset(
+      ImageConfiguration(),
+      "assets/drone_small.png",
+      width: 32,
+      height: 32,
+    ).then((icon) => droneIcon = icon);
   }
 
   @override
   void initState() {
     super.initState();
     fetchDestination();
+    addCustomIcon();
   }
 
   final Stream<DocumentSnapshot> _droneStream = FirebaseFirestore.instance
@@ -130,6 +141,12 @@ class _TrackingState extends State<Tracking> {
                     (snapshot.data! as dynamic)['longitude']);
                 final LatLng destination = LatLng(destinationLatitude!, destinationLongitude!);
                 track = [locationTrack, destination];
+                markers.add(Marker(
+                  markerId: const MarkerId("Drone"),
+                  icon: droneIcon,
+                  position: locationTrack,
+                ));
+
               }
               return GoogleMap(
                   initialCameraPosition: CameraPosition(
@@ -152,6 +169,5 @@ class _TrackingState extends State<Tracking> {
                         polylineId: const PolylineId("Live tracking"), points: track, zIndex: 5),
                   });
             });
-
   }
 }

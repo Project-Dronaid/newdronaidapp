@@ -3,7 +3,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dronaid_app/firebase/notification_service.dart';
-import 'package:dronaid_app/testingg/notificationButton.dart';
 
 import 'package:dronaid_app/firebase/firestore_methods.dart';
 import 'package:dronaid_app/screens/map_page.dart';
@@ -195,7 +194,7 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: Column(
+      body: ListView(
         children: [
           Container(
             width: MediaQuery.of(context).size.width * 1,
@@ -203,52 +202,55 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
             padding: EdgeInsets.only(top: 10, left: 18, right: 10, bottom: 18),
             decoration: BoxDecoration(
                 color: Colors.white, borderRadius: BorderRadius.circular(15)),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Hospital Location:',
-                      style: TextStyle(
-                          fontSize: 17,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Hospital Location:',
+                        style: TextStyle(
+                            fontSize: 17,
+                            color: kPrimaryColor,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            // _isEditing = !_isEditing;
+                            // FirestoreMethods().getLatLong(_locationController.text);
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ConfirmDetails()));
+                          });
+                        },
+                        icon: Icon(
+                          _isEditing ? Icons.check : Icons.edit_outlined,
+                          size: 17,
                           color: kPrimaryColor,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          // _isEditing = !_isEditing;
-                          // FirestoreMethods().getLatLong(_locationController.text);
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => ConfirmDetails()));
-                        });
-                      },
-                      icon: Icon(
-                        _isEditing ? Icons.check : Icons.edit_outlined,
-                        size: 17,
-                        color: kPrimaryColor,
-                      ),
-                    )
-                  ],
-                ),
-                _isEditing
-                    ? TextField(
-                        controller: _locationController,
-                        style: TextStyle(fontSize: 15),
-                        decoration: InputDecoration(border: InputBorder.none),
+                        ),
                       )
-                    : Text(
-                        _locationController.text,
-                        style: TextStyle(fontSize: 15),
-                      ),
-                // Text(
-                //   _locationController.text,
-                //   style: TextStyle(
-                //     fontSize: 15,
-                //   ),
-                // ),
-              ],
+                    ],
+                  ),
+                  _isEditing
+                      ? TextField(
+                          controller: _locationController,
+                          style: TextStyle(fontSize: 15),
+                          decoration: InputDecoration(border: InputBorder.none),
+                        )
+                      : Text(
+                          _locationController.text,
+                          style: TextStyle(fontSize: 15),
+                        ),
+                  // Text(
+                  //   _locationController.text,
+                  //   style: TextStyle(
+                  //     fontSize: 15,
+                  //   ),
+                  // ),
+                ],
+              ),
             ),
           ),
           const SizedBox(
@@ -308,98 +310,103 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
-          Text(
-            'Select Priority Level:',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          Center(
+            child: Text(
+              'Select Priority Level:',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
           ),
           SizedBox(
             height: 30,
           ),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //   children: [
-          //     GestureDetector(
-          //       onTap: () => selectPriority(1),
-          //       child: Container(
-          //         height: 50,
-          //         width: 50,
-          //         child: Center(
-          //             child: Text(
-          //           '1',
-          //           style: TextStyle(fontSize: 20),
-          //         )),
-          //         decoration: BoxDecoration(
-          //             color: selectedPriority == 1
-          //                 ? Color(0xFFC3B1E1)
-          //                 : Colors.transparent,
-          //             borderRadius: BorderRadius.circular(25),
-          //             border: Border.all(color: kPrimaryColor, width: 2)),
-          //       ),
-          //     ),
-          //     GestureDetector(
-          //       onTap: () => selectPriority(2),
-          //       child: Container(
-          //         height: 50,
-          //         width: 50,
-          //         child: Center(
-          //             child: Text(
-          //           '2',
-          //           style: TextStyle(fontSize: 20),
-          //         )),
-          //         decoration: BoxDecoration(
-          //           color: selectedPriority == 2
-          //               ? Color(0xFFC3B1E1)
-          //               : Colors.transparent,
-          //           borderRadius: BorderRadius.circular(25),
-          //           border: Border.all(color: kPrimaryColor, width: 2),
-          //         ),
-          //       ),
-          //     ),
-          //     GestureDetector(
-          //       onTap: () => selectPriority(3),
-          //       child: Container(
-          //         height: 50,
-          //         width: 50,
-          //         child: Center(
-          //             child: Text(
-          //           '3',
-          //           style: TextStyle(fontSize: 20),
-          //         )),
-          //         decoration: BoxDecoration(
-          //             color: selectedPriority == 3
-          //                 ? Color(0xFFC3B1E1)
-          //                 : Colors.transparent,
-          //             borderRadius: BorderRadius.circular(25),
-          //             border: Border.all(color: kPrimaryColor, width: 2)),
-          //       ),
-          //     )
-          //   ],
-          // ),
-          // SizedBox(
-          //   height: 15,
-          // ),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     Icon(
-          //       Icons.info_outline,
-          //       color: kPrimaryColor,
-          //       size: 20,
-          //     ),
-          //     SizedBox(
-          //       width: 5,
-          //     ),
-          //     Text(
-          //       'Higher the Priority Level, higher the actual priority',
-          //       style: TextStyle(fontWeight: FontWeight.w300),
-          //     ),
-          //   ],
-          // ),
-          // Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              GestureDetector(
+                onTap: () => selectPriority(1),
+                child: Container(
+                  height: 50,
+                  width: 50,
+                  child: Center(
+                      child: Text(
+                    '1',
+                    style: TextStyle(fontSize: 20),
+                  )),
+                  decoration: BoxDecoration(
+                      color: selectedPriority == 1
+                          ? Color(0xFFC3B1E1)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(25),
+                      border: Border.all(color: kPrimaryColor, width: 2)),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => selectPriority(2),
+                child: Container(
+                  height: 50,
+                  width: 50,
+                  child: Center(
+                      child: Text(
+                    '2',
+                    style: TextStyle(fontSize: 20),
+                  )),
+                  decoration: BoxDecoration(
+                    color: selectedPriority == 2
+                        ? Color(0xFFC3B1E1)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(25),
+                    border: Border.all(color: kPrimaryColor, width: 2),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => selectPriority(3),
+                child: Container(
+                  height: 50,
+                  width: 50,
+                  child: Center(
+                      child: Text(
+                    '3',
+                    style: TextStyle(fontSize: 20),
+                  )),
+                  decoration: BoxDecoration(
+                      color: selectedPriority == 3
+                          ? Color(0xFFC3B1E1)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(25),
+                      border: Border.all(color: kPrimaryColor, width: 2)),
+                ),
+              )
+            ],
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.info_outline,
+                color: kPrimaryColor,
+                size: 20,
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Text(
+                  'Higher the Priority Level, higher the actual priority',
+                  style: TextStyle(fontWeight: FontWeight.w300),
+                ),
+              ),
+            ],
+          ),
+          Spacer(),
           GestureDetector(
             onTap: sendNotification,
             child: Container(
-
+      
               margin: EdgeInsets.only(
                 left: 18,
                 right: 18,

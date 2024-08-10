@@ -94,6 +94,13 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
             return;
           }
 
+          if (selectedHospital == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Please select the hospital')),
+            );
+            return;
+          }
+
           final userId = user.uid;
           final requestId = FirebaseFirestore.instance
               .collection('hospitalRequests')
@@ -243,9 +250,12 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                                     decoration: InputDecoration(
                                         border: InputBorder.none),
                                   )
-                                : Text(
-                                    _locationController.text,
-                                    style: TextStyle(fontSize: 15),
+                                : Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      _locationController.text,
+                                      style: TextStyle(fontSize: 15),
+                                    ),
                                   ),
                           ],
                         ),
@@ -282,8 +292,8 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        height: 10,
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.005,
                       ),
                       Container(
                         margin: EdgeInsets.all(18),
@@ -292,7 +302,7 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                             borderRadius: BorderRadius.circular(15),
                             color: Colors.white),
                         child: TextField(
-                          maxLines: 4,
+                          maxLines: 3,
                           controller: _emergencyController,
                           decoration: InputDecoration(
                             hintText: 'Example: O+ Blood needed',
@@ -306,32 +316,15 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                         ),
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.01,
+                        height: MediaQuery.of(context).size.height * 0.005,
                       ),
                       Text(
                         'Select Priority Level:',
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            color: kPrimaryColor,
-                            size: 20,
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            'Higher the Priority Level, higher the actual priority',
-                            style: TextStyle(fontWeight: FontWeight.w300),
-                          ),
-                        ],
-                      ),
                       SizedBox(
-                        height: 30,
+                        height: MediaQuery.of(context).size.height * 0.02,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -398,7 +391,27 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                         ],
                       ),
                       SizedBox(
-                        height: 20,
+                        height: MediaQuery.of(context).size.height * 0.02,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: kPrimaryColor,
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            'Higher the Priority Level, higher the actual priority',
+                            style: TextStyle(fontWeight: FontWeight.w300),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.005,
                       ),
                       Container(
                         margin: EdgeInsets.all(18),
@@ -433,22 +446,24 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                         ),
                       ),
                       SizedBox(
-                        height: 30,
+                        height: MediaQuery.of(context).size.height * 0.005,
                       ),
                       GestureDetector(
                         onTap: _submitRequest,
                         child: Container(
-                          height: 50,
-                          width: MediaQuery.of(context).size.width * 0.9,
+                          height: MediaQuery.of(context).size.height * 0.065,
+                          width: MediaQuery.of(context).size.width * 0.93,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
                             color: kPrimaryColor,
                           ),
                           child: Center(
                             child: Text(
-                              'SUBMIT',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 18),
+                              'Submit Request',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),

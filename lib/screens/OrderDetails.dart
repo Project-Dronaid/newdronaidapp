@@ -59,29 +59,33 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
             right: 10,
             child: EstimatedTimeWidget(),
           ),
-          DraggableScrollableSheet(
-              initialChildSize: 0.3,
-              minChildSize: 0.3,
-              maxChildSize: 0.65,
-              builder: (BuildContext context, scrollController) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEEEFF5),
-                    borderRadius: BorderRadius.circular(16.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        spreadRadius: 1,
-                        blurRadius: 10,
-                        offset: const Offset(0, 3), // Position of shadow
-                      ),
-                    ],
-                  ),
-                  child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: const OrderDetailsWidget()),
-                );
-              })
+          Container(
+            color: const Color(0xFFEEEFF5),
+            child: DraggableScrollableSheet(
+                initialChildSize: 0.3,
+                minChildSize: 0.3,
+                maxChildSize: 0.65,
+                builder: (BuildContext context, scrollController) {
+                  return Container(
+                    padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEEEFF5),
+                      borderRadius: BorderRadius.circular(16.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          spreadRadius: 1,
+                          blurRadius: 10,
+                          offset: const Offset(0, 3), // Position of shadow
+                        ),
+                      ],
+                    ),
+                    child: SingleChildScrollView(
+                        controller: scrollController,
+                        child: const OrderDetailsWidget()),
+                  );
+                }),
+          )
         ],
       ),
     );

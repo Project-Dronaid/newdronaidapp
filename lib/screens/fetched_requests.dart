@@ -153,7 +153,9 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                             data['emergencyText'] ?? 'Unknown';
 
                         return data['userId'] !=
-                                FirebaseAuth.instance.currentUser!.uid
+                                    FirebaseAuth.instance.currentUser!.uid &&
+                                data['receiverUid'] ==
+                                    FirebaseAuth.instance.currentUser!.uid
                             ? InkWell(
                                 onTap: () => Navigator.of(context).push(
                                     MaterialPageRoute(
@@ -221,7 +223,10 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                               final requestId =
                                                   doc.id; // Get the document ID
                                               _acceptRequest(requestId);
-                                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => RequestConfirmedPage()));
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          RequestConfirmedPage()));
                                             },
                                             child: Center(
                                               child: Container(

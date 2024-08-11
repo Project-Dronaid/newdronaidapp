@@ -19,21 +19,21 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
   String hospitalName = 'Loading...';
   bool _isEditing = false;
   TextEditingController _locationController = TextEditingController();
+  String? selectedHospital;
+  List<String> hospitalNames = [];
 
   @override
   void initState() {
     super.initState();
     _fetchUserDetails();
+    _fetchHospitalNames();
   }
 
   Future<void> _fetchUserDetails() async {
     try {
-      // Get the current user
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         final userId = user.uid;
-
-        // Fetch user document from Firestore
         final userDoc = await FirebaseFirestore.instance
             .collection('users')
             .doc(userId)
@@ -54,13 +54,30 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
           hospitalName = 'Unknown Hospital';
         });
       }
-      // FirestoreMethods().getLatLong(hospitalAddress);
     } catch (e) {
       print('Error fetching user details: $e');
       setState(() {
         hospitalAddress = 'Error fetching address';
         hospitalName = 'Error fetching hospital name';
       });
+    }
+  }
+
+  Future<void> _fetchHospitalNames() async {
+    try {
+      final snapshot =
+          await FirebaseFirestore.instance.collection('users').get();
+
+      List<String> hospitals = snapshot.docs
+          .map((doc) => doc.data()['hospital_name'] as String)
+          .where((name) => name != hospitalName)
+          .toList();
+
+      setState(() {
+        hospitalNames = hospitals;
+      });
+    } catch (e) {
+      print('Error fetching hospital names: $e');
     }
   }
 
@@ -77,6 +94,13 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
             return;
           }
 
+          if (selectedHospital == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Please select the hospital')),
+            );
+            return;
+          }
+
           final userId = user.uid;
           final requestId = FirebaseFirestore.instance
               .collection('hospitalRequests')
@@ -84,18 +108,36 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
               .id;
           final dateTime = DateTime.now();
 
+          // Fetch the userId of the selected hospital
+          String? receiverUid;
+          final querySnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .where('hospital_name', isEqualTo: selectedHospital)
+              .get();
+
+          if (querySnapshot.docs.isNotEmpty) {
+            receiverUid = querySnapshot.docs.last
+                .get('uid'); // Get the user ID of the hospital
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Selected hospital not found')),
+            );
+            return;
+          }
+
+          // Submit the request with the receiverUid included
           await FirebaseFirestore.instance
               .collection('hospitalRequests')
               .doc(requestId)
               .set({
             'address': hospitalAddress,
             'emergencyText': _emergencyController.text,
-            'emergencyImage':
-                '', // Assuming no image is attached; handle this accordingly
-            'hospitalName': hospitalName,
+            'emergencyImage': '',
+            'hospitalName': selectedHospital,
             'priorityLevel': selectedPriority,
             'dateTime': dateTime,
             'requestId': requestId,
+            'receiverUid': receiverUid, // Include receiverUid here
             'userId': userId,
             'status': 'pending',
           });
@@ -104,7 +146,6 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
             SnackBar(content: Text('Request submitted successfully!')),
           );
 
-          // Optionally, clear the input fields or navigate to another screen
           _emergencyController.clear();
           setState(() {
             selectedPriority = 0;
@@ -149,235 +190,291 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: Column(
-        children: [
-          Container(
-            width: MediaQuery.of(context).size.width * 1,
-            margin: EdgeInsets.all(18),
-            padding: EdgeInsets.only(top: 10, left: 18, right: 10, bottom: 18),
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(15)),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Hospital Location:',
-                      style: TextStyle(
-                          fontSize: 17,
-                          color: kPrimaryColor,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          // _isEditing = !_isEditing;
-                          // FirestoreMethods().getLatLong(_locationController.text);
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => ConfirmDetails()));
-                        });
-                      },
-                      icon: Icon(
-                        _isEditing ? Icons.check : Icons.edit_outlined,
-                        size: 17,
-                        color: kPrimaryColor,
-                      ),
-                    )
-                  ],
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
                 ),
-                _isEditing
-                    ? TextField(
-                        controller: _locationController,
-                        style: TextStyle(fontSize: 15),
-                        decoration: InputDecoration(border: InputBorder.none),
-                      )
-                    : Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          _locationController.text,
-                          style: TextStyle(
-                            fontSize: 15,
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 1,
+                        margin: EdgeInsets.all(18),
+                        padding: EdgeInsets.only(
+                            top: 10, left: 18, right: 10, bottom: 18),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Hospital Location:',
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      color: kPrimaryColor,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ConfirmDetails()));
+                                    });
+                                  },
+                                  icon: Icon(
+                                    _isEditing
+                                        ? Icons.check
+                                        : Icons.edit_outlined,
+                                    size: 17,
+                                    color: kPrimaryColor,
+                                  ),
+                                )
+                              ],
+                            ),
+                            _isEditing
+                                ? TextField(
+                                    controller: _locationController,
+                                    style: TextStyle(fontSize: 15),
+                                    decoration: InputDecoration(
+                                        border: InputBorder.none),
+                                  )
+                                : Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      _locationController.text,
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                  ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Column(
+                        children: [
+                          Text(
+                            'Emergency Help',
+                            style: TextStyle(
+                                fontSize: 38,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF1D1D1D)),
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            'Needed?',
+                            style: TextStyle(
+                                fontSize: 38,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF1D1D1D)),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            'Enter Emergency details:',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.005,
+                      ),
+                      Container(
+                        margin: EdgeInsets.all(18),
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.white),
+                        child: TextField(
+                          maxLines: 3,
+                          controller: _emergencyController,
+                          decoration: InputDecoration(
+                            hintText: 'Example: O+ Blood needed',
+                            contentPadding: EdgeInsets.all(10),
+                            border: InputBorder.none,
+                            suffixIcon: IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.photo_library_outlined),
+                            ),
                           ),
                         ),
                       ),
-                // Text(
-                //   _locationController.text,
-                //   style: TextStyle(
-                //     fontSize: 15,
-                //   ),
-                // ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          const Column(
-            children: [
-              Text(
-                'Emergency Help',
-                style: TextStyle(
-                    fontSize: 38,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF1D1D1D)),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                'Needed?',
-                style: TextStyle(
-                    fontSize: 38,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF1D1D1D)),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Text(
-                'Enter Emergency details:',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Container(
-            margin: EdgeInsets.all(18),
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15), color: Colors.white),
-            child: TextField(
-              maxLines: 4,
-              controller: _emergencyController,
-              decoration: InputDecoration(
-                hintText: 'Example: O+ Blood needed',
-                contentPadding: EdgeInsets.all(10),
-                border: InputBorder.none,
-                suffixIcon: IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.photo_library_outlined),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.01,
-          ),
-          Text(
-            'Select Priority Level:',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              GestureDetector(
-                onTap: () => selectPriority(1),
-                child: Container(
-                  height: 50,
-                  width: 50,
-                  child: Center(
-                      child: Text(
-                    '1',
-                    style: TextStyle(fontSize: 20),
-                  )),
-                  decoration: BoxDecoration(
-                      color: selectedPriority == 1
-                          ? Color(0xFFC3B1E1)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(color: kPrimaryColor, width: 2)),
-                ),
-              ),
-              GestureDetector(
-                onTap: () => selectPriority(2),
-                child: Container(
-                  height: 50,
-                  width: 50,
-                  child: Center(
-                      child: Text(
-                    '2',
-                    style: TextStyle(fontSize: 20),
-                  )),
-                  decoration: BoxDecoration(
-                    color: selectedPriority == 2
-                        ? Color(0xFFC3B1E1)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(color: kPrimaryColor, width: 2),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.005,
+                      ),
+                      Text(
+                        'Select Priority Level:',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.02,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          GestureDetector(
+                            onTap: () => selectPriority(1),
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              child: Center(
+                                  child: Text(
+                                '1',
+                                style: TextStyle(fontSize: 20),
+                              )),
+                              decoration: BoxDecoration(
+                                  color: selectedPriority == 1
+                                      ? Color(0xFFC3B1E1)
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(25),
+                                  border: Border.all(
+                                      color: kPrimaryColor, width: 2)),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => selectPriority(2),
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              child: Center(
+                                  child: Text(
+                                '2',
+                                style: TextStyle(fontSize: 20),
+                              )),
+                              decoration: BoxDecoration(
+                                color: selectedPriority == 2
+                                    ? Color(0xFFC3B1E1)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(25),
+                                border:
+                                    Border.all(color: kPrimaryColor, width: 2),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => selectPriority(3),
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              child: Center(
+                                  child: Text(
+                                '3',
+                                style: TextStyle(fontSize: 20),
+                              )),
+                              decoration: BoxDecoration(
+                                color: selectedPriority == 3
+                                    ? Color(0xFFC3B1E1)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(25),
+                                border:
+                                    Border.all(color: kPrimaryColor, width: 2),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.02,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: kPrimaryColor,
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            'Higher the Priority Level, higher the actual priority',
+                            style: TextStyle(fontWeight: FontWeight.w300),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.005,
+                      ),
+                      Container(
+                        margin: EdgeInsets.all(18),
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.white),
+                        child: DropdownButtonHideUnderline(
+                          // Hide the underline
+                          child: DropdownButton<String>(
+                            value: selectedHospital,
+                            hint: Center(child: Text('Select a hospital')),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                selectedHospital = newValue;
+                              });
+                            },
+                            items: hospitalNames.map((String hospital) {
+                              return DropdownMenuItem<String>(
+                                value: hospital,
+                                child: Center(
+                                  child: Text(
+                                    hospital,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            isExpanded: true,
+                            alignment: Alignment.center,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.005,
+                      ),
+                      GestureDetector(
+                        onTap: _submitRequest,
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.065,
+                          width: MediaQuery.of(context).size.width * 0.93,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: kPrimaryColor,
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Submit Request',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              GestureDetector(
-                onTap: () => selectPriority(3),
-                child: Container(
-                  height: 50,
-                  width: 50,
-                  child: Center(
-                      child: Text(
-                    '3',
-                    style: TextStyle(fontSize: 20),
-                  )),
-                  decoration: BoxDecoration(
-                      color: selectedPriority == 3
-                          ? Color(0xFFC3B1E1)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(color: kPrimaryColor, width: 2)),
-                ),
-              )
-            ],
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.info_outline,
-                color: kPrimaryColor,
-                size: 20,
-              ),
-              SizedBox(
-                width: 5,
-              ),
-              Text(
-                'Higher the Priority Level, higher the actual priority',
-                style: TextStyle(fontWeight: FontWeight.w300),
-              ),
-            ],
-          ),
-          Spacer(),
-          GestureDetector(
-            onTap: _submitRequest,
-            child: Container(
-              margin: EdgeInsets.only(
-                left: 18,
-                right: 18,
-                bottom: 20,
-              ),
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                  color: kPrimaryColor,
-                  borderRadius: BorderRadius.circular(10)),
-              child: const Center(
-                  child: Text(
-                'Submit Request',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              )),
-            ),
-          )
-        ],
+            );
+          },
+        ),
       ),
     );
   }

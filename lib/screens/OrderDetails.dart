@@ -13,6 +13,9 @@ class OrderTrackingPage extends StatefulWidget {
 
 class _OrderTrackingPageState extends State<OrderTrackingPage> {
   bool isMapVisible = true;
+  BitmapDescriptor droneIcon = BitmapDescriptor.defaultMarker;
+
+
   @override
   void initState() {
     super.initState();
@@ -24,6 +27,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
       isMapVisible = !isMapVisible;
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {

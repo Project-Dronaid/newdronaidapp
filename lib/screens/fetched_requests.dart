@@ -1,3 +1,4 @@
+import 'package:dronaid_app/screens/widget/Authentication_dialog.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,6 +14,23 @@ class FetchedRequests extends StatefulWidget {
 
 class _FetchedRequestsState extends State<FetchedRequests> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<bool> _showAuthenticationDialog() async {
+    bool isAuthenticated = false;
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AuthenticationDialog(
+          onAuthenticated: (authenticated) {
+            isAuthenticated = authenticated;
+          },
+        );
+      },
+    );
+
+    return isAuthenticated;
+  }
 
   Future<void> _rejectRequest(String requestId) async {
     try {
@@ -61,7 +79,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
           FirebaseFirestore.instance
               .collection('drone')
               .doc('drone1')
-              .update({'orderFlag': 1});
+              .update({'orderFlag': 1, 'droneFlag': 1});
         });
       }
     } catch (e) {
@@ -192,16 +210,32 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
                                         GestureDetector(
-                                          onTap: () {
-                                            final requestId =
-                                                doc.id; // Get the document ID
-                                            _acceptRequest(requestId);
+                                          onTap: () async {
+                                            final isAuthenticated =
+                                                await _showAuthenticationDialog();
+                                            if (isAuthenticated) {
+                                              final requestId =
+                                                  doc.id; // Get the document ID
+                                              _acceptRequest(requestId);
+                                            } else {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                    content: Text(
+                                                        'Authentication failed')),
+                                              );
+                                            }
                                           },
                                           child: Center(
                                             child: Container(
-                                              width: MediaQuery.of(context).size.width*0.83,
-                                              height: MediaQuery.of(context).size.height*0.05,
-
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.83,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.05,
                                               padding: EdgeInsets.all(10),
                                               margin: EdgeInsets.symmetric(
                                                   vertical: 10),
@@ -214,7 +248,9 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                                 child: Text(
                                                   'Accept Request',
                                                   style: TextStyle(
-                                                      color: Colors.white, fontWeight: FontWeight.bold),
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
                                               ),
                                             ),

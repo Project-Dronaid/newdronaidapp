@@ -1,5 +1,5 @@
-import 'package:dronaid_app/screens/emergency_page.dart';
 import 'package:dronaid_app/screens/home.dart';
+import 'package:dronaid_app/screens/map_page.dart';
 import 'package:flutter/material.dart';
 import '../../firebase/auth_methods.dart';
 import '../../utils/utils.dart';
@@ -18,6 +18,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();
 
   bool isLoading = false;
   bool obscureText = true;
@@ -42,6 +43,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       address: addressController.text,
       phone_no: phoneController.text,
       hospital_name: hospitalNameController.text,
+      //deliveryAddress: deliveryAddress);
     );
 
     setState(() {
@@ -108,8 +110,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             });
                           },
                         ),
-                        _buildTextField(
-                            addressController, "Address", Icons.location_on),
+                        _buildTextField(addressController, "Hospital Address",
+                            Icons.location_on),
+                        GestureDetector(
+                          onTap: () => ConfirmDetails,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: GestureDetector(
+                              onTap: () => ConfirmDetails(),
+                              child: TextFormField(
+                                controller: locationController,
+                                decoration: InputDecoration(
+                                  prefixIcon: Icon(Icons.location_on,
+                                      color: kPrimaryColor),
+                                  hintText: 'Delivery Address',
+                                  hintStyle: TextStyle(color: secondaryColor),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                         _buildTextField(
                             phoneController, "Phone Number", Icons.phone),
                       ],

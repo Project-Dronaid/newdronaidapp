@@ -1,5 +1,6 @@
 import 'package:dronaid_app/screens/home.dart';
 import 'package:dronaid_app/screens/login/login.dart';
+import 'package:dronaid_app/screens/signUp/signUp.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../firebase/firestore_methods.dart';
@@ -37,7 +38,7 @@ class _MyAppState extends State<MyApp> {
         builder: (context,snapshot){
           if(snapshot.connectionState == ConnectionState.active){
             if(snapshot.hasData) {
-              return HomePage();
+              return SignUpScreen();
             } else if(snapshot.hasError){
               return Center(
                 child: Text('${snapshot.error}'),

@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user.dart' as model;
@@ -61,8 +61,9 @@ class AuthMethods {
 
     try {
       if (email.isNotEmpty || password.isNotEmpty) {
-        await _auth.signInWithEmailAndPassword(
+        UserCredential cred = await _auth.signInWithEmailAndPassword(
             email: email, password: password);
+        await saveLoginState(cred.user!.uid);
         res = 'Success';
       } else {
         res = 'Please enter all the fields';
@@ -71,9 +72,27 @@ class AuthMethods {
       res = err.toString();
     }
     return res;
+    
   }
+  
+
+Future<void> saveLoginState(String userId) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('userId', userId);  // Save the user ID
+  await prefs.setBool('isLoggedIn', true);  // Save login state
+}
+
 
   Future<void> signOut() async {
     await _auth.signOut();
+
+    await clearLoginState();
   }
+
+  Future<void> clearLoginState() async{
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('isLoggedIn');
+    await prefs.remove('userId');
+  }
+
 }

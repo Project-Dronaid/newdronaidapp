@@ -1,5 +1,7 @@
-import 'package:dronaid_app/utils/colors.dart';
+import 'package:dronaid_app/screens/login/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -13,16 +15,6 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        // leading: IconButton(
-        //   onPressed: () {
-        //     //Back Button
-        //     // Navigator.push(
-        //     //   context,
-        //     //   MaterialPageRoute(builder: (context) => ),
-        //     // );
-        //   },
-        //   icon: const Icon(Icons.arrow_back, color: Colors.black),
-        // ),
         title: const Text(
           'Profile',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
@@ -48,8 +40,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           elevation: 10,
                           shape: CircleBorder(),
                           child: CircleAvatar(
-                            //add image here.
-                            // backgroundImage: AssetImage("assets/images/download.png"),
                             radius: 40,
                           ),
                         ),
@@ -63,6 +53,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           color: Colors.black,
                         ),
                       ),
+                      SizedBox(height: 8),
+                      SizedBox(height: 4),
                     ],
                   ),
                 ),
@@ -70,69 +62,137 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 24),
               Column(
                 children: [
-                  ListTile(
-                    leading: const Icon(Icons.person,),
-                    title: const Text('Hospital Data'),
-                    onTap: () {
-                      print('Hospital Data tapped');
-                    },
+                  Card(
+                    color: Colors.white,
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            children: [
+                              Icon(Icons.local_hospital,
+                                  color: Colors.blue, size: 28),
+                              SizedBox(width: 8),
+                              Text(
+                                'Hospital Information',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Icon(Icons.location_on, color: Colors.grey[600]),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  '1234 Street Name, City, State',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[800],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(Icons.phone, color: Colors.grey[600]),
+                              const SizedBox(width: 12),
+                              Text(
+                                '(123) 456-7890',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[800],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(Icons.email, color: Colors.grey[600]),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'contact@xyzhospital.com',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[800],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.history),
-                    title: const Text('Medical History'),
-                    onTap: () {
-                      print('Medical History tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.list),
-                    title: const Text('Request History'),
-                    onTap: () {
-                      print('Request History tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.settings),
-                    title: const Text('Settings'),
-                    onTap: () {
-                      print('Settings tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.question_answer),
-                    title: const Text('FAQ'),
-                    onTap: () {
-                      print('FAQ tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.group),
-                    title: const Text('Community'),
-                    onTap: () {
-                      print('Community tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.vpn_key),
-                    title: const Text('License'),
-                    onTap: () {
-                      print('License tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.help),
-                    title: const Text('Feel Free To Ask. We are Ready to Help'),
-                    onTap: () {
-                      print('Help tapped');
-                    },
-                  ),
+                  const SizedBox(height: 48),
+                  Center(
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        try {
+                          await FirebaseAuth.instance.signOut();
+                          // After signing out, navigate to the login screen
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginScreen()));
+                        } catch (e) {
+                          print('Error signing out: $e');
+                          // Optionally, show an error message to the user
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('Failed to sign out. Please try again.'),
+                            ),
+                          );
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.logout,
+                        color: Colors
+                            .red, // Red icon color to match the sign-out action
+                      ),
+                      label: const Text(
+                        'Sign Out',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red, // Matching text color
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(
+                            200, 40), // Adjusted size for better balance
+                        backgroundColor: Colors.white, // White background
+                        elevation:
+                            5, // Maintain elevation for the raised effect
+                        side: const BorderSide(
+                            color: Colors.red, width: 2), // Red border
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(14), // Rounded corners
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 24), // Increased padding
+                      ),
+                    ),
+                  )
                 ],
               ),
             ],

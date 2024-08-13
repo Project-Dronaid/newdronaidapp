@@ -1,6 +1,5 @@
 import 'package:dronaid_app/screens/home_page2.dart';
 import 'package:dronaid_app/utils/colors.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class RequestDeliveredPage extends StatelessWidget {

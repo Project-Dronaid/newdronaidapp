@@ -1,4 +1,6 @@
 import 'package:dronaid_app/screens/OrderDetails.dart';
+import 'package:dronaid_app/screens/fetched_emergency.dart';
+import 'package:dronaid_app/screens/home.dart';
 import 'package:dronaid_app/screens/home_page2.dart';
 import 'package:dronaid_app/screens/tracking.dart';
 import 'package:dronaid_app/utils/colors.dart';
@@ -73,15 +75,17 @@ class RequestConfirmedPage extends StatelessWidget {
                 },
                 child: Text(
                   'Track My Order',
-                  style: TextStyle(color: kPrimaryColor),
+                  style: TextStyle(color: kPrimaryColor, fontSize: 16),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
               SizedBox(
-                width: 200, // Increased width
+                width: MediaQuery.of(context).size.width*0.6, // Increased width
                 height: 50, // Increased height
                 child: ElevatedButton(
-                  onPressed: GoToHomePage,
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage()));
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: kPrimaryColor,
                     shape: RoundedRectangleBorder(
@@ -89,7 +93,7 @@ class RequestConfirmedPage extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    'Go to Home Page',
+                    'Go back to Home Page',
                     style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                 ),

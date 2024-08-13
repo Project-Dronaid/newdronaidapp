@@ -125,8 +125,8 @@ class _TrackingState extends State<Tracking> {
   final Stream<DocumentSnapshot> _droneStream = FirebaseFirestore.instance
       .collection('drone')
       .doc('drone1')
-      .collection('location')
-      .doc('live_location')
+      .collection('status')
+      .doc('geo_coordinates')
       .snapshots();
 
   @override

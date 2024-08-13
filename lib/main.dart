@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
         builder: (context,snapshot){
           if(snapshot.connectionState == ConnectionState.active){
             if(snapshot.hasData) {
-              return SignUpScreen();
+              return HomePage();
             } else if(snapshot.hasError){
               return Center(
                 child: Text('${snapshot.error}'),

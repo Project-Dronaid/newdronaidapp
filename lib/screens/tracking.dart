@@ -17,6 +17,7 @@ class _TrackingState extends State<Tracking> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   String? status;
   int? statusCode;
+  String selectedAddress = '';
 
   double? droneLatitude;
   double? droneLongitude;
@@ -25,6 +26,16 @@ class _TrackingState extends State<Tracking> {
 
   Set<Marker> markers = {};
   List<LatLng> route = [];
+
+  // Function to handle address selection, from map to hospital location textfield
+  void handleAddressSelection(String address) {
+    setState(() {
+      selectedAddress = address;
+    });
+
+    // Navigate back to FetchedEmergency page with selected address
+    Navigator.of(context).pop(selectedAddress);
+  }
 
   Future<bool> _checkAndRequestPermission({bool? background}) async {
     if (!await FlLocation.isLocationServicesEnabled) {
@@ -114,8 +125,8 @@ class _TrackingState extends State<Tracking> {
   final Stream<DocumentSnapshot> _droneStream = FirebaseFirestore.instance
       .collection('drone')
       .doc('drone1')
-      .collection('location')
-      .doc('live_location')
+      .collection('status')
+      .doc('geo_coordinates')
       .snapshots();
 
   @override

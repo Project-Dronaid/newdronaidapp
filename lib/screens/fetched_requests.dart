@@ -3,8 +3,10 @@ import 'package:dronaid_app/screens/request_confirmed_page.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+// import 'dart:typed_data';
 
 class FetchedRequests extends StatefulWidget {
   const FetchedRequests({super.key});
@@ -15,6 +17,22 @@ class FetchedRequests extends StatefulWidget {
 
 class _FetchedRequestsState extends State<FetchedRequests> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // Uint8List? _image;
+
+
+  // // image thing
+  // Future<void> _pickImage() async {
+  //   final picker = ImagePicker();
+  //   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  //
+  //   if (pickedFile != null) {
+  //     final bytes = await pickedFile.readAsBytes();
+  //     setState(() {
+  //       _image = bytes;
+  //     });
+  //   }
+  // }
+
 
   Future<void> _rejectRequest(String requestId) async {
     try {

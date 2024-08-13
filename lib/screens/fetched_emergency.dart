@@ -124,6 +124,10 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
             );
             return;
           }
+          final currentHospital = await FirebaseFirestore.instance
+              .collection('users')
+              .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+              .get();
 
           // Submit the request with the receiverUid included
           await FirebaseFirestore.instance
@@ -133,7 +137,7 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
             'address': hospitalAddress,
             'emergencyText': _emergencyController.text,
             'emergencyImage': '',
-            'hospitalName': selectedHospital,
+            'hospitalName': currentHospital.docs.last.get('hospital_name'),
             'priorityLevel': selectedPriority,
             'dateTime': dateTime,
             'requestId': requestId,
@@ -225,13 +229,19 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ConfirmDetails()));
-                                    });
+                                  onPressed: () async {
+                                    final selectedAddress = await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => ConfirmDetails(),
+                                      ),
+                                    );
+
+                                    if (selectedAddress != null) {
+                                      setState(() {
+                                        hospitalAddress = selectedAddress;
+                                        _locationController.text = selectedAddress;
+                                      });
+                                    }
                                   },
                                   icon: Icon(
                                     _isEditing

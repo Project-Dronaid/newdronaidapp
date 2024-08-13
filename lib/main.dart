@@ -1,5 +1,6 @@
 import 'package:dronaid_app/screens/home.dart';
 import 'package:dronaid_app/screens/login/login.dart';
+import 'package:dronaid_app/screens/signUp/signUp.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../firebase/firestore_methods.dart';

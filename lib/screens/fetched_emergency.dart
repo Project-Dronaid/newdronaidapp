@@ -225,13 +225,19 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ConfirmDetails()));
-                                    });
+                                  onPressed: () async {
+                                    final selectedAddress = await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => ConfirmDetails(),
+                                      ),
+                                    );
+
+                                    if (selectedAddress != null) {
+                                      setState(() {
+                                        hospitalAddress = selectedAddress;
+                                        _locationController.text = selectedAddress;
+                                      });
+                                    }
                                   },
                                   icon: Icon(
                                     _isEditing

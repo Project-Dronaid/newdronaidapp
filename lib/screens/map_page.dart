@@ -51,7 +51,9 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
       }).onError((error, _) {
         print('error: ${error.toString()}');
       });
-      await getAddress(_location!.latitude, _location!.longitude);
+      if (_location != null) {
+        await getAddress(_location!.latitude, _location!.longitude);
+      }
     }
   }
 
@@ -99,119 +101,120 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
       ),
       body: (_location == null)
           ? const Center(
-              child: CircularProgressIndicator(),
-            )
+        child: CircularProgressIndicator(),
+      )
           : Stack(
-              children: [
-                GoogleMap(
-                  mapType: MapType.hybrid,
-                  onTap: (LatLng destination) {
-                    setState(() {
-                      getAddress(destination.latitude, destination.longitude);
-                      markers.clear();
-                      markers.add(
-                        Marker(
-                          markerId: const MarkerId("Destination"),
-                          position: destination,
-                          icon: BitmapDescriptor.defaultMarker,
-                        ),
-                      );
-                    });
-                  },
-                  myLocationEnabled: true,
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                      _location!.latitude!,
-                      _location!.longitude!,
-                    ),
-                    zoom: 18,
+        children: [
+          GoogleMap(
+            mapType: MapType.hybrid,
+            onTap: (LatLng destination) {
+              setState(() {
+                getAddress(destination.latitude, destination.longitude);
+                markers.clear();
+                markers.add(
+                  Marker(
+                    markerId: const MarkerId("Destination"),
+                    position: destination,
+                    icon: BitmapDescriptor.defaultMarker,
                   ),
-                  markers: markers,
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    height: 260,
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(245, 238, 248, 0.8),
-                      borderRadius: BorderRadius.circular(16.0),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          offset: Offset(0.0, 2.0),
-                          blurRadius: 4.0,
-                        ),
-                      ],
+                );
+              });
+            },
+            myLocationEnabled: true,
+            initialCameraPosition: CameraPosition(
+              target: LatLng(
+                _location!.latitude!,
+                _location!.longitude!,
+              ),
+              zoom: 18,
+            ),
+            markers: markers,
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 260,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(245, 238, 248, 0.8),
+                borderRadius: BorderRadius.circular(16.0),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    offset: Offset(0.0, 2.0),
+                    blurRadius: 4.0,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(),
+                    child: const Text(
+                      "Delivering at:",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        DecoratedBox(
-                          decoration: BoxDecoration(),
-                          child: Text(
-                            "Delivering at:",
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    child: Text(
+                      locationAddress,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white60,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        child: Center(
+                          child: ElevatedButton.icon(
+                            icon: const Icon(
+                              Icons.location_on_outlined,
+                              size: 20.0,
+                              color: Colors.white,
                             ),
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.all(8),
-                          child: Text(
-                            locationAddress,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white60,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              child: Center(
-                                child: ElevatedButton.icon(
-                                  icon: const Icon(
-                                    Icons.location_on_outlined,
-                                    size: 20.0,
-                                    color: Colors.white,
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                      minimumSize: const Size(330, 60),
-                                      elevation: 4,
-                                      backgroundColor: const Color(0xFF8689C6),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(60.0))),
-                                  onPressed: () {
-                                    if (confirmDestination != null) {
-                                      uploadCoordinatesToFirebase(
-                                          confirmDestination!);
-                                    }
-                                    Navigator.pop(context);
-                                  },
-                                  label: const Text(
-                                    'Confirm Location',
-                                    style: TextStyle(
-                                        fontSize: 18, color: Colors.white),
-                                  ),
-                                ),
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(330, 60),
+                              elevation: 4,
+                              backgroundColor: const Color(0xFF8689C6),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(60.0),
                               ),
                             ),
-                          ],
-                        )
-                      ],
-                    ),
+                            onPressed: () {
+                              if (confirmDestination != null) {
+                                uploadCoordinatesToFirebase(
+                                    confirmDestination!);
+                              }
+                              Navigator.pop(context, locationAddress); // Return the address
+                            },
+                            label: const Text(
+                              'Confirm Location',
+                              style: TextStyle(
+                                  fontSize: 18, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+          ),
+        ],
+      ),
     );
   }
 }

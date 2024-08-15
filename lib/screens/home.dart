@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../provider/user_provider.dart';
 import '../utils/colors.dart';
 import 'ProfilePage.dart';
-import 'home_page2.dart';
+import 'info_page.dart';
 import 'login/login.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _widgetOptions = <Widget>[
     FetchedEmergency(),
     FetchedRequests(),
-    HomePage2(),
+    InfoPage(),
     ProfilePage(),
   ];
 

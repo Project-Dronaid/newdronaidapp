@@ -1,7 +1,6 @@
 import 'package:dronaid_app/screens/OrderDetails.dart';
 import 'package:dronaid_app/screens/fetched_emergency.dart';
 import 'package:dronaid_app/screens/home.dart';
-import 'package:dronaid_app/screens/home_page2.dart';
 import 'package:dronaid_app/screens/tracking.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/gestures.dart';

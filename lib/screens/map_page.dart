@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dronaid_app/firebase/firestore_methods.dart';
+import 'package:dronaid_app/utils/colors.dart';
 import 'package:fl_location/fl_location.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -92,7 +93,7 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(
-          color: Colors.white,
+          color: kPrimaryColor,
         ),
         title: const Text(
           "Enter Address",

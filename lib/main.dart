@@ -1,3 +1,4 @@
+import 'package:dronaid_app/screens/confirm_details.dart';
 import 'package:dronaid_app/screens/home.dart';
 import 'package:dronaid_app/screens/login/login.dart';
 import 'package:dronaid_app/screens/signUp/signUp.dart';

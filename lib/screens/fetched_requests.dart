@@ -81,7 +81,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
           FirebaseFirestore.instance
               .collection('drone')
               .doc('drone1')
-              .update({'orderFlag': 1, 'droneFlag': 1});
+              .update({'orderFlag': 1});
         });
       }
     } catch (e) {
@@ -318,7 +318,8 @@ class _FetchedRequestsState extends State<FetchedRequests> {
 
                     final requests = snapshot.data!.docs;
 
-                    return Column(
+                    return
+                      Column(
                       children: requests.map((doc) {
                         final data = doc.data() as Map<String, dynamic>;
                         final hospitalName = data['hospitalName'] ?? 'Unknown';

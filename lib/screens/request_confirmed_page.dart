@@ -1,4 +1,5 @@
 import 'package:dronaid_app/screens/OrderDetails.dart';
+import 'package:dronaid_app/screens/confirm_details.dart';
 import 'package:dronaid_app/screens/fetched_emergency.dart';
 import 'package:dronaid_app/screens/home.dart';
 import 'package:dronaid_app/screens/tracking.dart';
@@ -37,11 +38,11 @@ class RequestConfirmedPage extends StatelessWidget {
               const SizedBox(height: 10),
               RichText(
                 text: TextSpan(
-                  text: "Your request has been placed successfully. ",
-                  style: const TextStyle(color: Colors.grey, fontSize: 14),
+                  text: "Your request has been accepted successfully.     ",
+                  style: const TextStyle(color: Colors.grey, fontSize: 16, ),
                   children: [
                     TextSpan(
-                      text: "Request History",
+                      text: "Check your Request History.",
                       style: TextStyle(color: kPrimaryColor),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
@@ -54,11 +55,11 @@ class RequestConfirmedPage extends StatelessWidget {
               const SizedBox(height: 10),
               RichText(
                 text: const TextSpan(
-                  text: 'Your request will be delivered ',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                  text: 'Please place the requested supplies inside the drone and move to a safe distance.',
+                  style: TextStyle(color: Colors.grey, fontSize: 16),
                   children: [
                     TextSpan(
-                      text: 'as soon as possible.',
+                      text: '',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.grey,
@@ -70,7 +71,7 @@ class RequestConfirmedPage extends StatelessWidget {
               const SizedBox(height: 5),
                TextButton(
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => OrderTrackingPage()));
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => ConfirmDetails()));
                 },
                 child: Text(
                   'Track My Order',

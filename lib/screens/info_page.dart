@@ -1,7 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../utils/colors.dart';
 
 class InfoPage extends StatefulWidget {
   const InfoPage({super.key});
@@ -12,7 +13,6 @@ class InfoPage extends StatefulWidget {
 
 class _InfoPageState extends State<InfoPage> {
   int _currentCarouselImage = 0;
-  int currentpage = 0;
 
   final List<String> imgList = [
     'assets/asset1.jpg',
@@ -20,6 +20,7 @@ class _InfoPageState extends State<InfoPage> {
     'assets/drone_hex.jpeg',
     'assets/minister_interaction.png'
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -210,13 +211,13 @@ class _InfoPageState extends State<InfoPage> {
     );
   }
 
-  buildCarouselIndicator() {
+  Widget buildCarouselIndicator() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         for (int i = 0; i < imgList.length; i++)
           Container(
-            margin: EdgeInsets.all(5),
+            margin: const EdgeInsets.all(5),
             height: i == _currentCarouselImage ? 7 : 5,
             width: i == _currentCarouselImage ? 7 : 5,
             decoration: BoxDecoration(

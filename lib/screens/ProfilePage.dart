@@ -3,6 +3,7 @@ import 'package:dronaid_app/screens/login/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import '../utils/colors.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -204,15 +205,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       },
                       icon: const Icon(
                         Icons.logout,
-                        color: Colors
-                            .red, // Red icon color to match the sign-out action
+                        color: kPrimaryColor, // Red icon color to match the sign-out action
                       ),
                       label: const Text(
                         'Sign Out',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.red, // Matching text color
+                          color: kPrimaryColor, // Matching text color
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
@@ -222,7 +222,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         elevation:
                             5, // Maintain elevation for the raised effect
                         side: const BorderSide(
-                            color: Colors.red, width: 2), // Red border
+                            color: kPrimaryColor, width: 2), // Red border
                         shape: RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.circular(14), // Rounded corners

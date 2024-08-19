@@ -185,7 +185,6 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEEEFF5),
       appBar: AppBar(
         backgroundColor: const Color(0xFFEEEFF5),
         leading: const Icon(Icons.menu),

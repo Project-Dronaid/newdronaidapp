@@ -28,7 +28,7 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: EdgeInsets.only(top: 100),
+              padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.15),
             ),
             Image.asset(
               'assets/warningSymbol.png',
@@ -58,7 +58,7 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
               ),
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.06,
+              height: MediaQuery.of(context).size.height * 0.01,
             ),
             Container(
               margin: EdgeInsets.all(18),
@@ -69,7 +69,7 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
                 keyboardType: TextInputType.number,
                 controller: _weightController,
                 decoration: InputDecoration(
-                  hintText: 'Please Enter Weight of Package in Kg',
+                  hintText: 'Please Enter Weight of Package in kgs',
                   contentPadding: EdgeInsets.all(10),
                   border: InputBorder.none,
                 ),
@@ -91,6 +91,7 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
                 }
               },
               child: Container(
+                margin: EdgeInsets.only(top: 12),
                 padding: EdgeInsets.all(8),
                 width: MediaQuery.of(context).size.width * 0.45,
                 height: MediaQuery.of(context).size.height * 0.07,

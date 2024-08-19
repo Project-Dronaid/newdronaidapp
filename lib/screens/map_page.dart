@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dronaid_app/firebase/firestore_methods.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:fl_location/fl_location.dart';
 import 'package:flutter/material.dart';
@@ -107,7 +106,7 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
           : Stack(
         children: [
           GoogleMap(
-            mapType: MapType.hybrid,
+            mapType: MapType.normal,
             onTap: (LatLng destination) {
               setState(() {
                 getAddress(destination.latitude, destination.longitude);

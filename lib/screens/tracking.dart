@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dronaid_app/utils/colors.dart';
 import 'package:fl_location/fl_location.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -59,7 +60,8 @@ class _TrackingState extends State<Tracking> {
 
     // Location permission must always be granted (LocationPermission.always)
     // to collect location data in the background.
-    if (background == true && locationPermission == LocationPermission.whileInUse) {
+    if (background == true &&
+        locationPermission == LocationPermission.whileInUse) {
       // Location permission must always be granted to collect location in the background.
       return false;
     }
@@ -103,7 +105,6 @@ class _TrackingState extends State<Tracking> {
       markerId: const MarkerId("Destination"),
       position: LatLng(destinationLatitude!, destinationLongitude!),
     ));
-
   }
 
   void addCustomIcon() {
@@ -148,16 +149,17 @@ class _TrackingState extends State<Tracking> {
               }
 
               if (snapshot.hasData) {
-                final LatLng locationTrack = LatLng((snapshot.data! as dynamic)['latitude'],
+                final LatLng locationTrack = LatLng(
+                    (snapshot.data! as dynamic)['latitude'],
                     (snapshot.data! as dynamic)['longitude']);
-                final LatLng destination = LatLng(destinationLatitude!, destinationLongitude!);
+                final LatLng destination =
+                    LatLng(destinationLatitude!, destinationLongitude!);
                 track = [locationTrack, destination];
                 markers.add(Marker(
                   markerId: const MarkerId("Drone"),
                   icon: droneIcon,
                   position: locationTrack,
                 ));
-
               }
               return GoogleMap(
                   initialCameraPosition: CameraPosition(
@@ -177,7 +179,10 @@ class _TrackingState extends State<Tracking> {
                   markers: markers,
                   polylines: {
                     Polyline(
-                        polylineId: const PolylineId("Live tracking"), points: track, zIndex: 5),
+                        polylineId: const PolylineId("Live tracking"),
+                        points: track,
+                        zIndex: 5,
+                        color: kPrimaryColor),
                   });
             });
   }

@@ -24,8 +24,8 @@ class _InfoPageState extends State<InfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: SizedBox(
+      body: Material(
+        child: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: Stack(
@@ -44,12 +44,12 @@ class _InfoPageState extends State<InfoPage> {
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
                       color: kPrimaryColor,
-                      borderRadius: const BorderRadius.only(
+                      borderRadius: BorderRadius.only(
                         bottomRight: Radius.circular(200),
                       ),
                     ),
                     child: Container(
-                      padding: const EdgeInsets.only(top: 140),
+                      padding: EdgeInsets.only(top: 140),
                       child: Column(
                         children: [
                           ListTile(
@@ -102,12 +102,13 @@ class _InfoPageState extends State<InfoPage> {
                   ),
                   Align(
                     alignment: Alignment.topCenter,
-                    child: SizedBox(
+                    child: Container(
                       width: 200, // Specify the desired width
                       height: 200, // Specify the desired height
                       child: Image.asset(
                         'assets/logo_nobg.png',
-                        fit: BoxFit.contain, // Adjust the fit based on your needs
+                        fit: BoxFit
+                            .contain, // Adjust the fit based on your needs
                       ),
                     ),
                   ),
@@ -120,7 +121,7 @@ class _InfoPageState extends State<InfoPage> {
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                     color: kPrimaryColor,
-                    borderRadius: const BorderRadius.only(
+                    borderRadius: BorderRadius.only(
                       topRight: Radius.circular(80),
                     ),
                   ),
@@ -131,20 +132,20 @@ class _InfoPageState extends State<InfoPage> {
                 child: Container(
                   height: MediaQuery.of(context).size.height / 2.245,
                   width: MediaQuery.of(context).size.width,
-                  padding: const EdgeInsets.only(
+                  padding: EdgeInsets.only(
                     top: 40,
                     bottom: 40,
                   ),
                   decoration: BoxDecoration(
                     color: primaryColor,
-                    borderRadius: const BorderRadius.only(
+                    borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(80),
                         topRight: Radius.circular(80)),
                   ),
                   child: Column(
                     children: [
                       Container(
-                        padding: const EdgeInsets.only(left: 30),
+                        padding: EdgeInsets.only(left: 30),
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
@@ -157,37 +158,37 @@ class _InfoPageState extends State<InfoPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(
+                      SizedBox(
                         height: 10,
                       ),
                       CarouselSlider(
                         items: imgList
                             .map(
                               (e) => Center(
-                            child: GestureDetector(
-                              onTap: () {
-                                print('Image tapped');
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(boxShadow: [
-                                  BoxShadow(
-                                    color: secondaryColor,
-                                    blurRadius: 40,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    print('object');
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(boxShadow: [
+                                      BoxShadow(
+                                        color: secondaryColor,
+                                        blurRadius: 40,
+                                      ),
+                                    ]),
+                                    child: ClipRRect(
+                                      child: Image.asset(e),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
                                   ),
-                                ]),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Image.asset(e),
                                 ),
                               ),
-                            ),
-                          ),
-                        )
+                            )
                             .toList(),
                         options: CarouselOptions(
                             initialPage: 0,
                             autoPlay: true,
-                            autoPlayInterval: const Duration(seconds: 2),
+                            autoPlayInterval: Duration(seconds: 2),
                             enlargeCenterPage: true,
                             onPageChanged: (value, _) {
                               setState(() {
@@ -195,7 +196,9 @@ class _InfoPageState extends State<InfoPage> {
                               });
                             }),
                       ),
-                      const SizedBox(height: 10),
+                      Container(
+                        height: 10,
+                      ),
                       buildCarouselIndicator(),
                     ],
                   ),

@@ -1,12 +1,11 @@
 import 'package:dronaid_app/screens/OrderDetails.dart';
 import 'package:dronaid_app/screens/request_confirmed_page.dart';
 import 'package:dronaid_app/utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-// import 'dart:typed_data';
 
 class FetchedRequests extends StatefulWidget {
   const FetchedRequests({super.key});
@@ -17,22 +16,6 @@ class FetchedRequests extends StatefulWidget {
 
 class _FetchedRequestsState extends State<FetchedRequests> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  // Uint8List? _image;
-
-
-  // // image thing
-  // Future<void> _pickImage() async {
-  //   final picker = ImagePicker();
-  //   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-  //
-  //   if (pickedFile != null) {
-  //     final bytes = await pickedFile.readAsBytes();
-  //     setState(() {
-  //       _image = bytes;
-  //     });
-  //   }
-  // }
-
 
   Future<void> _rejectRequest(String requestId) async {
     try {
@@ -156,133 +139,106 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                     FirebaseAuth.instance.currentUser!.uid &&
                                 data['receiverUid'] ==
                                     FirebaseAuth.instance.currentUser!.uid
-                            ? InkWell(
-                                onTap: () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            OrderTrackingPage())),
-                                child: Container(
-                                  margin: EdgeInsets.all(15),
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border.all(
-                                      color: Colors.transparent,
-                                    ),
-                                    borderRadius: BorderRadius.circular(15),
+                            ? Container(
+                                margin: EdgeInsets.all(15),
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: Colors.transparent,
                                   ),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          CircleAvatar(
-                                            backgroundImage: NetworkImage(
-                                                'https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGhvc3BpdGFsJTIwYnVpbGRpbmd8ZW58MHx8MHx8fDA%3D'),
-                                          ),
-                                          SizedBox(
-                                            width: 8,
-                                          ),
-                                          Text(
-                                            hospitalName,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 15),
-                                          ),
-                                          Spacer(),
-                                          Text(
-                                            dateTime,
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w300),
-                                          ),
-                                          IconButton(
-                                              onPressed: () {},
-                                              icon: Icon(Icons.more_vert)),
-                                        ],
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 46,
-                                            right: 10,
-                                            bottom: 5,
-                                            top: 10),
-                                        child: Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(emergencyText)),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Divider(),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              final requestId =
-                                                  doc.id; // Get the document ID
-                                              _acceptRequest(requestId);
-                                              Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          RequestConfirmedPage()));
-                                            },
-                                            child: Center(
-                                              child: Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.83,
-                                                height: MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.05,
-                                                padding: EdgeInsets.all(10),
-                                                margin: EdgeInsets.symmetric(
-                                                    vertical: 10),
-                                                decoration: BoxDecoration(
-                                                    color: kPrimaryColor,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                child: Center(
-                                                  child: Text(
-                                                    'Accept Request',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundImage: NetworkImage(
+                                              'https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGhvc3BpdGFsJTIwYnVpbGRpbmd8ZW58MHx8MHx8fDA%3D'),
+                                        ),
+                                        SizedBox(
+                                          width: 8,
+                                        ),
+                                        Text(
+                                          hospitalName,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 15),
+                                        ),
+                                        Spacer(),
+                                        Text(
+                                          dateTime,
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w300),
+                                        ),
+                                        IconButton(
+                                            onPressed: () {},
+                                            icon: Icon(Icons.more_vert)),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 46,
+                                          right: 10,
+                                          bottom: 5,
+                                          top: 10),
+                                      child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(emergencyText)),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Divider(),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            final requestId =
+                                                doc.id; // Get the document ID
+                                            _acceptRequest(requestId);
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        RequestConfirmedPage()));
+                                          },
+                                          child: Center(
+                                            child: Container(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.83,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.05,
+                                              padding: EdgeInsets.all(10),
+                                              margin: EdgeInsets.symmetric(
+                                                  vertical: 10),
+                                              decoration: BoxDecoration(
+                                                  color: kPrimaryColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
+                                              child: Center(
+                                                child: Text(
+                                                  'Accept Request',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
                                               ),
                                             ),
                                           ),
-                                          // SizedBox(
-                                          //   width: 30,
-                                          // ),
-                                          // GestureDetector(
-                                          //   onTap: () {
-                                          //     final requestId =
-                                          //         doc.id; // Get the document ID
-                                          //     _rejectRequest(requestId);
-                                          //   },
-                                          //   child: Container(
-                                          //     padding: EdgeInsets.all(10),
-                                          //     decoration: BoxDecoration(
-                                          //         color: Colors.red,
-                                          //         borderRadius:
-                                          //             BorderRadius.circular(20)),
-                                          //     child: Text(
-                                          //       'Reject Request',
-                                          //       style: TextStyle(color: Colors.white),
-                                          //     ),
-                                          //   ),
-                                          // ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
                                 ),
                               )
                             : Container(
@@ -318,8 +274,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
 
                     final requests = snapshot.data!.docs;
 
-                    return
-                      Column(
+                    return Column(
                       children: requests.map((doc) {
                         final data = doc.data() as Map<String, dynamic>;
                         final hospitalName = data['hospitalName'] ?? 'Unknown';

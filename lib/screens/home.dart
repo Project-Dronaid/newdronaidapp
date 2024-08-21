@@ -1,6 +1,5 @@
 import 'package:dronaid_app/screens/fetched_emergency.dart';
 import 'package:dronaid_app/screens/fetched_requests.dart';
-import 'package:dronaid_app/screens/request_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,8 +7,7 @@ import 'package:provider/provider.dart';
 import '../provider/user_provider.dart';
 import '../utils/colors.dart';
 import 'ProfilePage.dart';
-import 'emergency_page.dart';
-import 'home_page2.dart';
+import 'info_page.dart';
 import 'login/login.dart';
 
 class HomePage extends StatefulWidget {
@@ -25,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _widgetOptions = <Widget>[
     FetchedEmergency(),
     FetchedRequests(),
-    HomePage2(),
+    InfoPage(),
     ProfilePage(),
   ];
 

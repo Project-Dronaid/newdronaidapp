@@ -1,9 +1,11 @@
-import 'package:dronaid_app/screens/widget/Authentication_dialog.dart';
+import 'package:dronaid_app/screens/OrderDetails.dart';
+import 'package:dronaid_app/screens/request_confirmed_page.dart';
 import 'package:dronaid_app/utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class FetchedRequests extends StatefulWidget {
   const FetchedRequests({super.key});
@@ -74,7 +76,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
         });
 
         // Delete from hospitalRequests collection
-        await requestDoc.delete();
+        // await requestDoc.delete();
         setState(() {
           FirebaseFirestore.instance
               .collection('drone')
@@ -151,7 +153,9 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                             data['emergencyText'] ?? 'Unknown';
 
                         return data['userId'] !=
-                                FirebaseAuth.instance.currentUser!.uid
+                                    FirebaseAuth.instance.currentUser!.uid &&
+                                data['receiverUid'] ==
+                                    FirebaseAuth.instance.currentUser!.uid
                             ? Container(
                                 margin: EdgeInsets.all(15),
                                 padding: EdgeInsets.all(10),
@@ -210,21 +214,14 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
                                         GestureDetector(
-                                          onTap: () async {
-                                            final isAuthenticated =
-                                                await _showAuthenticationDialog();
-                                            if (isAuthenticated) {
-                                              final requestId =
-                                                  doc.id; // Get the document ID
-                                              _acceptRequest(requestId);
-                                            } else {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                const SnackBar(
-                                                    content: Text(
-                                                        'Authentication failed')),
-                                              );
-                                            }
+                                          onTap: () {
+                                            final requestId =
+                                                doc.id; // Get the document ID
+                                            _acceptRequest(requestId);
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        RequestConfirmedPage()));
                                           },
                                           child: Center(
                                             child: Container(
@@ -256,27 +253,6 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                             ),
                                           ),
                                         ),
-                                        // SizedBox(
-                                        //   width: 30,
-                                        // ),
-                                        // GestureDetector(
-                                        //   onTap: () {
-                                        //     final requestId =
-                                        //         doc.id; // Get the document ID
-                                        //     _rejectRequest(requestId);
-                                        //   },
-                                        //   child: Container(
-                                        //     padding: EdgeInsets.all(10),
-                                        //     decoration: BoxDecoration(
-                                        //         color: Colors.red,
-                                        //         borderRadius:
-                                        //             BorderRadius.circular(20)),
-                                        //     child: Text(
-                                        //       'Reject Request',
-                                        //       style: TextStyle(color: Colors.white),
-                                        //     ),
-                                        //   ),
-                                        // ),
                                       ],
                                     )
                                   ],

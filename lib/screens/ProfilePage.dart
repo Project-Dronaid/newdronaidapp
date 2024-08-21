@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dronaid_app/screens/login/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import '../utils/colors.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -10,6 +13,43 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String? hospitalName;
+  String? hospitalAddress;
+  String? hospitalNumber;
+  String? hospitalEmail;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users') // Assuming your collection is named 'users'
+            .doc(user.uid)
+            .get();
+
+        setState(() {
+          hospitalName = userDoc.get('hospital_name');
+          hospitalAddress = userDoc.get('address');
+          hospitalEmail = userDoc.get('email');
+          hospitalNumber = userDoc.get('phone_no');
+        });
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to load profile data. Please try again.'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,18 +85,18 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       SizedBox(height: 16),
-                      Text(
-                        "XYZ Hospital",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      SizedBox(height: 4),
                     ],
                   ),
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                hospitalName ??
+                    'Loading...', // Display 'hospitalName' or a placeholder
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 24),
@@ -94,7 +134,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  '1234 Street Name, City, State',
+                                  hospitalAddress ?? 'Loading...',
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.grey[800],
@@ -109,7 +149,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               Icon(Icons.phone, color: Colors.grey[600]),
                               const SizedBox(width: 12),
                               Text(
-                                '(123) 456-7890',
+                                hospitalNumber ?? 'Loading...',
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.grey[800],
@@ -124,7 +164,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  'contact@xyzhospital.com',
+                                  hospitalEmail ?? 'Loading...',
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.grey[800],
@@ -148,7 +188,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         try {
                           await FirebaseAuth.instance.signOut();
                           // After signing out, navigate to the login screen
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginScreen()));
                         } catch (e) {
                           print('Error signing out: $e');
                           // Optionally, show an error message to the user
@@ -162,15 +205,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       },
                       icon: const Icon(
                         Icons.logout,
-                        color: Colors
-                            .red, // Red icon color to match the sign-out action
+                        color: kPrimaryColor, // Red icon color to match the sign-out action
                       ),
                       label: const Text(
                         'Sign Out',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.red, // Matching text color
+                          color: kPrimaryColor, // Matching text color
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
@@ -180,7 +222,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         elevation:
                             5, // Maintain elevation for the raised effect
                         side: const BorderSide(
-                            color: Colors.red, width: 2), // Red border
+                            color: kPrimaryColor, width: 2), // Red border
                         shape: RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.circular(14), // Rounded corners

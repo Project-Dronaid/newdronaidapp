@@ -1,11 +1,12 @@
-import 'package:dronaid_app/screens/emergency_page.dart';
 import 'package:dronaid_app/screens/home.dart';
+import 'package:dronaid_app/screens/map_page.dart';
 import 'package:flutter/material.dart';
 import '../../firebase/auth_methods.dart';
 import '../../utils/utils.dart';
 import '../login/login.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../utils/colors.dart';
+
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -18,6 +19,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();
 
   bool isLoading = false;
   bool obscureText = true;
@@ -42,22 +44,58 @@ class _SignUpScreenState extends State<SignUpScreen> {
       address: addressController.text,
       phone_no: phoneController.text,
       hospital_name: hospitalNameController.text,
+      //deliveryAddress: locationController.text, // Uncomment this if needed
     );
 
     setState(() {
       isLoading = false;
     });
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage()),
-    );
-
-    if (res != 'Success') {
-      showSnackBar(res, context);
+    if (res == 'Success') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
     } else {
       showSnackBar(res, context);
     }
+  }
+
+  Widget _buildTextField(
+      TextEditingController controller,
+      String labelText,
+      IconData icon, {
+        bool isPassword = false,
+        bool readOnly = false,
+        VoidCallback? toggleObscureText,
+        VoidCallback? onTap,
+        bool obscureText = false,
+      }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: TextFormField(
+        controller: controller,
+        obscureText: obscureText,
+        readOnly: readOnly,
+        onTap: onTap,
+        decoration: InputDecoration(
+          prefixIcon: Icon(icon, color: kPrimaryColor),
+          labelText: labelText,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          suffixIcon: isPassword
+              ? IconButton(
+            icon: Icon(
+              obscureText ? Icons.visibility : Icons.visibility_off,
+              color: kPrimaryColor,
+            ),
+            onPressed: toggleObscureText,
+          )
+              : null,
+        ),
+      ),
+    );
   }
 
   @override
@@ -93,8 +131,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Form(
                     child: Column(
                       children: [
-                        _buildTextField(hospitalNameController, "Hospital Name",
-                            Icons.local_hospital),
+                        _buildTextField(hospitalNameController, "Hospital Name", Icons.local_hospital),
                         _buildTextField(emailController, "Email", Icons.email),
                         _buildTextField(
                           passwordController,
@@ -108,81 +145,77 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             });
                           },
                         ),
+                        _buildTextField(addressController, "Hospital Address", Icons.location_on),
                         _buildTextField(
-                            addressController, "Address", Icons.location_on),
-                        _buildTextField(
-                            phoneController, "Phone Number", Icons.phone),
+                          locationController,
+                          "Delivery Address",
+                          Icons.location_on,
+                          readOnly: true,
+                          onTap: () async {
+                            final location = await Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ConfirmDetails()),
+                            );
+                            if (location != null) {
+                              setState(() {
+                                locationController.text = location;
+                              });
+                            }
+                          },
+                        ),
+                        _buildTextField(phoneController, "Phone Number", Icons.phone),
+                        SizedBox(height: size.height * 0.02),
+                        isLoading
+                            ? CircularProgressIndicator()
+                            : ElevatedButton(
+                          onPressed: signUp,
+                          child: Text("Sign Up",
+                          style: TextStyle(
+                            color: Colors.white
+                          ),
+                          ),
+
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size(size.width * 0.8, 50), backgroundColor: kPrimaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ), // Ensure button is filled with the primary color
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
+            SizedBox(height: size.height * 0.02),
             Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: size.width * 0.1, vertical: size.height * 0.02),
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    signUp();
-                  });
-                },
-                child: isLoading
-                    ? CircularProgressIndicator(color: primaryColor)
-                    : Text("SIGN UP",
-                        style: TextStyle(fontSize: 18, color: primaryColor)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kPrimaryColor,
-                  minimumSize: Size(size.width * 0.8, 50),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: size.width * 0.1, vertical: size.height * 0.02),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()));
-                },
-                child: Center(
-                  child: Text(
-                    "Already have an account? LOGIN",
-                    style: TextStyle(color: kPrimaryColor, fontSize: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Already have an account? "),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
+                    },
+                    child: Text(
+                      "Login",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: kPrimaryColor,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
+            SizedBox(height: size.height * 0.05),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(
-      TextEditingController controller, String hintText, IconData icon,
-      {bool isPassword = false,
-      bool obscureText = false,
-      Function? toggleObscureText}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: TextFormField(
-        controller: controller,
-        obscureText: obscureText,
-        decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: kPrimaryColor),
-          hintText: hintText,
-          hintStyle: TextStyle(color: secondaryColor),
-          suffixIcon: isPassword
-              ? IconButton(
-                  icon: Icon(
-                      obscureText ? Icons.visibility : Icons.visibility_off),
-                  onPressed: () {
-                    if (toggleObscureText != null) toggleObscureText();
-                  },
-                )
-              : null,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
       ),
     );

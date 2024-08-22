@@ -1,3 +1,4 @@
+import 'package:dronaid_app/screens/home.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +33,7 @@ class RequestDeliveredPage extends StatelessWidget {
               const SizedBox(height: 10),
               RichText(
                 text:const  TextSpan(
-                  text: "Your request has been delivered successfully. ",
+                  text: "The request has been delivered successfully. ",
                   style: TextStyle(color: Colors.grey, fontSize: 14),
                   children: [
                   ],
@@ -52,7 +53,9 @@ class RequestDeliveredPage extends StatelessWidget {
                 width: 200, // Increased width
                 height: 50, // Increased height
                 child: ElevatedButton(
-                  onPressed: GoToHomePage,
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage()));
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: kPrimaryColor,
                     shape: RoundedRectangleBorder(

@@ -28,7 +28,7 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.15),
+              padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1),
             ),
             Image.asset(
               'assets/warningSymbol.png',
@@ -61,7 +61,7 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
               height: MediaQuery.of(context).size.height * 0.01,
             ),
             Container(
-              margin: EdgeInsets.all(18),
+              margin: EdgeInsets.all(10),
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15), color: Colors.white),
@@ -75,17 +75,29 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
                 ),
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0, bottom: 10),
+              child: Text('Maximum Weight allowed: 2kgs', style: TextStyle(fontWeight: FontWeight.w400),),
+            ),
             GestureDetector(
               onTap: () {
                 double weight = double.tryParse(_weightController.text) ?? 0.0;
-                if (weight <= 1.5) {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => OrderTrackingPage()));
-                  confirmDetails();
-                } else {
+                if(weight!=0.0){
+                  if (weight <= 2) {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => OrderTrackingPage()));
+                    confirmDetails();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("The weight limit is exceeded"),
+                      ),
+                    );
+                  }
+                } else{
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text("The weight limit is exceeded"),
+                      content: Text("Enter the weight"),
                     ),
                   );
                 }

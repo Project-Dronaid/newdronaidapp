@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dronaid_app/screens/request_delivered_page.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:fl_location/fl_location.dart';
 import 'package:flutter/material.dart';
@@ -24,45 +25,38 @@ class _TrackingState extends State<Tracking> {
   double? droneLongitude;
   double? destinationLatitude;
   double? destinationLongitude;
+  int? droneFlag;
+  int? orderFlag;
+  int? servoFlag;
 
   Set<Marker> markers = {};
   List<LatLng> route = [];
 
-  // Function to handle address selection, from map to hospital location textfield
   void handleAddressSelection(String address) {
     setState(() {
       selectedAddress = address;
     });
-
-    // Navigate back to FetchedEmergency page with selected address
     Navigator.of(context).pop(selectedAddress);
   }
 
   Future<bool> _checkAndRequestPermission({bool? background}) async {
     if (!await FlLocation.isLocationServicesEnabled) {
-      // Location services is disabled.
       return false;
     }
 
     var locationPermission = await FlLocation.checkLocationPermission();
     if (locationPermission == LocationPermission.deniedForever) {
-      // Location permission has been permanently denied.
       return false;
     } else if (locationPermission == LocationPermission.denied) {
-      // Ask the user for location permission.
       locationPermission = await FlLocation.requestLocationPermission();
       if (locationPermission == LocationPermission.denied ||
           locationPermission == LocationPermission.deniedForever) {
-        // Location permission has been denied.
         return false;
       }
     }
 
-    // Location permission must always be granted (LocationPermission.always)
-    // to collect location data in the background.
     if (background == true &&
         locationPermission == LocationPermission.whileInUse) {
-      // Location permission must always be granted to collect location in the background.
       return false;
     }
 
@@ -130,60 +124,96 @@ class _TrackingState extends State<Tracking> {
       .doc('geo_coordinates')
       .snapshots();
 
+  final Stream<DocumentSnapshot> _flagStream =
+  FirebaseFirestore.instance.collection('drone').doc('drone1').snapshots();
+
   @override
   Widget build(BuildContext context) {
     return (destinationLatitude == null || destinationLongitude == null)
         ? const Center(
-            child: CircularProgressIndicator(),
-          )
+      child: CircularProgressIndicator(),
+    )
         : StreamBuilder<DocumentSnapshot>(
-            stream: _droneStream,
-            builder: (BuildContext context, snapshot) {
-              List<LatLng> track = [];
-              if (snapshot.hasError) {
-                return const Text('Something went wrong');
-              }
+        stream: _flagStream,
+        builder: (BuildContext context, snapshot) {
+          if (snapshot.hasError) {
+            return const Text('Something went wrong');
+          }
 
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Text("Loading");
-              }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Text("Loading");
+          }
 
-              if (snapshot.hasData) {
-                final LatLng locationTrack = LatLng(
-                    (snapshot.data! as dynamic)['latitude'],
-                    (snapshot.data! as dynamic)['longitude']);
-                final LatLng destination =
-                    LatLng(destinationLatitude!, destinationLongitude!);
-                track = [locationTrack, destination];
-                markers.add(Marker(
-                  markerId: const MarkerId("Drone"),
-                  icon: droneIcon,
-                  position: locationTrack,
-                ));
-              }
-              return GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                      destinationLatitude!,
-                      destinationLongitude!,
-                    ),
-                    zoom: 13,
-                  ),
-                  zoomControlsEnabled: false,
-                  mapType: MapType.normal,
-                  onMapCreated: (controller) {
-                    setState(() {
-                      _controller = controller;
-                    });
-                  },
-                  markers: markers,
-                  polylines: {
-                    Polyline(
-                        polylineId: const PolylineId("Live tracking"),
-                        points: track,
-                        zIndex: 5,
-                        color: kPrimaryColor),
-                  });
+          if (snapshot.hasData) {
+            droneFlag = snapshot.data!['droneFlag'];
+            orderFlag = snapshot.data!['orderFlag'];
+            servoFlag = snapshot.data!['servoFlag'];
+          }
+
+          if (droneFlag == 3) {
+            Future.microtask(() {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>  RequestDeliveredPage(),
+                ),
+              );
             });
+            return Container();
+          }
+
+          return droneFlag == 1 || droneFlag == 2
+              ? StreamBuilder<DocumentSnapshot>(
+              stream: _droneStream,
+              builder: (BuildContext context, snapshot) {
+                List<LatLng> track = [];
+                if (snapshot.hasError) {
+                  return const Text('Something went wrong');
+                }
+
+                if (snapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  return const Text("Loading");
+                }
+
+                if (snapshot.hasData) {
+                  final LatLng locationTrack = LatLng(
+                      (snapshot.data! as dynamic)['latitude'],
+                      (snapshot.data! as dynamic)['longitude']);
+                  final LatLng destination = LatLng(
+                      destinationLatitude!, destinationLongitude!);
+                  track = [locationTrack, destination];
+                  markers.add(Marker(
+                    markerId: const MarkerId("Drone"),
+                    icon: droneIcon,
+                    position: locationTrack,
+                  ));
+                }
+                return GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(
+                        destinationLatitude!,
+                        destinationLongitude!,
+                      ),
+                      zoom: 13,
+                    ),
+                    zoomControlsEnabled: false,
+                    mapType: MapType.normal,
+                    onMapCreated: (controller) {
+                      setState(() {
+                        _controller = controller;
+                      });
+                    },
+                    markers: markers,
+                    polylines: {
+                      Polyline(
+                          polylineId: const PolylineId("Live tracking"),
+                          points: track,
+                          zIndex: 5,
+                          color: kPrimaryColor),
+                    });
+              })
+              : Container();
+        });
   }
 }

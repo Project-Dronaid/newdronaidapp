@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dronaid_app/screens/home.dart';
 import 'package:dronaid_app/screens/tracking.dart';
 import 'package:dronaid_app/utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -14,12 +17,73 @@ class OrderTrackingPage extends StatefulWidget {
 class _OrderTrackingPageState extends State<OrderTrackingPage> {
   bool isMapVisible = true;
   BitmapDescriptor droneIcon = BitmapDescriptor.defaultMarker;
-
+  Map<String, String?> droneDetails = {};
 
   @override
   void initState() {
     super.initState();
+    _loadDroneDetails();
     WidgetsBinding.instance.addPostFrameCallback((_) {});
+  }
+
+  Future<void> _loadDroneDetails() async {
+    final details = await fetchDroneDetails();
+    setState(() {
+      droneDetails = details;
+    });
+  }
+
+  Future<Map<String, String?>> fetchDroneDetails() async {
+    final firestore = FirebaseFirestore.instance;
+
+    try {
+      final altitudeDoc = await firestore
+          .collection('drone')
+          .doc('drone1')
+          .collection('status')
+          .doc('geo_coordinates')
+          .get();
+
+      final speedsDoc = await firestore
+          .collection('drone')
+          .doc('drone1')
+          .collection('status')
+          .doc('speeds')
+          .get();
+
+      final batteryDoc = await firestore
+          .collection('drone')
+          .doc('drone1')
+          .collection('status')
+          .doc('battery')
+          .get();
+
+      // Extracting, formatting, and adding units
+      final altitude =
+          (altitudeDoc.data()?['altitude'] as num?)?.toStringAsFixed(2);
+      final groundSpeed =
+          (speedsDoc.data()?['ground_speed'] as num?)?.toStringAsFixed(2);
+      final airSpeed =
+          (speedsDoc.data()?['air_speed'] as num?)?.toStringAsFixed(2);
+      final battery = batteryDoc.data()?['level']?.toString();
+
+      return {
+        'altitude': altitude != null ? '$altitude m' : 'N/A',
+        'groundSpeed': groundSpeed != null ? '$groundSpeed m/s' : 'N/A',
+        'airSpeed': airSpeed != null ? '$airSpeed m/s' : 'N/A',
+        'battery': battery != null
+            ? '$battery%'
+            : 'N/A', // Assuming battery level is in percentage
+      };
+    } catch (e) {
+      print('Error fetching drone details: $e');
+      return {
+        'altitude': 'N/A',
+        'groundSpeed': 'N/A',
+        'airSpeed': 'N/A',
+        'battery': 'N/A',
+      };
+    }
   }
 
   void toggleMapVisibility() {
@@ -27,8 +91,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
       isMapVisible = !isMapVisible;
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +105,12 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
             backgroundColor: Colors.white,
             child: IconButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HomePage(),
+                  ),
+                );
               },
               icon: Icon(Icons.arrow_back),
               color: Colors.black,
@@ -55,8 +122,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.all(0.0), // Add padding here
-            // child: GoogleMapWidget(onMapTap: toggleMapVisibility),
+            padding: const EdgeInsets.all(0.0),
             child: Tracking(),
           ),
           const Positioned(
@@ -84,7 +150,12 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                   ),
                   child: SingleChildScrollView(
                       controller: scrollController,
-                      child: const OrderDetailsWidget()),
+                      child: OrderDetailsWidget(
+                        droneAltitude: droneDetails['altitude'],
+                        droneGspeed: droneDetails['groundSpeed'],
+                        droneAspeed: droneDetails['airSpeed'],
+                        droneBattery: droneDetails['battery'],
+                      )),
                 );
               })
         ],
@@ -94,7 +165,18 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
 }
 
 class OrderDetailsWidget extends StatelessWidget {
-  const OrderDetailsWidget({super.key});
+  final String? droneAltitude;
+  final String? droneGspeed;
+  final String? droneAspeed;
+  final String? droneBattery;
+
+  const OrderDetailsWidget({
+    super.key,
+    this.droneAltitude,
+    this.droneGspeed,
+    this.droneAspeed,
+    this.droneBattery,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -111,9 +193,7 @@ class OrderDetailsWidget extends StatelessWidget {
             child: OrderTracking(),
           ),
           Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -125,9 +205,7 @@ class OrderDetailsWidget extends StatelessWidget {
                     'Arrival estimation',
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
+                  SizedBox(height: 10),
                   Text(
                     '08:00 PM - 08:12 PM',
                     style: TextStyle(
@@ -147,40 +225,42 @@ class OrderDetailsWidget extends StatelessWidget {
               )
             ],
           ),
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10),
           Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10),
           Text(
             'Address',
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
           ),
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10),
           Text('1234 NW Bobcat Lane, St. Robert, MO 65584-5678'),
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10),
           Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10),
           Text(
             'Order Details',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+          ),
+          SizedBox(height: 10),
+          Text('emergencytext'), // fetch emergency controller
+          SizedBox(height: 10),
+          Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
+          SizedBox(height: 10),
+          Text(
+            'Drone Details',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-            child: OrderItemsTable(),
+            child: OrderItemsTable(
+              droneAltitude: droneAltitude,
+              droneGspeed: droneGspeed,
+              droneAspeed: droneAspeed,
+              droneBattery: droneBattery,
+            ),
           ),
           Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10),
         ]),
       ),
     );
@@ -188,32 +268,44 @@ class OrderDetailsWidget extends StatelessWidget {
 }
 
 class OrderItemsTable extends StatelessWidget {
-  final List<OrderItem> items = [
-    OrderItem(name: 'Heart', quantity: 10, weight: 1.2),
-    OrderItem(name: 'O+ Blood 5L', quantity: 1, weight: 1.1),
-    OrderItem(name: 'Liver', quantity: 1, weight: 1.5),
-    OrderItem(name: 'Lungs', quantity: 1, weight: 2.0),
-    OrderItem(name: 'Nuts', quantity: 2, weight: 0.8),
-  ];
+  final String? droneAltitude;
+  final String? droneGspeed;
+  final String? droneAspeed;
+  final String? droneBattery;
+
+  const OrderItemsTable({
+    super.key,
+    this.droneAltitude,
+    this.droneGspeed,
+    this.droneAspeed,
+    this.droneBattery,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final List<OrderItem> items = [
+      OrderItem(name: 'Altitude', details: droneAltitude ?? 'N/A'),
+      OrderItem(name: 'Ground Speed', details: droneGspeed ?? 'N/A'),
+      OrderItem(name: 'Air Speed', details: droneAspeed ?? 'N/A'),
+      OrderItem(name: 'Battery', details: droneBattery ?? 'N/A'),
+    ];
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(30)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 10.0)]),
         child: DataTable(
           columns: [
-            DataColumn(label: Text('Name')),
-            DataColumn(label: Text('Quantity')),
-            DataColumn(label: Text('Weight (kg)')),
+            DataColumn(label: Text('Drone1')),
+            DataColumn(label: Text('Details')),
           ],
           rows: items.map((item) {
             return DataRow(cells: [
               DataCell(Text(item.name)),
-              DataCell(Text(item.quantity.toString())),
-              DataCell(Text(item.weight.toString())),
+              DataCell(Text(item.details)),
             ]);
           }).toList(),
         ),
@@ -224,10 +316,9 @@ class OrderItemsTable extends StatelessWidget {
 
 class OrderItem {
   final String name;
-  final int quantity;
-  final double weight;
+  final String details;
 
-  OrderItem({required this.name, required this.quantity, required this.weight});
+  OrderItem({required this.name, required this.details});
 }
 
 class GoogleMapWidget extends StatelessWidget {
@@ -377,7 +468,7 @@ class TrackingStep extends StatelessWidget {
           SizedBox(height: 10),
           Icon(
             icon,
-            color: Colors.black,
+            color: kPrimaryColor,
             size: 25,
           ),
           SizedBox(height: 5),

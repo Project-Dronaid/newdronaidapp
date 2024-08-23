@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dronaid_app/screens/OrderDetails.dart';
 import 'package:dronaid_app/utils/colors.dart';
-import 'package:dronaid_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class ConfirmDetails extends StatefulWidget {
@@ -15,7 +14,7 @@ Future<void> confirmDetails() async {
   await FirebaseFirestore.instance
       .collection('drone')
       .doc('drone1')
-      .update({'orderFlag': 2, 'droneFlag': 1});
+      .update({'orderFlag': 2, 'droneFlag': 1, 'servoFlag': 0});
 }
 
 class _ConfirmDetailsState extends State<ConfirmDetails> {

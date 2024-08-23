@@ -4,6 +4,7 @@ import 'package:dronaid_app/screens/OrderDetails.dart';
 import 'package:dronaid_app/screens/confirm_details.dart';
 import 'package:dronaid_app/screens/fetched_emergency.dart';
 import 'package:dronaid_app/screens/home.dart';
+import 'package:dronaid_app/screens/info_page.dart';
 import 'package:dronaid_app/screens/tracking.dart';
 import 'package:dronaid_app/utils/colors.dart';
 

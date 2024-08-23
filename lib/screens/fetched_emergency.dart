@@ -186,7 +186,7 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFEEEFF5),
-        leading: const Icon(Icons.menu),
+        // leading: const Icon(Icons.menu),
         title: const Text(
           'Home',
           style: TextStyle(fontWeight: FontWeight.bold),

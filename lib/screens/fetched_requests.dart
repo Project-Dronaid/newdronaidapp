@@ -1,10 +1,8 @@
-import 'package:dronaid_app/screens/OrderDetails.dart';
 import 'package:dronaid_app/screens/request_confirmed_page.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class FetchedRequests extends StatefulWidget {
@@ -16,6 +14,7 @@ class FetchedRequests extends StatefulWidget {
 
 class _FetchedRequestsState extends State<FetchedRequests> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String? rid;
 
   Future<void> _rejectRequest(String requestId) async {
     try {
@@ -54,6 +53,10 @@ class _FetchedRequestsState extends State<FetchedRequests> {
 
         // Add to closedRequests collection with an updated status
         await _firestore.collection('closedRequests').doc(requestId).set({
+          ...requestData,
+          'status': 'accepted', // Add status field
+        });
+        await _firestore.collection('hospitalRequests').doc(requestId).set({
           ...requestData,
           'status': 'accepted', // Add status field
         });
@@ -201,6 +204,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                             final requestId =
                                                 doc.id; // Get the document ID
                                             _acceptRequest(requestId);
+                                            rid = requestId;
                                             Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                     builder: (context) =>

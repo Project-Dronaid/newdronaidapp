@@ -164,7 +164,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
   }
 }
 
-class OrderDetailsWidget extends StatelessWidget {
+class OrderDetailsWidget extends StatefulWidget {
   final String? droneAltitude;
   final String? droneGspeed;
   final String? droneAspeed;
@@ -179,91 +179,140 @@ class OrderDetailsWidget extends StatelessWidget {
   });
 
   @override
+  State<OrderDetailsWidget> createState() => _OrderDetailsWidgetState();
+}
+
+class _OrderDetailsWidgetState extends State<OrderDetailsWidget> {
+  String? address;
+  String? emergencyText;
+  bool isLoading = false;
+
+  Future<void> requestDetails() async {
+    setState(() {
+      isLoading = true;
+    });
+    QuerySnapshot snap = await FirebaseFirestore.instance
+        .collection('hospitalRequests')
+        .where('receiverUid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .where('status', isEqualTo: 'accepted')
+        .get();
+
+    DocumentSnapshot doc = snap.docs.first;
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    address = data['address'];
+    emergencyText = data['emergencyText'];
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    requestDetails();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: Color.fromARGB(255, 236, 237, 240),
-        borderRadius: BorderRadius.circular(14.0),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Container(
-            child: OrderTracking(),
-          ),
-          Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Arrival estimation',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    '08:00 PM - 08:12 PM',
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: Color.fromARGB(255, 122, 121, 121)),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: OutlinedButton(
-                    onPressed: () {},
-                    child: Text(
-                      '23 Min',
-                      style: TextStyle(color: Colors.black),
-                    )),
-              )
-            ],
-          ),
-          SizedBox(height: 10),
-          Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
-          SizedBox(height: 10),
-          Text(
-            'Address',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
-          ),
-          SizedBox(height: 10),
-          Text('1234 NW Bobcat Lane, St. Robert, MO 65584-5678'),
-          SizedBox(height: 10),
-          Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
-          SizedBox(height: 10),
-          Text(
-            'Order Details',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
-          ),
-          SizedBox(height: 10),
-          Text('emergencytext'), // fetch emergency controller
-          SizedBox(height: 10),
-          Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
-          SizedBox(height: 10),
-          Text(
-            'Drone Details',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-            child: OrderItemsTable(
-              droneAltitude: droneAltitude,
-              droneGspeed: droneGspeed,
-              droneAspeed: droneAspeed,
-              droneBattery: droneBattery,
+    return isLoading == true
+        ? Center(
+            child: CircularProgressIndicator(),
+          )
+        : Container(
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 236, 237, 240),
+              borderRadius: BorderRadius.circular(14.0),
             ),
-          ),
-          Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
-          SizedBox(height: 10),
-        ]),
-      ),
-    );
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      child: OrderTracking(),
+                    ),
+                    Divider(
+                        height: 1, color: Color.fromARGB(255, 210, 205, 205)),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Arrival estimation',
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.w900),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              '08:00 PM - 08:12 PM',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Color.fromARGB(255, 122, 121, 121)),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: OutlinedButton(
+                              onPressed: () {},
+                              child: Text(
+                                '23 Min',
+                                style: TextStyle(color: Colors.black),
+                              )),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Divider(
+                        height: 1, color: Color.fromARGB(255, 210, 205, 205)),
+                    SizedBox(height: 10),
+                    Text(
+                      'Address',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+                    ),
+                    SizedBox(height: 10),
+                    Text(address!),
+                    SizedBox(height: 10),
+                    Divider(
+                        height: 1, color: Color.fromARGB(255, 210, 205, 205)),
+                    SizedBox(height: 10),
+                    Text(
+                      'Request Details',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+                    ),
+                    SizedBox(height: 10),
+                    Text(emergencyText!), // fetch emergency controller
+                    SizedBox(height: 10),
+                    Divider(
+                        height: 1, color: Color.fromARGB(255, 210, 205, 205)),
+                    SizedBox(height: 10),
+                    Text(
+                      'Drone Details',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+                      child: OrderItemsTable(
+                        droneAltitude: widget.droneAltitude,
+                        droneGspeed: widget.droneGspeed,
+                        droneAspeed: widget.droneAspeed,
+                        droneBattery: widget.droneBattery,
+                      ),
+                    ),
+                    Divider(
+                        height: 1, color: Color.fromARGB(255, 210, 205, 205)),
+                    SizedBox(height: 10),
+                  ]),
+            ),
+          );
   }
 }
 
@@ -293,11 +342,14 @@ class OrderItemsTable extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
+        width: MediaQuery.of(context).size.width * 0.89,
         decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 10.0)]),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          // boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 10.0)]
+        ),
         child: DataTable(
+          columnSpacing: MediaQuery.of(context).size.width * 0.35,
           columns: [
             DataColumn(label: Text('Drone1')),
             DataColumn(label: Text('Details')),

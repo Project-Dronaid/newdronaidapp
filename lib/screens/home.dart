@@ -43,6 +43,9 @@ class _HomePageState extends State<HomePage> {
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            scaffoldBackgroundColor: const Color(0xFFEEEFF5),
+          ),
           home: StreamBuilder(
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: (context, snapshot) {
@@ -51,6 +54,7 @@ class _HomePageState extends State<HomePage> {
                     return Scaffold(
                       body: _widgetOptions.elementAt(_selectedIndex),
                       bottomNavigationBar: BottomNavigationBar(
+                        backgroundColor: Color(0xFFEEEFF5),
                         items: const <BottomNavigationBarItem>[
                           BottomNavigationBarItem(
                             icon: Icon(
@@ -90,7 +94,7 @@ class _HomePageState extends State<HomePage> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
                     child: CircularProgressIndicator(
-                      color: primaryColor,
+                      color: kPrimaryColor,
                     ),
                   );
                 }

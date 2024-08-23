@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dronaid_app/firebase/firestore_methods.dart';
 import 'package:dronaid_app/screens/map_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -431,6 +430,7 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                         child: DropdownButtonHideUnderline(
                           // Hide the underline
                           child: DropdownButton<String>(
+                            dropdownColor: Colors.white,
                             value: selectedHospital,
                             hint: Center(child: Text('Select a hospital')),
                             onChanged: (String? newValue) {

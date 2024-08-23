@@ -151,6 +151,13 @@ class _TrackingState extends State<Tracking> {
           }
 
           if (droneFlag == 3) {
+            FirebaseFirestore.instance
+                .collection('drone')
+                .doc('drone1')
+                .update({'orderFlag': 3});
+          }
+
+          if(orderFlag == 3){
             Future.microtask(() {
               Navigator.pushReplacement(
                 context,
@@ -207,6 +214,11 @@ class _TrackingState extends State<Tracking> {
                     markers: markers,
                     polylines: {
                       Polyline(
+                          patterns: [                  // Customize pattern
+                            PatternItem.dash(30),
+                            PatternItem.gap(20),
+                          ],
+                          width: 4,
                           polylineId: const PolylineId("Live tracking"),
                           points: track,
                           zIndex: 5,

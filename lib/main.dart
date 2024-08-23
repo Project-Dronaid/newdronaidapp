@@ -1,7 +1,5 @@
-import 'package:dronaid_app/screens/confirm_details.dart';
 import 'package:dronaid_app/screens/home.dart';
 import 'package:dronaid_app/screens/login/login.dart';
-import 'package:dronaid_app/screens/signUp/signUp.dart';
 import 'package:dronaid_app/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../firebase/firestore_methods.dart';
@@ -34,6 +32,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      // home: OrderTrackingPage(),
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context,snapshot){

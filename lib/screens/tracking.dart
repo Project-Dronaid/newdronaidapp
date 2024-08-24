@@ -133,99 +133,102 @@ class _TrackingState extends State<Tracking> {
         ? const Center(
       child: CircularProgressIndicator(),
     )
-        : StreamBuilder<DocumentSnapshot>(
-        stream: _flagStream,
-        builder: (BuildContext context, snapshot) {
-          if (snapshot.hasError) {
-            return const Text('Something went wrong');
-          }
+        : PopScope(
+      canPop: false,
+          child: StreamBuilder<DocumentSnapshot>(
+          stream: _flagStream,
+          builder: (BuildContext context, snapshot) {
+            if (snapshot.hasError) {
+              return const Text('Something went wrong');
+            }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text("Loading");
-          }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Text("Loading");
+            }
 
-          if (snapshot.hasData) {
-            droneFlag = snapshot.data!['droneFlag'];
-            orderFlag = snapshot.data!['orderFlag'];
-            servoFlag = snapshot.data!['servoFlag'];
-          }
+            if (snapshot.hasData) {
+              droneFlag = snapshot.data!['droneFlag'];
+              orderFlag = snapshot.data!['orderFlag'];
+              servoFlag = snapshot.data!['servoFlag'];
+            }
 
-          if (droneFlag == 3) {
-            FirebaseFirestore.instance
-                .collection('drone')
-                .doc('drone1')
-                .update({'orderFlag': 3});
-          }
+            if (droneFlag == 3) {
+              FirebaseFirestore.instance
+                  .collection('drone')
+                  .doc('drone1')
+                  .update({'orderFlag': 3});
+            }
 
-          if(orderFlag == 3){
-            Future.microtask(() {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>  RequestDeliveredPage(),
-                ),
-              );
-            });
-            return Container();
-          }
+            if(orderFlag == 3){
+              Future.microtask(() {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>  RequestDeliveredPage(),
+                  ),
+                );
+              });
+              return Container();
+            }
 
-          return droneFlag == 1 || droneFlag == 2
-              ? StreamBuilder<DocumentSnapshot>(
-              stream: _droneStream,
-              builder: (BuildContext context, snapshot) {
-                List<LatLng> track = [];
-                if (snapshot.hasError) {
-                  return const Text('Something went wrong');
-                }
+            return droneFlag == 1 || droneFlag == 2
+                ? StreamBuilder<DocumentSnapshot>(
+                stream: _droneStream,
+                builder: (BuildContext context, snapshot) {
+                  List<LatLng> track = [];
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
 
-                if (snapshot.connectionState ==
-                    ConnectionState.waiting) {
-                  return const Text("Loading");
-                }
+                  if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const Text("Loading");
+                  }
 
-                if (snapshot.hasData) {
-                  final LatLng locationTrack = LatLng(
-                      (snapshot.data! as dynamic)['latitude'],
-                      (snapshot.data! as dynamic)['longitude']);
-                  final LatLng destination = LatLng(
-                      destinationLatitude!, destinationLongitude!);
-                  track = [locationTrack, destination];
-                  markers.add(Marker(
-                    markerId: const MarkerId("Drone"),
-                    icon: droneIcon,
-                    position: locationTrack,
-                  ));
-                }
-                return GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: LatLng(
-                        destinationLatitude!,
-                        destinationLongitude!,
+                  if (snapshot.hasData) {
+                    final LatLng locationTrack = LatLng(
+                        (snapshot.data! as dynamic)['latitude'],
+                        (snapshot.data! as dynamic)['longitude']);
+                    final LatLng destination = LatLng(
+                        destinationLatitude!, destinationLongitude!);
+                    track = [locationTrack, destination];
+                    markers.add(Marker(
+                      markerId: const MarkerId("Drone"),
+                      icon: droneIcon,
+                      position: locationTrack,
+                    ));
+                  }
+                  return GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(
+                          destinationLatitude!,
+                          destinationLongitude!,
+                        ),
+                        zoom: 13,
                       ),
-                      zoom: 13,
-                    ),
-                    zoomControlsEnabled: false,
-                    mapType: MapType.normal,
-                    onMapCreated: (controller) {
-                      setState(() {
-                        _controller = controller;
+                      zoomControlsEnabled: false,
+                      mapType: MapType.normal,
+                      onMapCreated: (controller) {
+                        setState(() {
+                          _controller = controller;
+                        });
+                      },
+                      markers: markers,
+                      polylines: {
+                        Polyline(
+                            patterns: [                  // Customize pattern
+                              PatternItem.dash(30),
+                              PatternItem.gap(20),
+                            ],
+                            width: 4,
+                            polylineId: const PolylineId("Live tracking"),
+                            points: track,
+                            zIndex: 5,
+                            color: kPrimaryColor),
                       });
-                    },
-                    markers: markers,
-                    polylines: {
-                      Polyline(
-                          patterns: [                  // Customize pattern
-                            PatternItem.dash(30),
-                            PatternItem.gap(20),
-                          ],
-                          width: 4,
-                          polylineId: const PolylineId("Live tracking"),
-                          points: track,
-                          zIndex: 5,
-                          color: kPrimaryColor),
-                    });
-              })
-              : Container();
-        });
+                })
+                : Container();
+          }),
+        );
   }
 }

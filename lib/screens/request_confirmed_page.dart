@@ -9,7 +9,9 @@ import 'package:dronaid_app/screens/tracking.dart';
 import 'package:dronaid_app/utils/colors.dart';
 
 class RequestConfirmedPage extends StatelessWidget {
-  const RequestConfirmedPage({Key? key}) : super(key: key);
+  final String requestId;
+  const RequestConfirmedPage({Key? key, required this.requestId})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +98,9 @@ class RequestConfirmedPage extends StatelessWidget {
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const ConfirmDetails()));
+                        builder: (context) => ConfirmDetails(
+                              requestId: requestId,
+                            )));
                   },
                   child: Text(
                     'Track My Order',

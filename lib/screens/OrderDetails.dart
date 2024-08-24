@@ -197,7 +197,7 @@ class _OrderDetailsWidgetState extends State<OrderDetailsWidget> {
     QuerySnapshot snap = await FirebaseFirestore.instance
         .collection('hospitalRequests')
         .where('receiverUid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .where('status', isEqualTo: 'accepted')
+        .where('status', isEqualTo: 'ongoing')
         .get();
 
     DocumentSnapshot doc = snap.docs.first;

@@ -4,21 +4,28 @@ import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class ConfirmDetails extends StatefulWidget {
-  const ConfirmDetails({super.key});
+  final String requestId;
+  const ConfirmDetails({super.key, required this.requestId});
 
   @override
   State<ConfirmDetails> createState() => _ConfirmDetailsState();
 }
 
-Future<void> confirmDetails() async {
-  await FirebaseFirestore.instance
-      .collection('drone')
-      .doc('drone1')
-      .update({'orderFlag': 2, 'droneFlag': 1, 'servoFlag': 0});
-}
-
 class _ConfirmDetailsState extends State<ConfirmDetails> {
   TextEditingController _weightController = TextEditingController();
+
+  Future<void> confirmDetails() async {
+    await FirebaseFirestore.instance
+        .collection('drone')
+        .doc('drone1')
+        .update({'orderFlag': 2, 'droneFlag': 1, 'servoFlag': 0});
+
+    await FirebaseFirestore.instance
+        .collection('hospitalRequests')
+        .doc(widget.requestId)
+        .update({'status': 'ongoing'});
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -29,7 +36,8 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1),
+                padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.1),
               ),
               Image.asset(
                 'assets/warningSymbol.png',
@@ -65,7 +73,8 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
                 margin: EdgeInsets.all(10),
                 padding: EdgeInsets.all(5),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15), color: Colors.white),
+                    borderRadius: BorderRadius.circular(15),
+                    color: Colors.white),
                 child: TextField(
                   keyboardType: TextInputType.number,
                   controller: _weightController,
@@ -78,12 +87,16 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0, bottom: 10),
-                child: Text('Maximum Weight allowed: 2kgs', style: TextStyle(fontWeight: FontWeight.w400),),
+                child: Text(
+                  'Maximum Weight allowed: 2kgs',
+                  style: TextStyle(fontWeight: FontWeight.w400),
+                ),
               ),
               GestureDetector(
                 onTap: () {
-                  double weight = double.tryParse(_weightController.text) ?? 0.0;
-                  if(weight!=0.0){
+                  double weight =
+                      double.tryParse(_weightController.text) ?? 0.0;
+                  if (weight != 0.0) {
                     if (weight <= 2) {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => OrderTrackingPage()));
@@ -95,7 +108,7 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
                         ),
                       );
                     }
-                  } else{
+                  } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text("Enter the weight"),

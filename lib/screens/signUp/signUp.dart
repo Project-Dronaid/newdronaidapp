@@ -7,7 +7,6 @@ import '../login/login.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../utils/colors.dart';
 
-
 class SignUpScreen extends StatefulWidget {
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
@@ -20,12 +19,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController addressController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
+  final TextEditingController resultController = TextEditingController();
 
   bool isLoading = false;
   bool obscureText = true;
 
   void signUp() async {
     if (emailController.text.isEmpty ||
+        resultController.text.isEmpty ||
         passwordController.text.isEmpty ||
         addressController.text.isEmpty ||
         phoneController.text.isEmpty ||
@@ -40,6 +41,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     });
     String res = await AuthMethods().signUpUser(
       email: emailController.text,
+      emailresult: resultController.text,
       password: passwordController.text,
       address: addressController.text,
       phone_no: phoneController.text,
@@ -62,15 +64,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildTextField(
-      TextEditingController controller,
-      String labelText,
-      IconData icon, {
-        bool isPassword = false,
-        bool readOnly = false,
-        VoidCallback? toggleObscureText,
-        VoidCallback? onTap,
-        bool obscureText = false,
-      }) {
+    TextEditingController controller,
+    String labelText,
+    IconData icon, {
+    bool isPassword = false,
+    bool readOnly = false,
+    VoidCallback? toggleObscureText,
+    VoidCallback? onTap,
+    bool obscureText = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextFormField(
@@ -86,12 +88,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           suffixIcon: isPassword
               ? IconButton(
-            icon: Icon(
-              obscureText ? Icons.visibility : Icons.visibility_off,
-              color: kPrimaryColor,
-            ),
-            onPressed: toggleObscureText,
-          )
+                  icon: Icon(
+                    obscureText ? Icons.visibility : Icons.visibility_off,
+                    color: kPrimaryColor,
+                  ),
+                  onPressed: toggleObscureText,
+                )
               : null,
         ),
       ),
@@ -131,8 +133,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Form(
                     child: Column(
                       children: [
-                        _buildTextField(hospitalNameController, "Hospital Name", Icons.local_hospital),
+                        _buildTextField(hospitalNameController, "Hospital Name",
+                            Icons.local_hospital),
                         _buildTextField(emailController, "Email", Icons.email),
+                        _buildTextField(resultController,
+                            "Email for official communication", Icons.email),
                         _buildTextField(
                           passwordController,
                           "Password",
@@ -145,7 +150,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             });
                           },
                         ),
-                        _buildTextField(addressController, "Hospital Address", Icons.location_on),
+                        _buildTextField(addressController, "Hospital Address",
+                            Icons.location_on),
                         _buildTextField(
                           locationController,
                           "Delivery Address",
@@ -154,7 +160,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           onTap: () async {
                             final location = await Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => ConfirmDetails()),
+                              MaterialPageRoute(
+                                  builder: (context) => ConfirmDetails()),
                             );
                             if (location != null) {
                               setState(() {
@@ -163,25 +170,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             }
                           },
                         ),
-                        _buildTextField(phoneController, "Phone Number", Icons.phone),
+                        _buildTextField(
+                            phoneController, "Phone Number", Icons.phone),
                         SizedBox(height: size.height * 0.02),
                         isLoading
                             ? CircularProgressIndicator()
                             : ElevatedButton(
-                          onPressed: signUp,
-                          child: Text("Sign Up",
-                          style: TextStyle(
-                            color: Colors.white
-                          ),
-                          ),
-
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: Size(size.width * 0.8, 50), backgroundColor: kPrimaryColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ), // Ensure button is filled with the primary color
-                          ),
-                        ),
+                                onPressed: signUp,
+                                child: Text(
+                                  "Sign Up",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: Size(size.width * 0.8, 50),
+                                  backgroundColor: kPrimaryColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ), // Ensure button is filled with the primary color
+                                ),
+                              ),
                       ],
                     ),
                   ),

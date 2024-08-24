@@ -21,6 +21,7 @@ class AuthMethods {
       {required String email,
       required String password,
       required String address,
+      required String emailresult,
       required String hospital_name,
       required String phone_no,
       String? deliveryAddress}) async {
@@ -29,6 +30,7 @@ class AuthMethods {
       if (email.isNotEmpty ||
           password.isNotEmpty ||
           hospital_name.isNotEmpty ||
+          emailresult.isNotEmpty ||
           address.isNotEmpty ||
           phone_no.isNotEmpty) {
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
@@ -38,6 +40,7 @@ class AuthMethods {
             hospital_name: hospital_name,
             uid: cred.user!.uid,
             email: email,
+            emailresult: emailresult,
             address: address,
             phone_no: phone_no,
             deliveryAddress: deliveryAddress);

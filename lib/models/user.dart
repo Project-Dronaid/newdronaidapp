@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
+  final String emailresult;
   final String hospital_name;
   final String email;
   final String address;
@@ -11,6 +12,7 @@ class User {
   const User(
       {required this.hospital_name,
       required this.email,
+      required this.emailresult,
       required this.address,
       required this.phone_no,
       required this.uid,
@@ -20,6 +22,7 @@ class User {
         "hospital_name": hospital_name,
         "email": email,
         "address": address,
+        "emailresult": emailresult,
         "phone_no": phone_no,
         "uid": uid,
         "deliveryAddress": deliveryAddress
@@ -31,6 +34,7 @@ class User {
     return User(
         hospital_name: snapshot['hospital_name'],
         email: snapshot['email'],
+        emailresult: snapshot['emailresult'],
         address: snapshot['address'],
         phone_no: snapshot['phone_no'],
         uid: snapshot['uid'],

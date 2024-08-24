@@ -11,7 +11,6 @@ class ConfirmDetails extends StatefulWidget {
   State<ConfirmDetails> createState() => _ConfirmDetailsState();
 }
 
-
 class _ConfirmDetailsState extends State<ConfirmDetails> {
   TextEditingController _weightController = TextEditingController();
 

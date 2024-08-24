@@ -220,7 +220,8 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Hospital Location:',
@@ -231,16 +232,19 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                                   ),
                                   IconButton(
                                     onPressed: () async {
-                                      final selectedAddress = await Navigator.of(context).push(
+                                      final selectedAddress =
+                                          await Navigator.of(context).push(
                                         MaterialPageRoute(
-                                          builder: (context) => ConfirmDetails(),
+                                          builder: (context) =>
+                                              ConfirmDetails(),
                                         ),
                                       );
 
                                       if (selectedAddress != null) {
                                         setState(() {
                                           hospitalAddress = selectedAddress;
-                                          _locationController.text = selectedAddress;
+                                          _locationController.text =
+                                              selectedAddress;
                                         });
                                       }
                                     },
@@ -374,8 +378,8 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                                       ? Color(0xFFC3B1E1)
                                       : Colors.transparent,
                                   borderRadius: BorderRadius.circular(25),
-                                  border:
-                                      Border.all(color: kPrimaryColor, width: 2),
+                                  border: Border.all(
+                                      color: kPrimaryColor, width: 2),
                                 ),
                               ),
                             ),
@@ -394,8 +398,8 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                                       ? Color(0xFFC3B1E1)
                                       : Colors.transparent,
                                   borderRadius: BorderRadius.circular(25),
-                                  border:
-                                      Border.all(color: kPrimaryColor, width: 2),
+                                  border: Border.all(
+                                      color: kPrimaryColor, width: 2),
                                 ),
                               ),
                             ),

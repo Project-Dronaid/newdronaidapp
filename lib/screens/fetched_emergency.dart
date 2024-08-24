@@ -186,7 +186,6 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFEEEFF5),
-        leading: const Icon(Icons.menu),
         title: const Text(
           'Home',
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -228,7 +227,8 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                                 ),
                                 IconButton(
                                   onPressed: () async {
-                                    final selectedAddress = await Navigator.of(context).push(
+                                    final selectedAddress =
+                                        await Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => ConfirmDetails(),
                                       ),
@@ -237,7 +237,8 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                                     if (selectedAddress != null) {
                                       setState(() {
                                         hospitalAddress = selectedAddress;
-                                        _locationController.text = selectedAddress;
+                                        _locationController.text =
+                                            selectedAddress;
                                       });
                                     }
                                   },

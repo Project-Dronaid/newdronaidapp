@@ -61,8 +61,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
           'status': 'accepted', // Add status field
         });
 
-        // Delete from hospitalRequests collection
-        // await requestDoc.delete();
+        await requestDoc.delete();
         setState(() {
           FirebaseFirestore.instance
               .collection('drone')

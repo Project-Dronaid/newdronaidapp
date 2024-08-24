@@ -183,307 +183,314 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFEEEFF5),
-        title: const Text(
-          'Home',
-          style: TextStyle(fontWeight: FontWeight.bold),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: const Color(0xFFEEEFF5),
+          // leading: const Icon(Icons.menu),
+          title: const Text(
+            'Home',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
-                child: IntrinsicHeight(
-                  child: Column(
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width * 1,
-                        margin: EdgeInsets.all(18),
-                        padding: EdgeInsets.only(
-                            top: 10, left: 18, right: 10, bottom: 18),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Hospital Location:',
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      color: kPrimaryColor,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                IconButton(
-                                  onPressed: () async {
-                                    final selectedAddress =
-                                        await Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => ConfirmDetails(),
-                                      ),
-                                    );
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
+                  ),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width * 1,
+                          margin: EdgeInsets.all(18),
+                          padding: EdgeInsets.only(
+                              top: 10, left: 18, right: 10, bottom: 18),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15)),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Hospital Location:',
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        color: kPrimaryColor,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  IconButton(
+                                    onPressed: () async {
+                                      final selectedAddress =
+                                          await Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ConfirmDetails(),
+                                        ),
+                                      );
 
-                                    if (selectedAddress != null) {
-                                      setState(() {
-                                        hospitalAddress = selectedAddress;
-                                        _locationController.text =
-                                            selectedAddress;
-                                      });
-                                    }
-                                  },
-                                  icon: Icon(
-                                    _isEditing
-                                        ? Icons.check
-                                        : Icons.edit_outlined,
-                                    size: 17,
-                                    color: kPrimaryColor,
-                                  ),
-                                )
-                              ],
-                            ),
-                            _isEditing
-                                ? TextField(
-                                    controller: _locationController,
-                                    style: TextStyle(fontSize: 15),
-                                    decoration: InputDecoration(
-                                        border: InputBorder.none),
-                                  )
-                                : Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      _locationController.text,
-                                      style: TextStyle(fontSize: 15),
+                                      if (selectedAddress != null) {
+                                        setState(() {
+                                          hospitalAddress = selectedAddress;
+                                          _locationController.text =
+                                              selectedAddress;
+                                        });
+                                      }
+                                    },
+                                    icon: Icon(
+                                      _isEditing
+                                          ? Icons.check
+                                          : Icons.edit_outlined,
+                                      size: 17,
+                                      color: kPrimaryColor,
                                     ),
-                                  ),
+                                  )
+                                ],
+                              ),
+                              _isEditing
+                                  ? TextField(
+                                      controller: _locationController,
+                                      style: TextStyle(fontSize: 15),
+                                      decoration: InputDecoration(
+                                          border: InputBorder.none),
+                                    )
+                                  : Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        _locationController.text,
+                                        style: TextStyle(fontSize: 15),
+                                      ),
+                                    ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Column(
+                          children: [
+                            Text(
+                              'Emergency Help',
+                              style: TextStyle(
+                                  fontSize: 38,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF1D1D1D)),
+                              textAlign: TextAlign.center,
+                            ),
+                            Text(
+                              'Needed?',
+                              style: TextStyle(
+                                  fontSize: 38,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF1D1D1D)),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              'Enter Emergency details:',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Column(
-                        children: [
-                          Text(
-                            'Emergency Help',
-                            style: TextStyle(
-                                fontSize: 38,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF1D1D1D)),
-                            textAlign: TextAlign.center,
-                          ),
-                          Text(
-                            'Needed?',
-                            style: TextStyle(
-                                fontSize: 38,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF1D1D1D)),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            'Enter Emergency details:',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.005,
-                      ),
-                      Container(
-                        margin: EdgeInsets.all(18),
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: Colors.white),
-                        child: TextField(
-                          maxLines: 3,
-                          controller: _emergencyController,
-                          decoration: InputDecoration(
-                            hintText: 'Example: O+ Blood needed',
-                            contentPadding: EdgeInsets.all(10),
-                            border: InputBorder.none,
-                            suffixIcon: IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.photo_library_outlined),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.005,
+                        ),
+                        Container(
+                          margin: EdgeInsets.all(18),
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: Colors.white),
+                          child: TextField(
+                            maxLines: 3,
+                            controller: _emergencyController,
+                            decoration: InputDecoration(
+                              hintText: 'Example: O+ Blood needed',
+                              contentPadding: EdgeInsets.all(10),
+                              border: InputBorder.none,
+                              suffixIcon: IconButton(
+                                onPressed: () {},
+                                icon: Icon(Icons.photo_library_outlined),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.005,
-                      ),
-                      Text(
-                        'Select Priority Level:',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.02,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          GestureDetector(
-                            onTap: () => selectPriority(1),
-                            child: Container(
-                              height: 50,
-                              width: 50,
-                              child: Center(
-                                  child: Text(
-                                '1',
-                                style: TextStyle(fontSize: 20),
-                              )),
-                              decoration: BoxDecoration(
-                                  color: selectedPriority == 1
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.005,
+                        ),
+                        Text(
+                          'Select Priority Level:',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.02,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            GestureDetector(
+                              onTap: () => selectPriority(1),
+                              child: Container(
+                                height: 50,
+                                width: 50,
+                                child: Center(
+                                    child: Text(
+                                  '1',
+                                  style: TextStyle(fontSize: 20),
+                                )),
+                                decoration: BoxDecoration(
+                                    color: selectedPriority == 1
+                                        ? Color(0xFFC3B1E1)
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(25),
+                                    border: Border.all(
+                                        color: kPrimaryColor, width: 2)),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => selectPriority(2),
+                              child: Container(
+                                height: 50,
+                                width: 50,
+                                child: Center(
+                                    child: Text(
+                                  '2',
+                                  style: TextStyle(fontSize: 20),
+                                )),
+                                decoration: BoxDecoration(
+                                  color: selectedPriority == 2
                                       ? Color(0xFFC3B1E1)
                                       : Colors.transparent,
                                   borderRadius: BorderRadius.circular(25),
                                   border: Border.all(
-                                      color: kPrimaryColor, width: 2)),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => selectPriority(2),
-                            child: Container(
-                              height: 50,
-                              width: 50,
-                              child: Center(
-                                  child: Text(
-                                '2',
-                                style: TextStyle(fontSize: 20),
-                              )),
-                              decoration: BoxDecoration(
-                                color: selectedPriority == 2
-                                    ? Color(0xFFC3B1E1)
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(25),
-                                border:
-                                    Border.all(color: kPrimaryColor, width: 2),
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => selectPriority(3),
-                            child: Container(
-                              height: 50,
-                              width: 50,
-                              child: Center(
-                                  child: Text(
-                                '3',
-                                style: TextStyle(fontSize: 20),
-                              )),
-                              decoration: BoxDecoration(
-                                color: selectedPriority == 3
-                                    ? Color(0xFFC3B1E1)
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(25),
-                                border:
-                                    Border.all(color: kPrimaryColor, width: 2),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.02,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            color: kPrimaryColor,
-                            size: 20,
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            'Higher the Priority Level, higher the actual priority',
-                            style: TextStyle(fontWeight: FontWeight.w300),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.005,
-                      ),
-                      Container(
-                        margin: EdgeInsets.all(18),
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: Colors.white),
-                        child: DropdownButtonHideUnderline(
-                          // Hide the underline
-                          child: DropdownButton<String>(
-                            dropdownColor: Colors.white,
-                            value: selectedHospital,
-                            hint: Center(child: Text('Select a hospital')),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                selectedHospital = newValue;
-                              });
-                            },
-                            items: hospitalNames.map((String hospital) {
-                              return DropdownMenuItem<String>(
-                                value: hospital,
-                                child: Center(
-                                  child: Text(
-                                    hospital,
-                                    textAlign: TextAlign.center,
-                                  ),
+                                      color: kPrimaryColor, width: 2),
                                 ),
-                              );
-                            }).toList(),
-                            isExpanded: true,
-                            alignment: Alignment.center,
-                          ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => selectPriority(3),
+                              child: Container(
+                                height: 50,
+                                width: 50,
+                                child: Center(
+                                    child: Text(
+                                  '3',
+                                  style: TextStyle(fontSize: 20),
+                                )),
+                                decoration: BoxDecoration(
+                                  color: selectedPriority == 3
+                                      ? Color(0xFFC3B1E1)
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(25),
+                                  border: Border.all(
+                                      color: kPrimaryColor, width: 2),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.005,
-                      ),
-                      GestureDetector(
-                        onTap: _submitRequest,
-                        child: Container(
-                          height: MediaQuery.of(context).size.height * 0.065,
-                          width: MediaQuery.of(context).size.width * 0.93,
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.02,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              color: kPrimaryColor,
+                              size: 20,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              'Higher the Priority Level, higher the actual priority',
+                              style: TextStyle(fontWeight: FontWeight.w300),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.005,
+                        ),
+                        Container(
+                          margin: EdgeInsets.all(18),
+                          padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: kPrimaryColor,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Submit Request',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
+                              borderRadius: BorderRadius.circular(15),
+                              color: Colors.white),
+                          child: DropdownButtonHideUnderline(
+                            // Hide the underline
+                            child: DropdownButton<String>(
+                              dropdownColor: Colors.white,
+                              value: selectedHospital,
+                              hint: Center(child: Text('Select a hospital')),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedHospital = newValue;
+                                });
+                              },
+                              items: hospitalNames.map((String hospital) {
+                                return DropdownMenuItem<String>(
+                                  value: hospital,
+                                  child: Center(
+                                    child: Text(
+                                      hospital,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                              isExpanded: true,
+                              alignment: Alignment.center,
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.005,
+                        ),
+                        GestureDetector(
+                          onTap: _submitRequest,
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.065,
+                            width: MediaQuery.of(context).size.width * 0.93,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: kPrimaryColor,
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Submit Request',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

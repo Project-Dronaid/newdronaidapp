@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dronaid_app/screens/login/login.dart';
+import 'package:dronaid_app/screens/FrequentlyAskedQ.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import '../utils/colors.dart';
+import 'RequestHistory.dart';
+import 'login/login.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -17,6 +18,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String? hospitalAddress;
   String? hospitalNumber;
   String? hospitalEmail;
+  User? currentUser; // Store the current user here
 
   @override
   void initState() {
@@ -26,11 +28,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _fetchUserData() async {
     try {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
+      currentUser = FirebaseAuth.instance.currentUser; // Set currentUser here
+      if (currentUser != null) {
         DocumentSnapshot userDoc = await FirebaseFirestore.instance
-            .collection('users') // Assuming your collection is named 'users'
-            .doc(user.uid)
+            .collection('users')
+            .doc(currentUser!.uid)
             .get();
 
         setState(() {
@@ -43,7 +45,7 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (e) {
       print('Error fetching user data: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Failed to load profile data. Please try again.'),
         ),
       );
@@ -53,191 +55,210 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: const Text(
           'Profile',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: Colors.white,
-        elevation: 0,
+        elevation: 1,
         centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
-        child: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(16.0),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Column(
             children: <Widget>[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Column(
-                    children: [
-                      Center(
-                        child: Material(
-                          elevation: 10,
-                          shape: CircleBorder(),
-                          child: CircleAvatar(
-                            radius: 40,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                    ],
-                  ),
+              // Hospital Logo Section
+              Image.asset(
+                'assets/launcher_icon.png',
+                height: 100,
+                width: 100,
+              ),
+
+              const SizedBox(height: 16),
+
+              // Hospital Name Section
+              Text(
+                hospitalName ?? 'Loading...',
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: kPrimaryColor,
                 ),
               ),
-              SizedBox(height: 16),
-              Text(
-                hospitalName ??
-                    'Loading...', // Display 'hospitalName' or a placeholder
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+
+              const SizedBox(height: 24),
+
+              // Hospital Information Card
+              _buildInfoCard(
+                icon: Icons.info_outline,
+                title: 'Hospital Information',
+                content: Column(
+                  children: [
+                    _buildInfoRow(
+                        icon: Icons.location_on,
+                        text: hospitalAddress ?? 'Loading...'),
+                    const SizedBox(height: 8),
+                    _buildInfoRow(
+                        icon: Icons.phone,
+                        text: hospitalNumber ?? 'Loading...'),
+                    const SizedBox(height: 8),
+                    _buildInfoRow(
+                        icon: Icons.email, text: hospitalEmail ?? 'Loading...'),
+                  ],
                 ),
               ),
               const SizedBox(height: 24),
-              Column(
-                children: [
-                  Card(
-                    color: Colors.white,
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Row(
-                            children: [
-                              Icon(Icons.local_hospital,
-                                  color: Colors.blue, size: 28),
-                              SizedBox(width: 8),
-                              Text(
-                                'Hospital Information',
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Icon(Icons.location_on, color: Colors.grey[600]),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  hospitalAddress ?? 'Loading...',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey[800],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(Icons.phone, color: Colors.grey[600]),
-                              const SizedBox(width: 12),
-                              Text(
-                                hospitalNumber ?? 'Loading...',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey[800],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(Icons.email, color: Colors.grey[600]),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  hospitalEmail ?? 'Loading...',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey[800],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                        ],
-                      ),
-                    ),
+
+              // Request History Card
+              _buildInfoCard(
+                icon: Icons.history,
+                title: 'Request History',
+                content: GestureDetector(
+                  onTap: () {
+                    if (currentUser != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RequestHistoryPage(),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    'Tap to view request history',
+                    style: TextStyle(fontSize: 16, color: Colors.black),
                   ),
-                  const SizedBox(height: 48),
-                  Center(
-                    child: ElevatedButton.icon(
-                      onPressed: () async {
-                        try {
-                          await FirebaseAuth.instance.signOut();
-                          // After signing out, navigate to the login screen
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LoginScreen()));
-                        } catch (e) {
-                          print('Error signing out: $e');
-                          // Optionally, show an error message to the user
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content:
-                                  Text('Failed to sign out. Please try again.'),
-                            ),
-                          );
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.logout,
-                        color: kPrimaryColor, // Red icon color to match the sign-out action
-                      ),
-                      label: const Text(
-                        'Sign Out',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: kPrimaryColor, // Matching text color
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // FAQs Card
+              _buildInfoCard(
+                icon: Icons.help_outline,
+                title: 'FAQs',
+                content: GestureDetector(
+                  onTap: () {
+                    if (currentUser != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FrequentlyAskedQ(),
                         ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    'Frequently Asked Questions',
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 48),
+
+              // Sign Out Button
+              ElevatedButton.icon(
+                onPressed: () async {
+                  try {
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>  LoginScreen()));
+                  } catch (e) {
+                    print('Error signing out: $e');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Failed to sign out. Please try again.'),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(
-                            200, 40), // Adjusted size for better balance
-                        backgroundColor: Colors.white, // White background
-                        elevation:
-                            5, // Maintain elevation for the raised effect
-                        side: const BorderSide(
-                            color: kPrimaryColor, width: 2), // Red border
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(14), // Rounded corners
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 24), // Increased padding
-                      ),
-                    ),
-                  )
-                ],
+                    );
+                  }
+                },
+                icon: const Icon(Icons.logout, color: Colors.white),
+                label: const Text(
+                  'Sign Out',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kPrimaryColor,
+                  minimumSize: const Size(200, 50),
+                  elevation: 5,
+                  side: const BorderSide(color: kPrimaryColor, width: 2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoCard({
+    required IconData icon,
+    required String title,
+    required Widget content,
+  }) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 4,
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: kPrimaryColor, size: 28),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: kPrimaryColor,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            content,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow({required IconData icon, required String text}) {
+    return Row(
+      children: [
+        Icon(icon, color: kPrimaryColor),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

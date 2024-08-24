@@ -1,7 +1,6 @@
-import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dronaid_app/screens/FrequentlyAskedQ.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../models/user.dart' as model;
 import 'package:flutter/material.dart';
 import '../utils/colors.dart';
 import 'RequestHistory.dart';
@@ -127,9 +126,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => RequestHistoryPage(
-
-                            )),
+                          builder: (context) => RequestHistoryPage(),
+                        ),
                       );
                     }
                   },
@@ -146,9 +144,21 @@ class _ProfilePageState extends State<ProfilePage> {
               _buildInfoCard(
                 icon: Icons.help_outline,
                 title: 'FAQs',
-                content: const Text(
-                  'Frequently Asked Questions',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                content: GestureDetector(
+                  onTap: () {
+                    if (currentUser != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FrequentlyAskedQ(),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    'Frequently Asked Questions',
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
                 ),
               ),
 

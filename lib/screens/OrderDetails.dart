@@ -8,7 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class OrderTrackingPage extends StatefulWidget {
-  const OrderTrackingPage({super.key});
+  final String requestId;
+  const OrderTrackingPage({super.key, required this.requestId});
 
   @override
   _OrderTrackingPageState createState() => _OrderTrackingPageState();
@@ -153,6 +154,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                     child: SingleChildScrollView(
                         controller: scrollController,
                         child: OrderDetailsWidget(
+                          requestId: widget.requestId,
                           droneAltitude: droneDetails['altitude'],
                           droneGspeed: droneDetails['groundSpeed'],
                           droneAspeed: droneDetails['airSpeed'],
@@ -172,13 +174,13 @@ class OrderDetailsWidget extends StatefulWidget {
   final String? droneGspeed;
   final String? droneAspeed;
   final String? droneBattery;
-
+  final String requestId;
   const OrderDetailsWidget({
     super.key,
     this.droneAltitude,
     this.droneGspeed,
     this.droneAspeed,
-    this.droneBattery,
+    this.droneBattery, required this.requestId,
   });
 
   @override
@@ -197,14 +199,17 @@ class _OrderDetailsWidgetState extends State<OrderDetailsWidget> {
     });
     QuerySnapshot snap = await FirebaseFirestore.instance
         .collection('closedRequests')
-        .where('receiverUid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .where('status', isEqualTo: 'ongoing')
+        .where('requestId', isEqualTo: widget.requestId)
         .get();
 
-    DocumentSnapshot doc = snap.docs.first;
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    address = data['address'];
-    emergencyText = data['emergencyText'];
+    try{
+      DocumentSnapshot doc = snap.docs.first;
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      address = data['address'];
+      emergencyText = data['emergencyText'];
+    } catch(e){
+      print(e.toString());
+    }
     setState(() {
       isLoading = false;
       print('set to false');

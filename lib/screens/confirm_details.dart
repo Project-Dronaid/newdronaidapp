@@ -147,7 +147,7 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
                     if (weight <= 2) {
                       await confirmDetails();
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => OrderTrackingPage()));
+                          builder: (context) => OrderTrackingPage(requestId: widget.requestId,)));
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

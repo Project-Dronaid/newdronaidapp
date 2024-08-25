@@ -31,6 +31,7 @@ class _TrackingState extends State<Tracking> {
 
   Set<Marker> markers = {};
   List<LatLng> route = [];
+  bool isLoading = false;
 
   void handleAddressSelection(String address) {
     setState(() {
@@ -79,6 +80,9 @@ class _TrackingState extends State<Tracking> {
   }
 
   Future<void> fetchDestination() async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       DocumentSnapshot droneSnapshot = await firestore
           .collection('drone')
@@ -99,6 +103,9 @@ class _TrackingState extends State<Tracking> {
       markerId: const MarkerId("Destination"),
       position: LatLng(destinationLatitude!, destinationLongitude!),
     ));
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void addCustomIcon() {
@@ -129,9 +136,9 @@ class _TrackingState extends State<Tracking> {
 
   @override
   Widget build(BuildContext context) {
-    return (destinationLatitude == null || destinationLongitude == null)
+    return (destinationLatitude == null || destinationLongitude == null || isLoading == true)
         ? const Center(
-      child: CircularProgressIndicator(),
+      child: CircularProgressIndicator(color: Colors.white,),
     )
         : PopScope(
       canPop: false,

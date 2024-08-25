@@ -107,6 +107,43 @@ class _FetchedRequestsState extends State<FetchedRequests> {
     }
   }
 
+  void _deleteRequest2(BuildContext context, String requestId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Request'),
+          content: Text('Are you sure you want to delete this request?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                try {
+                  await FirebaseFirestore.instance
+                      .collection('closedRequests') // Collection name
+                      .doc(requestId) // Document ID
+                      .delete();
+
+                  print('Document deleted successfully!');
+                  Navigator.of(context)
+                      .pop(); // Close the dialog after deletion
+                } catch (e) {
+                  print('Error deleting request: $e');
+                }
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _deleteRequest(BuildContext context, String requestId) {
     showDialog(
         context: context,
@@ -178,10 +215,10 @@ class _FetchedRequestsState extends State<FetchedRequests> {
           bottom: const TabBar(
             tabs: [
               Tab(
-                text: 'Active Requests',
+                text: 'Requests Received',
               ),
               Tab(
-                text: 'Closed Requests',
+                text: 'Ongoing Requests',
               )
             ],
           ),
@@ -403,6 +440,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                         return Column(
                           children: requests.map((doc) {
                             final data = doc.data() as Map<String, dynamic>;
+                            final requestId = data['requestId'];
                             final hospitalName =
                                 data['hospitalName'] ?? 'Unknown';
                             final Timestamp? timestamp =
@@ -415,9 +453,9 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                 data['emergencyText'] ?? 'Unknown';
                             final status = data['status'] ?? 'Unknown';
 
-                            return data['userId'] !=
+                            return data['userId'] ==
                                         FirebaseAuth
-                                            .instance.currentUser!.uid &&
+                                            .instance.currentUser!.uid ||
                                     data['receiverUid'] ==
                                         FirebaseAuth.instance.currentUser!.uid
                                 ? Container(
@@ -452,6 +490,25 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.w300),
                                             ),
+                                            PopupMenuButton<String>(
+                                                color: const Color(0xFFEEEFF5),
+                                                icon: Icon(Icons.more_vert),
+                                                onSelected: (value) {
+                                                  if (value == 'delete') {
+                                                    //handle the delete option
+                                                    _deleteRequest2(
+                                                        context, requestId);
+                                                  }
+                                                },
+                                                itemBuilder:
+                                                    (BuildContext context) {
+                                                  return [
+                                                    PopupMenuItem<String>(
+                                                        value: 'delete',
+                                                        child: Text(
+                                                            'Delete Request'))
+                                                  ];
+                                                })
                                           ],
                                         ),
                                         Padding(
@@ -629,7 +686,10 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                                   Navigator.of(context).push(
                                                       MaterialPageRoute(
                                                           builder: (context) =>
-                                                              OrderTrackingPage()));
+                                                              OrderTrackingPage(
+                                                                requestId:
+                                                                    requestId,
+                                                              )));
                                                 },
                                                 child: Center(
                                                   child: Container(

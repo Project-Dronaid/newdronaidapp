@@ -193,9 +193,10 @@ class _OrderDetailsWidgetState extends State<OrderDetailsWidget> {
   Future<void> requestDetails() async {
     setState(() {
       isLoading = true;
+      print('set to true');
     });
     QuerySnapshot snap = await FirebaseFirestore.instance
-        .collection('hospitalRequests')
+        .collection('closedRequests')
         .where('receiverUid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .where('status', isEqualTo: 'ongoing')
         .get();
@@ -206,6 +207,7 @@ class _OrderDetailsWidgetState extends State<OrderDetailsWidget> {
     emergencyText = data['emergencyText'];
     setState(() {
       isLoading = false;
+      print('set to false');
     });
   }
 

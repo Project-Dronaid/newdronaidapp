@@ -28,7 +28,7 @@ class _RequestHistoryPageState extends State<RequestHistoryPage> {
     if (user != null) {
       try {
         final DocumentSnapshot userDoc =
-        await _firestore.collection('users').doc(user.uid).get();
+            await _firestore.collection('users').doc(user.uid).get();
 
         setState(() {
           hospitalName = userDoc['hospitalName'];
@@ -66,15 +66,14 @@ class _RequestHistoryPageState extends State<RequestHistoryPage> {
         body: isLoading
             ? const Center(child: CircularProgressIndicator())
             : TabBarView(
-          children: [
-            _buildRequestList(active: true),
-            _buildRequestList(active: false),
-          ],
-        ),
+                children: [
+                  _buildRequestList(active: true),
+                  _buildRequestList(active: false),
+                ],
+              ),
       ),
     );
   }
-
 
   Widget _buildRequestList({required bool active}) {
     return SingleChildScrollView(
@@ -92,7 +91,9 @@ class _RequestHistoryPageState extends State<RequestHistoryPage> {
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(
               child: Text(
-                active ? 'No Requests Sent Found' : 'No Requests Received Found',
+                active
+                    ? 'No Requests Sent Found'
+                    : 'No Requests Received Found',
               ),
             );
           }
@@ -110,7 +111,9 @@ class _RequestHistoryPageState extends State<RequestHistoryPage> {
           if (requests.isEmpty) {
             return Center(
               child: Text(
-                active ? 'No Requests Sent Found' : 'No Requests Received Found',
+                active
+                    ? 'No Requests Sent Found'
+                    : 'No Requests Received Found',
               ),
             );
           }
@@ -181,13 +184,12 @@ class _RequestHistoryPageState extends State<RequestHistoryPage> {
                       const SizedBox(height: 5),
                       const Divider(),
                       Text(
-                        status == 'accepted'
-                            ? 'Request was accepted'
+                        status == 'completed'
+                            ? 'Request was completed'
                             : 'Request was rejected',
                         style: TextStyle(
-                          color: status == 'accepted'
-                              ? Colors.green
-                              : Colors.red,
+                          color:
+                              status == 'completed' ? Colors.green : Colors.red,
                         ),
                       ),
                     ],
@@ -200,6 +202,4 @@ class _RequestHistoryPageState extends State<RequestHistoryPage> {
       ),
     );
   }
-
-
 }

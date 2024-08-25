@@ -17,6 +17,24 @@ class _FetchedRequestsState extends State<FetchedRequests> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? rid;
 
+  Future<void> _updateRequestStatus() async {
+    try {
+      final batch = _firestore.batch();
+      final querySnapshot = await _firestore
+          .collection('closedRequests')
+          .where('status', isEqualTo: 'ongoing')
+          .get();
+
+      for (final doc in querySnapshot.docs) {
+        batch.update(doc.reference, {'status': 'completed'});
+      }
+
+      await batch.commit();
+    } catch (e) {
+      print('Failed to update status: $e');
+    }
+  }
+
   Future<String?> _getUserEmail(String userId) async {
     try {
       final docSnapshot =
@@ -68,11 +86,11 @@ class _FetchedRequestsState extends State<FetchedRequests> {
         // Add to closedRequests collection with an updated status
         await _firestore.collection('closedRequests').doc(requestId).set({
           ...requestData,
-          'status': 'accepted', // Add status field
+          'status': 'ongoing', // Add status field
         });
         await _firestore.collection('hospitalRequests').doc(requestId).set({
           ...requestData,
-          'status': 'accepted', // Add status field
+          'status': 'ongoing', // Add status field
         });
 
         await requestDoc.delete();
@@ -194,6 +212,13 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                     return Column(
                       children: requests.map((doc) {
                         final data = doc.data() as Map<String, dynamic>;
+                        final status = data['status'];
+
+                        // Check if the status is 'pending'
+                        if (status != 'pending') {
+                          return Container(width: 0, height: 0);
+                        }
+
                         final requestId = data['requestId'];
                         final hospitalName = data['hospitalName'] ?? 'Unknown';
                         final Timestamp? timestamp =
@@ -249,7 +274,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                             icon: Icon(Icons.more_vert),
                                             onSelected: (value) {
                                               if (value == 'delete') {
-                                                //handle the fucking delete option
+                                                //handle the delete option
                                                 _deleteRequest(
                                                     context, requestId);
                                               }
@@ -285,11 +310,6 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                       children: [
                                         GestureDetector(
                                           onTap: () {
-                                            final requestId =
-                                                doc.id; // Get the document ID
-                                            _acceptRequest(requestId);
-                                            rid = requestId;
-                                            print(requestId);
                                             Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                     builder: (context) =>
@@ -343,402 +363,321 @@ class _FetchedRequestsState extends State<FetchedRequests> {
               ],
             ),
           ),
+
           // Closed Requests Tab
           SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                StreamBuilder<QuerySnapshot>(
-                  stream: _firestore
-                      .collection('hospitalRequests')
-                      .where('status', whereIn: [
-                    'ongoing',
-                    'completed'
-                  ]) // Include both statuses
-                      .snapshots(),
+                StreamBuilder<DocumentSnapshot>(
+                  stream:
+                      _firestore.collection('drone').doc('drone1').snapshots(),
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                    if (snapshot.connectionState == ConnectionState.active) {
+                      if (snapshot.hasData && snapshot.data != null) {
+                        final data =
+                            snapshot.data!.data() as Map<String, dynamic>?;
+                        final orderFlag = data?['orderFlag'] as int?;
+
+                        if (orderFlag == 3) {
+                          _updateRequestStatus();
+                        }
+                      }
                     }
+                    return StreamBuilder<QuerySnapshot>(
+                      stream: _firestore.collection('closedRequests').where(
+                          'status',
+                          whereIn: ['ongoing', 'completed']).snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
 
-                    if (!snapshot.hasData) {
-                      return Center(child: Text('No Requests Found'));
-                    }
+                        if (!snapshot.hasData) {
+                          return Center(child: Text('No Requests Found'));
+                        }
 
-                    final requests = snapshot.data!.docs;
+                        final requests = snapshot.data!.docs;
 
-                    return Column(
-                      children: requests.map((doc) {
-                        final data = doc.data() as Map<String, dynamic>;
-                        final hospitalName = data['hospitalName'] ?? 'Unknown';
-                        final Timestamp? timestamp =
-                            data['dateTime'] as Timestamp?;
-                        final String dateTime = timestamp != null
-                            ? DateFormat('hh:mma, dd MMMM')
-                                .format(timestamp.toDate())
-                            : 'Unknown Date';
-                        final emergencyText =
-                            data['emergencyText'] ?? 'Unknown';
-                        final status = data['status'] ?? 'Unknown';
+                        return Column(
+                          children: requests.map((doc) {
+                            final data = doc.data() as Map<String, dynamic>;
+                            final hospitalName =
+                                data['hospitalName'] ?? 'Unknown';
+                            final Timestamp? timestamp =
+                                data['dateTime'] as Timestamp?;
+                            final String dateTime = timestamp != null
+                                ? DateFormat('hh:mma, dd MMMM')
+                                    .format(timestamp.toDate())
+                                : 'Unknown Date';
+                            final emergencyText =
+                                data['emergencyText'] ?? 'Unknown';
+                            final status = data['status'] ?? 'Unknown';
 
-                        return data['userId'] !=
-                                    FirebaseAuth.instance.currentUser!.uid &&
-                                data['receiverUid'] ==
-                                    FirebaseAuth.instance.currentUser!.uid
-                            ? Container(
-                                margin: EdgeInsets.all(15),
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    color: Colors.transparent,
-                                  ),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
+                            return data['userId'] !=
+                                        FirebaseAuth
+                                            .instance.currentUser!.uid &&
+                                    data['receiverUid'] ==
+                                        FirebaseAuth.instance.currentUser!.uid
+                                ? Container(
+                                    margin: EdgeInsets.all(15),
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border.all(
+                                        color: Colors.transparent,
+                                      ),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Column(
                                       children: [
-                                        CircleAvatar(
-                                          backgroundImage: NetworkImage(
-                                              'https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGhvc3BpdGFsJTIwYnVpbGRpbmd8ZW58MHx8MHx8fDA%3D'),
+                                        Row(
+                                          children: [
+                                            CircleAvatar(
+                                              backgroundImage: NetworkImage(
+                                                  'https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGhvc3BpdGFsJTIwYnVpbGRpbmd8ZW58MHx8MHx8fDA%3D'),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              hospitalName,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 15),
+                                            ),
+                                            Spacer(),
+                                            Text(
+                                              dateTime,
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w300),
+                                            ),
+                                          ],
                                         ),
-                                        SizedBox(
-                                          width: 8,
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 46,
+                                              right: 10,
+                                              bottom: 5,
+                                              top: 10),
+                                          child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(emergencyText)),
                                         ),
-                                        Text(
-                                          hospitalName,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 15),
-                                        ),
-                                        Spacer(),
-                                        Text(
-                                          dateTime,
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w300),
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 46,
-                                          right: 10,
-                                          bottom: 5,
-                                          top: 10),
-                                      child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(emergencyText)),
-                                    ),
-                                    Divider(),
-                                    SizedBox(
-                                      height: 8,
-                                    ),
-                                    // Display the appropriate button based on status
-                                    status == 'completed'
-                                        ? GestureDetector(
-                                            onTap: () async {
-                                              final userId = data['userId'];
-                                              final email =
-                                                  await _getUserEmail(userId);
+                                        Divider(),
+                                        SizedBox(height: 8),
+                                        status == 'completed'
+                                            ? GestureDetector(
+                                                onTap: () async {
+                                                  final userId = data['userId'];
+                                                  final email =
+                                                      await _getUserEmail(
+                                                          userId);
 
-                                              if (email != null) {
-                                                showDialog(
-                                                  context: context,
-                                                  builder: (context) {
-                                                    return AlertDialog(
-                                                      // backgroundColor: Colors.white,
-                                                      title: Column(
-                                                        children: [
-                                                          const Center(
-                                                              child: Text(
-                                                            'Send Email',
-                                                            style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                          )),
-                                                        ],
-                                                      ),
-                                                      content: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .fromLTRB(
-                                                                11, 8, 11, 8),
-                                                        child: RichText(
-                                                          text: TextSpan(
-                                                            style: TextStyle(
-                                                              fontSize: 16,
-                                                              color:
-                                                                  Colors.black,
-                                                            ),
-                                                            children: [
-                                                              TextSpan(
-                                                                text:
-                                                                    'Please send the request results to ',
-                                                              ),
-                                                              TextSpan(
-                                                                text: '$email',
-                                                                style:
-                                                                    TextStyle(
+                                                  if (email != null) {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return AlertDialog(
+                                                          title: Center(
+                                                            child: Text(
+                                                              'Send Email',
+                                                              style: TextStyle(
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .bold,
-                                                                  color:
-                                                                      kPrimaryColor,
-                                                                ),
-                                                              ),
-                                                            ],
+                                                                          .bold),
+                                                            ),
                                                           ),
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                        ),
-                                                      ),
-                                                      actions: [
-                                                        Center(
-                                                          child:
-                                                              GestureDetector(
-                                                            onTap: () {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            },
-                                                            child: Container(
-                                                              width: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width *
-                                                                  0.3,
-                                                              height: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .height *
-                                                                  0.05,
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(10),
-                                                              margin: EdgeInsets
-                                                                  .symmetric(
-                                                                      vertical:
-                                                                          10),
-                                                              decoration: BoxDecoration(
-                                                                  color:
-                                                                      kPrimaryColor,
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              15)),
-                                                              child: Center(
-                                                                child: Text(
-                                                                  'Ok',
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                          .white,
+                                                          content: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .fromLTRB(
+                                                                    11,
+                                                                    8,
+                                                                    11,
+                                                                    8),
+                                                            child: RichText(
+                                                              text: TextSpan(
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: 16,
+                                                                  color: Colors
+                                                                      .black,
+                                                                ),
+                                                                children: [
+                                                                  TextSpan(
+                                                                    text:
+                                                                        'Please send the request results to ',
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text:
+                                                                        '$email',
+                                                                    style:
+                                                                        TextStyle(
                                                                       fontWeight:
                                                                           FontWeight
-                                                                              .bold),
+                                                                              .bold,
+                                                                      color:
+                                                                          kPrimaryColor,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                            ),
+                                                          ),
+                                                          actions: [
+                                                            Center(
+                                                              child:
+                                                                  GestureDetector(
+                                                                onTap: () {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                  width: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.3,
+                                                                  height: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .height *
+                                                                      0.05,
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .all(
+                                                                              10),
+                                                                  margin: EdgeInsets
+                                                                      .symmetric(
+                                                                          vertical:
+                                                                              10),
+                                                                  decoration: BoxDecoration(
+                                                                      color:
+                                                                          kPrimaryColor,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              15)),
+                                                                  child: Center(
+                                                                    child: Text(
+                                                                      'Ok',
+                                                                      style: TextStyle(
+                                                                          color: Colors
+                                                                              .white,
+                                                                          fontWeight:
+                                                                              FontWeight.bold),
+                                                                    ),
+                                                                  ),
                                                                 ),
                                                               ),
                                                             ),
-                                                          ),
-                                                        ),
-                                                      ],
+                                                          ],
+                                                        );
+                                                      },
                                                     );
-                                                  },
-                                                );
-                                              } else {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                      content: Text(
-                                                          'Failed to fetch user email')),
-                                                );
-                                              }
-                                            },
-                                            child: Center(
-                                              child: Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.83,
-                                                height: MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.05,
-                                                padding: EdgeInsets.all(10),
-                                                margin: EdgeInsets.symmetric(
-                                                    vertical: 10),
-                                                decoration: BoxDecoration(
-                                                    color: kPrimaryColor,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
+                                                  } else {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                          content: Text(
+                                                              'Failed to fetch user email')),
+                                                    );
+                                                  }
+                                                },
                                                 child: Center(
-                                                  child: Text(
-                                                    'Send Email',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold),
+                                                  child: Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.83,
+                                                    height:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.05,
+                                                    padding: EdgeInsets.all(10),
+                                                    margin:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 10),
+                                                    decoration: BoxDecoration(
+                                                        color: Colors.green,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10)),
+                                                    child: Center(
+                                                      child: Text(
+                                                        'Send Email',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            : GestureDetector(
+                                                onTap: () {
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              OrderTrackingPage()));
+                                                },
+                                                child: Center(
+                                                  child: Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.83,
+                                                    height:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.05,
+                                                    padding: EdgeInsets.all(10),
+                                                    margin:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 10),
+                                                    decoration: BoxDecoration(
+                                                        color: kPrimaryColor,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10)),
+                                                    child: Center(
+                                                      child: Text(
+                                                        'Track Order',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          )
-                                        : GestureDetector(
-                                            onTap: () {
-                                              Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          OrderTrackingPage()));
-                                            },
-                                            child: Center(
-                                              child: Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.83,
-                                                height: MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.05,
-                                                padding: EdgeInsets.all(10),
-                                                margin: EdgeInsets.symmetric(
-                                                    vertical: 10),
-                                                decoration: BoxDecoration(
-                                                    color: kPrimaryColor,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                child: Center(
-                                                  child: Text(
-                                                    'Track Order',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                  ],
-                                ),
-                              )
-                            : Container(
-                                width: 0,
-                                height: 0,
-                              );
-                      }).toList(),
-                    );
-                  },
-                ),
-                StreamBuilder<QuerySnapshot>(
-                  stream: _firestore
-                      .collection('closedRequests')
-                      .orderBy('priorityLevel', descending: true)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-
-                    if (!snapshot.hasData) {
-                      return Center(child: Text('No Closed Requests Found'));
-                    }
-
-                    final requests = snapshot.data!.docs;
-
-                    return Column(
-                      children: requests.map((doc) {
-                        final data = doc.data() as Map<String, dynamic>;
-                        final hospitalName = data['hospitalName'] ?? 'Unknown';
-                        final Timestamp? timestamp =
-                            data['dateTime'] as Timestamp?;
-                        final String dateTime = timestamp != null
-                            ? DateFormat('hh:mma, dd MMMM')
-                                .format(timestamp.toDate())
-                            : 'Unknown Date';
-                        final emergencyText =
-                            data['emergencyText'] ?? 'Unknown';
-                        final status = data['status'] ?? 'Unknown';
-
-                        return data['userId'] !=
-                                    FirebaseAuth.instance.currentUser!.uid &&
-                                data['receiverUid'] ==
-                                    FirebaseAuth.instance.currentUser!.uid
-                            ? Container(
-                                margin: EdgeInsets.all(15),
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    color: Colors.transparent,
-                                  ),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundImage: NetworkImage(
-                                              'https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGhvc3BpdGFsJTIwYnVpbGRpbmd8ZW58MHx8MHx8fDA%3D'),
-                                        ),
-                                        SizedBox(
-                                          width: 8,
-                                        ),
-                                        Text(
-                                          hospitalName,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 15),
-                                        ),
-                                        Spacer(),
-                                        Text(
-                                          dateTime,
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w300),
-                                        ),
                                       ],
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 46,
-                                          right: 10,
-                                          bottom: 5,
-                                          top: 10),
-                                      child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(emergencyText)),
-                                    ),
-                                    Divider(),
-                                    SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      status == 'accepted'
-                                          ? 'Request was accepted'
-                                          : 'Request was rejected',
-                                      style: TextStyle(
-                                        color: status == 'accepted'
-                                            ? Colors.green
-                                            : Colors.red,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : Container(
-                                width: 0,
-                                height: 0,
-                              );
-                      }).toList(),
+                                  )
+                                : Container(
+                                    width: 0,
+                                    height: 0,
+                                  );
+                          }).toList(),
+                        );
+                      },
                     );
                   },
-                ),
+                )
               ],
             ),
           ),

@@ -14,6 +14,50 @@ class ConfirmDetails extends StatefulWidget {
 class _ConfirmDetailsState extends State<ConfirmDetails> {
   TextEditingController _weightController = TextEditingController();
 
+  Future<void> _acceptRequest(String requestId) async {
+    try {
+      final requestDoc = FirebaseFirestore.instance
+          .collection('hospitalRequests')
+          .doc(requestId);
+
+      // Fetch the request data
+      final requestSnapshot = await requestDoc.get();
+      if (requestSnapshot.exists) {
+        final requestData = requestSnapshot.data() as Map<String, dynamic>;
+
+        // Add to closedRequests collection with an updated status
+        await FirebaseFirestore.instance
+            .collection('closedRequests')
+            .doc(requestId)
+            .set({
+          ...requestData,
+          'status': 'ongoing', // Add status field
+        });
+
+        // Update the status in the hospitalRequests collection
+        await FirebaseFirestore.instance
+            .collection('hospitalRequests')
+            .doc(requestId)
+            .set({
+          ...requestData,
+          'status': 'ongoing', // Add status field
+        });
+
+        // Update the drone's orderFlag
+        FirebaseFirestore.instance
+            .collection('drone')
+            .doc('drone1')
+            .update({'orderFlag': 1});
+
+        // Delete the original request document
+        await requestDoc.delete();
+      }
+    } catch (e) {
+      // Handle any errors
+      print('Error accepting request: $e');
+    }
+  }
+
   Future<void> confirmDetails() async {
     await FirebaseFirestore.instance
         .collection('drone')
@@ -24,6 +68,9 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
         .collection('hospitalRequests')
         .doc(widget.requestId)
         .update({'status': 'ongoing'});
+
+    // Accept the request and update its status
+    await _acceptRequest(widget.requestId);
   }
 
   @override
@@ -93,14 +140,14 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
                 ),
               ),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   double weight =
                       double.tryParse(_weightController.text) ?? 0.0;
                   if (weight != 0.0) {
                     if (weight <= 2) {
+                      await confirmDetails();
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => OrderTrackingPage()));
-                      confirmDetails();
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

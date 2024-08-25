@@ -128,73 +128,87 @@ class _RequestHistoryPageState extends State<RequestHistoryPage> {
                   : 'Unknown Date';
               final emergencyText = data['emergencyText'] ?? 'Unknown';
               final status = data['status'] ?? 'Unknown';
+              final receiverUid = data['receiverUid'] ?? '';
 
-              return InkWell(
-                onTap: () {
-                  // Handle tap event if necessary
-                },
-                child: Container(
-                  margin: const EdgeInsets.all(15),
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                      color: Colors.transparent,
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
+              return FutureBuilder<DocumentSnapshot>(
+                future: _firestore.collection('users').doc(receiverUid).get(),
+                builder: (context, userSnapshot) {
+                  if (userSnapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  final String receiverHospitalName =
+                      userSnapshot.data?.get('hospital_name') ?? 'Unknown';
+
+                  return InkWell(
+                    onTap: () {
+                      // Handle tap event if necessary
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.all(15),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                          color: Colors.transparent,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Column(
                         children: [
-                          const CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                'https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGhvc3BpdGFsJTIwYnVpbGRpbmd8ZW58MHx8MHx8fDA%3D'),
+                          Row(
+                            children: [
+                              const CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                    'https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGhvc3BpdGFsJTIwYnVpbGRpbmd8ZW58MHx8MHx8fDA%3D'),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                hospitalName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                dateTime,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            hospitalName,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 46, right: 10, bottom: 5, top: 10),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(emergencyText),
                             ),
                           ),
-                          const Spacer(),
+                          const SizedBox(height: 5),
+                          const Divider(),
                           Text(
-                            dateTime,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w300,
+                            active
+                                ? 'sent to $receiverHospitalName'
+                                : status == 'completed'
+                                    ? 'Request was completed'
+                                    : 'Request was rejected',
+                            style: TextStyle(
+                              color: active
+                                  ? Colors.black
+                                  : status == 'completed'
+                                      ? Colors.green
+                                      : Colors.red,
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.more_vert),
                           ),
                         ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 46, right: 10, bottom: 5, top: 10),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(emergencyText),
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      const Divider(),
-                      Text(
-                        status == 'completed'
-                            ? 'Request was completed'
-                            : 'Request was rejected',
-                        style: TextStyle(
-                          color:
-                              status == 'completed' ? Colors.green : Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               );
             }).toList(),
           );

@@ -120,22 +120,20 @@ class _ProfilePageState extends State<ProfilePage> {
               _buildInfoCard(
                 icon: Icons.history,
                 title: 'Request History',
-                content: GestureDetector(
-                  onTap: () {
-                    if (currentUser != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RequestHistoryPage(),
-                        ),
-                      );
-                    }
-                  },
-                  child: const Text(
-                    'Tap to view request history',
-                    style: TextStyle(fontSize: 16, color: Colors.black),
-                  ),
+                content: const Text(
+                  'Tap to view request history',
+                  style: TextStyle(fontSize: 16, color: Colors.black),
                 ),
+                onTap: () {
+                  if (currentUser != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RequestHistoryPage(),
+                      ),
+                    );
+                  }
+                },
               ),
 
               const SizedBox(height: 24),
@@ -144,22 +142,20 @@ class _ProfilePageState extends State<ProfilePage> {
               _buildInfoCard(
                 icon: Icons.help_outline,
                 title: 'FAQs',
-                content: GestureDetector(
-                  onTap: () {
-                    if (currentUser != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => FrequentlyAskedQ(),
-                        ),
-                      );
-                    }
-                  },
-                  child: const Text(
-                    'Frequently Asked Questions',
-                    style: TextStyle(fontSize: 16, color: Colors.black),
-                  ),
+                content: const Text(
+                  'Frequently Asked Questions',
+                  style: TextStyle(fontSize: 16, color: Colors.black),
                 ),
+                onTap: () {
+                  if (currentUser != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FrequentlyAskedQ(),
+                      ),
+                    );
+                  }
+                },
               ),
 
               const SizedBox(height: 48),
@@ -169,10 +165,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 onPressed: () async {
                   try {
                     await FirebaseAuth.instance.signOut();
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>  LoginScreen()));
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()));
                   } catch (e) {
                     print('Error signing out: $e');
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -212,33 +206,37 @@ class _ProfilePageState extends State<ProfilePage> {
     required IconData icon,
     required String title,
     required Widget content,
+    VoidCallback? onTap, // Add this parameter
   }) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      elevation: 4,
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, color: kPrimaryColor, size: 28),
-                const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: kPrimaryColor,
+    return GestureDetector(
+      onTap: onTap, // Use the onTap parameter
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        elevation: 4,
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(icon, color: kPrimaryColor, size: 28),
+                  const SizedBox(width: 8),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: kPrimaryColor,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            content,
-          ],
+                ],
+              ),
+              const SizedBox(height: 12),
+              content,
+            ],
+          ),
         ),
       ),
     );

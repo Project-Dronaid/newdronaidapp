@@ -17,6 +17,16 @@ class _FetchedRequestsState extends State<FetchedRequests> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? rid;
 
+  Future<void> _updateRequestStatusToEmailSent(String requestId) async {
+    try {
+      await _firestore.collection('closedRequests').doc(requestId).update({
+        'status': 'email sent',
+      });
+    } catch (e) {
+      print('Failed to update status: $e');
+    }
+  }
+
   Future<void> _updateRequestStatus() async {
     try {
       final batch = _firestore.batch();
@@ -347,6 +357,10 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                       children: [
                                         GestureDetector(
                                           onTap: () {
+                                            FirebaseFirestore.instance
+                                                .collection('drone')
+                                                .doc('drone1')
+                                                .update({'orderFlag': 1});
                                             Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                     builder: (context) =>
@@ -536,7 +550,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                                       context: context,
                                                       builder: (context) {
                                                         return AlertDialog(
-                                                          title: Center(
+                                                          title: const Center(
                                                             child: Text(
                                                               'Send Email',
                                                               style: TextStyle(
@@ -548,90 +562,155 @@ class _FetchedRequestsState extends State<FetchedRequests> {
                                                           content: Padding(
                                                             padding:
                                                                 const EdgeInsets
-                                                                    .fromLTRB(
-                                                                    11,
-                                                                    8,
-                                                                    11,
-                                                                    8),
-                                                            child: RichText(
-                                                              text: TextSpan(
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 16,
-                                                                  color: Colors
-                                                                      .black,
-                                                                ),
-                                                                children: [
-                                                                  TextSpan(
-                                                                    text:
-                                                                        'Please send the request results to ',
-                                                                  ),
-                                                                  TextSpan(
-                                                                    text:
-                                                                        '$email',
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        11,
+                                                                    vertical:
+                                                                        8),
+                                                            child: Column(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: [
+                                                                RichText(
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                  text:
+                                                                      TextSpan(
                                                                     style:
-                                                                        TextStyle(
+                                                                        const TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      color: Colors
+                                                                          .black,
+                                                                    ),
+                                                                    children: [
+                                                                      const TextSpan(
+                                                                          text:
+                                                                              'Please send the request results to '),
+                                                                      TextSpan(
+                                                                        text:
+                                                                            '$email',
+                                                                        style:
+                                                                            const TextStyle(
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          color:
+                                                                              kPrimaryColor,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                    height: 15),
+                                                                const Text(
+                                                                  "Please click on EMAIL SENT button after sending the e-mail",
+                                                                  style: TextStyle(
                                                                       fontWeight:
                                                                           FontWeight
-                                                                              .bold,
-                                                                      color:
-                                                                          kPrimaryColor,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
+                                                                              .bold),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                ),
+                                                              ],
                                                             ),
                                                           ),
                                                           actions: [
-                                                            Center(
-                                                              child:
-                                                                  GestureDetector(
-                                                                onTap: () {
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                },
-                                                                child:
-                                                                    Container(
-                                                                  width: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.3,
-                                                                  height: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .height *
-                                                                      0.05,
-                                                                  padding:
-                                                                      EdgeInsets
-                                                                          .all(
-                                                                              10),
-                                                                  margin: EdgeInsets
-                                                                      .symmetric(
-                                                                          vertical:
-                                                                              10),
-                                                                  decoration: BoxDecoration(
-                                                                      color:
-                                                                          kPrimaryColor,
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              15)),
-                                                                  child: Center(
-                                                                    child: Text(
-                                                                      'Ok',
-                                                                      style: TextStyle(
-                                                                          color: Colors
-                                                                              .white,
-                                                                          fontWeight:
-                                                                              FontWeight.bold),
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              children: [
+                                                                GestureDetector(
+                                                                  onTap:
+                                                                      () async {
+                                                                    await _updateRequestStatusToEmailSent(
+                                                                        requestId);
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                  },
+                                                                  child:
+                                                                      Container(
+                                                                    width: MediaQuery.of(context)
+                                                                            .size
+                                                                            .width *
+                                                                        0.3,
+                                                                    height: MediaQuery.of(context)
+                                                                            .size
+                                                                            .height *
+                                                                        0.05,
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .all(
+                                                                            10),
+                                                                    margin: const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical:
+                                                                            10),
+                                                                    decoration: BoxDecoration(
+                                                                        color:
+                                                                            kPrimaryColor,
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(20)),
+                                                                    child:
+                                                                        Center(
+                                                                      child:
+                                                                          Text(
+                                                                        'Email Sent',
+                                                                        style: TextStyle(
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            color: Colors.white),
+                                                                      ),
                                                                     ),
                                                                   ),
                                                                 ),
-                                                              ),
+                                                                GestureDetector(
+                                                                  onTap: () =>
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop(),
+                                                                  child:
+                                                                      Container(
+                                                                    width: MediaQuery.of(context)
+                                                                            .size
+                                                                            .width *
+                                                                        0.3,
+                                                                    height: MediaQuery.of(context)
+                                                                            .size
+                                                                            .height *
+                                                                        0.05,
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .all(
+                                                                            10),
+                                                                    margin: const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical:
+                                                                            10),
+                                                                    decoration: BoxDecoration(
+                                                                        color:
+                                                                            kPrimaryColor,
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(20)),
+                                                                    child:
+                                                                        Center(
+                                                                      child:
+                                                                          Text(
+                                                                        'Ok',
+                                                                        style: TextStyle(
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            color: Colors.white),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
                                                             ),
                                                           ],
                                                         );

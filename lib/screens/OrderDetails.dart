@@ -180,7 +180,8 @@ class OrderDetailsWidget extends StatefulWidget {
     this.droneAltitude,
     this.droneGspeed,
     this.droneAspeed,
-    this.droneBattery, required this.requestId,
+    this.droneBattery,
+    required this.requestId,
   });
 
   @override
@@ -202,12 +203,12 @@ class _OrderDetailsWidgetState extends State<OrderDetailsWidget> {
         .where('requestId', isEqualTo: widget.requestId)
         .get();
 
-    try{
+    try {
       DocumentSnapshot doc = snap.docs.first;
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       address = data['address'];
       emergencyText = data['emergencyText'];
-    } catch(e){
+    } catch (e) {
       print(e.toString());
     }
     setState(() {
@@ -258,12 +259,12 @@ class _OrderDetailsWidgetState extends State<OrderDetailsWidget> {
                                   fontSize: 22, fontWeight: FontWeight.w900),
                             ),
                             SizedBox(height: 10),
-                            Text(
-                              '08:00 PM - 08:12 PM',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  color: Color.fromARGB(255, 122, 121, 121)),
-                            ),
+                            // Text(
+                            //   '08:00 PM - 08:12 PM',
+                            //   style: TextStyle(
+                            //       fontSize: 15,
+                            //       color: Color.fromARGB(255, 122, 121, 121)),
+                            // ),
                           ],
                         ),
                         Padding(
@@ -271,7 +272,7 @@ class _OrderDetailsWidgetState extends State<OrderDetailsWidget> {
                           child: OutlinedButton(
                               onPressed: () {},
                               child: Text(
-                                '23 Min',
+                                '5 Min',
                                 style: TextStyle(color: Colors.black),
                               )),
                         )

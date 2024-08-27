@@ -194,13 +194,13 @@ class _RequestHistoryPageState extends State<RequestHistoryPage> {
                           Text(
                             active
                                 ? 'Sent to $receiverHospitalName'
-                                : status == 'completed'
+                                : status == 'email sent'
                                     ? 'Request was completed'
                                     : 'Request was rejected',
                             style: TextStyle(
                               color: active
                                   ? kPrimaryColor
-                                  : status == 'completed'
+                                  : status == 'email sent'
                                       ? Colors.green
                                       : Colors.red,
                             ),

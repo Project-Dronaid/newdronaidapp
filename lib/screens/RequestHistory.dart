@@ -1,3 +1,4 @@
+import 'package:dronaid_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -192,14 +193,14 @@ class _RequestHistoryPageState extends State<RequestHistoryPage> {
                           const Divider(),
                           Text(
                             active
-                                ? 'sent to $receiverHospitalName'
-                                : status == 'completed'
+                                ? 'Sent to $receiverHospitalName'
+                                : status == 'email sent'
                                     ? 'Request was completed'
                                     : 'Request was rejected',
                             style: TextStyle(
                               color: active
-                                  ? Colors.black
-                                  : status == 'completed'
+                                  ? kPrimaryColor
+                                  : status == 'email sent'
                                       ? Colors.green
                                       : Colors.red,
                             ),

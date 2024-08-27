@@ -437,6 +437,10 @@ class _FetchedEmergencyState extends State<FetchedEmergency> {
                           child: DropdownButtonHideUnderline(
                             // Hide the underline
                             child: DropdownButton<String>(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20)),
+                              menuMaxHeight:
+                                  MediaQuery.of(context).size.height / 4,
                               dropdownColor: Colors.white,
                               value: selectedHospital,
                               hint: Center(child: Text('Select a hospital')),

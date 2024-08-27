@@ -44,10 +44,10 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
         });
 
         // Update the drone's orderFlag
-        FirebaseFirestore.instance
-            .collection('drone')
-            .doc('drone1')
-            .update({'orderFlag': 1});
+        // FirebaseFirestore.instance
+        //     .collection('drone')
+        //     .doc('drone1')
+        //     .update({'orderFlag': 1});
 
         // Delete the original request document
         await requestDoc.delete();
@@ -147,7 +147,9 @@ class _ConfirmDetailsState extends State<ConfirmDetails> {
                     if (weight <= 2) {
                       await confirmDetails();
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => OrderTrackingPage(requestId: widget.requestId,)));
+                          builder: (context) => OrderTrackingPage(
+                                requestId: widget.requestId,
+                              )));
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

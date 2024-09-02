@@ -1,5 +1,12 @@
-import 'package:dronaid_app/utils/colors.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dronaid_app/screens/FrequentlyAskedQ.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
+import '../utils/colors.dart';
+import 'RequestHistory.dart';
+import 'login/login.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -8,140 +15,255 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String? hospitalName;
+  String? hospitalAddress;
+  String? hospitalNumber;
+  String? hospitalEmail;
+  User? currentUser; // Store the current user here
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    try {
+      currentUser = FirebaseAuth.instance.currentUser; // Set currentUser here
+      if (currentUser != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser!.uid)
+            .get();
+
+        setState(() {
+          hospitalName = userDoc.get('hospital_name');
+          hospitalAddress = userDoc.get('address');
+          hospitalEmail = userDoc.get('email');
+          hospitalNumber = userDoc.get('phone_no');
+        });
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to load profile data. Please try again.'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      backgroundColor: Color(0xFFEEEFF5),
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        // leading: IconButton(
-        //   onPressed: () {
-        //     //Back Button
-        //     // Navigator.push(
-        //     //   context,
-        //     //   MaterialPageRoute(builder: (context) => ),
-        //     // );
-        //   },
-        //   icon: const Icon(Icons.arrow_back, color: Colors.black),
-        // ),
         title: const Text(
           'Profile',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        backgroundColor: Color(0xFFEEEFF5),
-        surfaceTintColor: Color(0xFFEEEFF5),
-        elevation: 0,
+        backgroundColor: Colors.white,
+        elevation: 1,
         centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
-        child: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(16.0),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Column(
             children: <Widget>[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Column(
-                    children: [
-                      Center(
-                        child: Material(
-                          elevation: 10,
-                          shape: CircleBorder(),
-                          child: CircleAvatar(
-                            backgroundColor: Colors.white,
-                            //add image here.
-                            // backgroundImage: AssetImage("assets/images/download.png"),
-                            radius: 40,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        "XYZ Hospital",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
+              // Hospital Logo Section
+              Image.asset(
+                'assets/launcher_icon.png',
+                height: 100,
+                width: 100,
+              ),
+
+              const SizedBox(height: 16),
+
+              // Hospital Name Section
+              Text(
+                hospitalName ?? 'Loading...',
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: kPrimaryColor,
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Hospital Information Card
+              _buildInfoCard(
+                icon: Icons.info_outline,
+                title: 'Hospital Information',
+                content: Column(
+                  children: [
+                    _buildInfoRow(
+                        icon: Icons.location_on,
+                        text: hospitalAddress ?? 'Loading...'),
+                    const SizedBox(height: 8),
+                    _buildInfoRow(
+                        icon: Icons.phone,
+                        text: hospitalNumber ?? 'Loading...'),
+                    const SizedBox(height: 8),
+                    _buildInfoRow(
+                        icon: Icons.email, text: hospitalEmail ?? 'Loading...'),
+                  ],
                 ),
               ),
               const SizedBox(height: 24),
-              Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.person,),
-                    title: const Text('Hospital Data'),
-                    onTap: () {
-                      print('Hospital Data tapped');
-                    },
+
+              // Request History Card
+              _buildInfoCard(
+                icon: Icons.history,
+                title: 'Request History',
+                content: const Text(
+                  'Tap to view request history',
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                onTap: () {
+                  if (currentUser != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RequestHistoryPage(),
+                      ),
+                    );
+                  }
+                },
+              ),
+
+              const SizedBox(height: 24),
+
+              // FAQs Card
+              _buildInfoCard(
+                icon: Icons.help_outline,
+                title: 'FAQs',
+                content: const Text(
+                  'Frequently Asked Questions',
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                onTap: () {
+                  if (currentUser != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FrequentlyAskedQ(),
+                      ),
+                    );
+                  }
+                },
+              ),
+
+              const SizedBox(height: 48),
+
+              // Sign Out Button
+              ElevatedButton.icon(
+                onPressed: () async {
+                  try {
+                     await FirebaseFirestore.instance
+                     .collection('users')
+                     .doc(currentUser?.uid)
+                     .set({
+                     'token': ''
+                      }, SetOptions(merge: true));
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()));
+                  } catch (e) {
+                    print('Error signing out: $e');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Failed to sign out. Please try again.'),
+                      ),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.logout, color: Colors.white),
+                label: const Text(
+                  'Sign Out',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.history),
-                    title: const Text('Medical History'),
-                    onTap: () {
-                      print('Medical History tapped');
-                    },
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kPrimaryColor,
+                  minimumSize: const Size(200, 50),
+                  elevation: 5,
+                  side: const BorderSide(color: kPrimaryColor, width: 2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
                   ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.list),
-                    title: const Text('Request History'),
-                    onTap: () {
-                      print('Request History tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.settings),
-                    title: const Text('Settings'),
-                    onTap: () {
-                      print('Settings tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.question_answer),
-                    title: const Text('FAQ'),
-                    onTap: () {
-                      print('FAQ tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.group),
-                    title: const Text('Community'),
-                    onTap: () {
-                      print('Community tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.vpn_key),
-                    title: const Text('License'),
-                    onTap: () {
-                      print('License tapped');
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.help),
-                    title: const Text('Feel Free To Ask. We are Ready to Help'),
-                    onTap: () {
-                      print('Help tapped');
-                    },
-                  ),
-                ],
+                ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoCard({
+    required IconData icon,
+    required String title,
+    required Widget content,
+    VoidCallback? onTap, // Add this parameter
+  }) {
+    return GestureDetector(
+      onTap: onTap, // Use the onTap parameter
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        elevation: 4,
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(icon, color: kPrimaryColor, size: 28),
+                  const SizedBox(width: 8),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: kPrimaryColor,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              content,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow({required IconData icon, required String text}) {
+    return Row(
+      children: [
+        Icon(icon, color: kPrimaryColor),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,96 +1,142 @@
-import 'package:dronaid_app/screens/home_page2.dart';
-import 'package:dronaid_app/utils/colors.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
+import 'package:dronaid_app/screens/OrderDetails.dart';
+import 'package:dronaid_app/screens/confirm_details.dart';
+import 'package:dronaid_app/screens/fetched_emergency.dart';
+import 'package:dronaid_app/screens/home.dart';
+import 'package:dronaid_app/screens/info_page.dart';
+import 'package:dronaid_app/screens/tracking.dart';
+import 'package:dronaid_app/utils/colors.dart';
 
 class RequestConfirmedPage extends StatelessWidget {
-  const RequestConfirmedPage({super.key});
+  final String requestId;
+  const RequestConfirmedPage({Key? key, required this.requestId})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const ColorFiltered(
-                colorFilter: ColorFilter.mode(
-                  Colors.green,
-                  BlendMode.srcIn,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const ColorFiltered(
+                  colorFilter: ColorFilter.mode(
+                    Colors.green,
+                    BlendMode.srcIn,
+                  ),
+                  child: ImageIcon(
+                    AssetImage("assets/check.png"),
+                    size: 75,
+                  ),
                 ),
-                child: ImageIcon(
-                  AssetImage("assets/check.png"),
-                  size: 90,
+                const SizedBox(height: 20),
+                const Text(
+                  "Request Confirmed!",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 28,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Request Confirmed!",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
-              ),
-              const SizedBox(height: 10),
-              RichText(
-                text: TextSpan(
-                  text: "Your request has been placed successfully. ",
-                  style: const TextStyle(color: Colors.grey, fontSize: 14),
+                const SizedBox(height: 18),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    TextSpan(
-                      text: "Request History",
-                      style: TextStyle(color: kPrimaryColor),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          // Request page navigation
-                        },
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 5, 8, 0),
+                      child: Text(
+                        "Your request has been accepted successfully.",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 17,
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
-              RichText(
-                text: const TextSpan(
-                  text: 'Get delivery by ',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                  children: [
-                    TextSpan(
-                      text: 'Mon, 06 Feb - Thu, 09 Feb',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
+                    // const SizedBox(height: 0), // Add vertical space here
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 5),
+                      child: Text.rich(
+                        TextSpan(
+                          text: "Check your Request History.",
+                          style: TextStyle(
+                            color: kPrimaryColor,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              // Navigate to request history page
+                            },
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 5),
-              const TextButton(
-                onPressed: TrackOrder,
-                child: Text(
-                  'Track My Order',
-                  style: TextStyle(color: kPrimaryColor),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: 200, // Increased width
-                height: 50, // Increased height
-                child: ElevatedButton(
-                  onPressed: GoToHomePage,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kPrimaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8), // Rounded edges
+                const SizedBox(height: 15),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: const TextSpan(
+                      text:
+                          'Please place the requested supplies inside the drone and move to a safe distance.',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 17,
+                      ),
                     ),
                   ),
-                  child: const Text(
-                    'Go to Home Page',
-                    style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ConfirmDetails(
+                              requestId: requestId,
+                            )));
+                  },
+                  child: Text(
+                    'Track My Order',
+                    style: TextStyle(
+                      color: kPrimaryColor,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const HomePage()));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kPrimaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Go back to Home Page',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -98,10 +144,10 @@ class RequestConfirmedPage extends StatelessWidget {
   }
 }
 
-void TrackOrder() {
-  // Tanishq Track Order Page
+void trackOrder() {
+  // Track order functionality
 }
 
-void GoToHomePage() {
-  // Home Page
+void goToHomePage() {
+  // Go to home page functionality
 }

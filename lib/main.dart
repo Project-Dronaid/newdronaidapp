@@ -9,6 +9,8 @@ import 'package:dronaid_app/screens/home_page2.dart';
 import 'package:dronaid_app/screens/login/login.dart';
 import 'package:dronaid_app/screens/map_page.dart';
 import 'package:dronaid_app/screens/signUp/signUp.dart';
+import 'package:dronaid_app/utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:dronaid_app/screens/tracking.dart';
 import '../firebase/firestore_methods.dart';
@@ -57,36 +59,32 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'DronAid',
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: LoginScreen(),
-        // body: LoginScreen(),
-        // body:  _widgetOptions.elementAt(_selectedIndex),
-        // bottomNavigationBar: BottomNavigationBar(
-        //   items: const <BottomNavigationBarItem>[
-        //     BottomNavigationBarItem(
-        //       icon: Icon(Icons.home,),
-        //       label: 'Home',
-        //     ),
-        //     BottomNavigationBarItem(
-        //       icon: Icon(Icons.request_page_outlined,),
-        //       label: 'Requests',
-        //     ),
-        //     BottomNavigationBarItem(
-        //       icon: Icon(Icons.info_outline),
-        //       label: 'Info',
-        //     ),
-        //     BottomNavigationBarItem(
-        //       icon: Icon(Icons.person_outline),
-        //       label: 'Profile',
-        //     ),
-        //   ],
-        //   unselectedItemColor: Colors.black.withOpacity(0.6),
-        //   showUnselectedLabels: true,
-        //   currentIndex: _selectedIndex,
-        //   selectedItemColor: kPrimaryColor,
-        //   onTap: _onItemTapped,
-        // ),
+      // home: OrderTrackingPage(),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context,snapshot){
+          if(snapshot.connectionState == ConnectionState.active){
+            if(snapshot.hasData) {
+              return HomePage();
+            } else if(snapshot.hasError){
+              return Center(
+                child: Text('${snapshot.error}'),
+              );
+            }
+          }
+
+          if(snapshot.connectionState ==  ConnectionState.waiting){
+            return const Center(
+              child: CircularProgressIndicator(
+                color: kPrimaryColor,
+              ),
+            );
+          }
+
+          return Scaffold(body: LoginScreen());
+        },
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../models/user.dart' as model;
 
 class AuthMethods {
@@ -23,24 +24,37 @@ class AuthMethods {
       required String address,
       required String hospital_name,
       required String phone_no,
-      String? deliveryAddress}) async {
+            required String emailresult,
+      String? deliveryAddress,
+      List<String>? tokens //add tokens parameter
+      }) async {
     String res = "Some Error occured";
     try {
       if (email.isNotEmpty ||
           password.isNotEmpty ||
+                    emailresult.isNotEmpty ||
           hospital_name.isNotEmpty ||
           address.isNotEmpty ||
           phone_no.isNotEmpty) {
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
-
+          
+        String? fcmToken = await FirebaseMessaging.instance.getToken();
+        
+        // Initialize the list of tokens with the FCM token
+        List<String> tokens = [];
+        if (fcmToken != null) {
+          tokens.add(fcmToken);
+        }
         model.User user = model.User(
             hospital_name: hospital_name,
             uid: cred.user!.uid,
             email: email,
+                        emailresult: emailresult,
             address: address,
             phone_no: phone_no,
-            deliveryAddress: deliveryAddress);
+            deliveryAddress: deliveryAddress,
+            tokens: tokens);
 
         await _firestore
             .collection('users')
@@ -73,7 +87,7 @@ class AuthMethods {
     return res;
   }
 
-  Future<void> signOut() async {
+  Future<void> signOut(String uid) async {
     await _auth.signOut();
   }
 }

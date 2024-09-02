@@ -1,3 +1,4 @@
+import 'package:dronaid_app/firebase/notification_service.dart';
 import 'package:dronaid_app/screens/home.dart';
 import 'package:dronaid_app/screens/map_page.dart';
 import 'package:flutter/material.dart';
@@ -13,12 +14,31 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+
+
+    NotificationService notificationService= NotificationService();
+
+  @override
+  void initState(){
+    super.initState();
+    notificationService.requestNotificationPermission();
+    notificationService.firebaseInit(context);
+    notificationService.setupInteractMessage(context);
+    // notificationService.isTokenRefresh();
+    notificationService.getDeviceToken().then((value){
+      print('Device Details:');
+      print(value);
+    });
+  }
+  
+
   final TextEditingController hospitalNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
+    final TextEditingController resultController = TextEditingController();
 
   bool isLoading = false;
   bool obscureText = true;
@@ -42,24 +62,61 @@ class _SignUpScreenState extends State<SignUpScreen> {
       password: passwordController.text,
       address: addressController.text,
       phone_no: phoneController.text,
+      emailresult: resultController.text,
+
       hospital_name: hospitalNameController.text,
-      //deliveryAddress: deliveryAddress);
     );
 
     setState(() {
       isLoading = false;
     });
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage()),
-    );
-
-    if (res != 'Success') {
-      showSnackBar(res, context);
+      if (res == 'Success') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
     } else {
       showSnackBar(res, context);
     }
+  }
+
+
+   Widget _buildTextField(
+    TextEditingController controller,
+    String labelText,
+    IconData icon, {
+    bool isPassword = false,
+    bool readOnly = false,
+    VoidCallback? toggleObscureText,
+    VoidCallback? onTap,
+    bool obscureText = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: TextFormField(
+        controller: controller,
+        obscureText: obscureText,
+        readOnly: readOnly,
+        onTap: onTap,
+        decoration: InputDecoration(
+          prefixIcon: Icon(icon, color: kPrimaryColor),
+          labelText: labelText,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          suffixIcon: isPassword
+              ? IconButton(
+                  icon: Icon(
+                    obscureText ? Icons.visibility : Icons.visibility_off,
+                    color: kPrimaryColor,
+                  ),
+                  onPressed: toggleObscureText,
+                )
+              : null,
+        ),
+      ),
+    );
   }
 
   @override
@@ -98,6 +155,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         _buildTextField(hospitalNameController, "Hospital Name",
                             Icons.local_hospital),
                         _buildTextField(emailController, "Email", Icons.email),
+                        _buildTextField(resultController,
+                            "Email for official communication", Icons.email),
                         _buildTextField(
                           passwordController,
                           "Password",
@@ -112,99 +171,77 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         _buildTextField(addressController, "Hospital Address",
                             Icons.location_on),
-                        GestureDetector(
-                          onTap: () => ConfirmDetails,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: GestureDetector(
-                              onTap: () => ConfirmDetails(),
-                              child: TextFormField(
-                                controller: locationController,
-                                decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.location_on,
-                                      color: kPrimaryColor),
-                                  hintText: 'Delivery Address',
-                                  hintStyle: TextStyle(color: secondaryColor),
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                ),
-                              ),
-                            ),
-                          ),
+                        _buildTextField(
+                          locationController,
+                          "Delivery Address",
+                          Icons.location_on,
+                          readOnly: true,
+                          onTap: () async {
+                            final location = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ConfirmDetails()),
+                            );
+                            if (location != null) {
+                              setState(() {
+                                locationController.text = location;
+                              });
+                            }
+                          },
                         ),
                         _buildTextField(
                             phoneController, "Phone Number", Icons.phone),
+                        SizedBox(height: size.height * 0.02),
+                        isLoading
+                            ? CircularProgressIndicator()
+                            : ElevatedButton(
+                                onPressed: signUp,
+                                child: Text(
+                                  "Sign Up",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: Size(size.width * 0.8, 50),
+                                  backgroundColor: kPrimaryColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ), // Ensure button is filled with the primary color
+                                ),
+                              ),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
+            SizedBox(height: size.height * 0.02),
             Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: size.width * 0.1, vertical: size.height * 0.02),
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    signUp();
-                  });
-                },
-                child: isLoading
-                    ? CircularProgressIndicator(color: primaryColor)
-                    : Text("SIGN UP",
-                        style: TextStyle(fontSize: 18, color: primaryColor)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kPrimaryColor,
-                  minimumSize: Size(size.width * 0.8, 50),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: size.width * 0.1, vertical: size.height * 0.02),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()));
-                },
-                child: Center(
-                  child: Text(
-                    "Already have an account? LOGIN",
-                    style: TextStyle(color: kPrimaryColor, fontSize: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Already have an account? "),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
+                    },
+                    child: Text(
+                      "Login",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: kPrimaryColor,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
+            SizedBox(height: size.height * 0.05),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(
-      TextEditingController controller, String hintText, IconData icon,
-      {bool isPassword = false,
-      bool obscureText = false,
-      Function? toggleObscureText}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: TextFormField(
-        controller: controller,
-        obscureText: obscureText,
-        decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: kPrimaryColor),
-          hintText: hintText,
-          hintStyle: TextStyle(color: secondaryColor),
-          suffixIcon: isPassword
-              ? IconButton(
-                  icon: Icon(
-                      obscureText ? Icons.visibility : Icons.visibility_off),
-                  onPressed: () {
-                    if (toggleObscureText != null) toggleObscureText();
-                  },
-                )
-              : null,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
       ),
     );

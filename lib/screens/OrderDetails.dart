@@ -1,11 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dronaid_app/screens/home.dart';
 import 'package:dronaid_app/screens/tracking.dart';
 import 'package:dronaid_app/utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class OrderTrackingPage extends StatefulWidget {
-  const OrderTrackingPage({super.key});
+  final String requestId;
+  const OrderTrackingPage({super.key, required this.requestId});
 
   @override
   _OrderTrackingPageState createState() => _OrderTrackingPageState();
@@ -13,10 +17,74 @@ class OrderTrackingPage extends StatefulWidget {
 
 class _OrderTrackingPageState extends State<OrderTrackingPage> {
   bool isMapVisible = true;
+  BitmapDescriptor droneIcon = BitmapDescriptor.defaultMarker;
+  Map<String, String?> droneDetails = {};
+
   @override
   void initState() {
     super.initState();
+    _loadDroneDetails();
     WidgetsBinding.instance.addPostFrameCallback((_) {});
+  }
+
+  Future<void> _loadDroneDetails() async {
+    final details = await fetchDroneDetails();
+    setState(() {
+      droneDetails = details;
+    });
+  }
+
+  Future<Map<String, String?>> fetchDroneDetails() async {
+    final firestore = FirebaseFirestore.instance;
+
+    try {
+      final altitudeDoc = await firestore
+          .collection('drone')
+          .doc('drone1')
+          .collection('status')
+          .doc('geo_coordinates')
+          .get();
+
+      final speedsDoc = await firestore
+          .collection('drone')
+          .doc('drone1')
+          .collection('status')
+          .doc('speeds')
+          .get();
+
+      final batteryDoc = await firestore
+          .collection('drone')
+          .doc('drone1')
+          .collection('status')
+          .doc('battery')
+          .get();
+
+      // Extracting, formatting, and adding units
+      final altitude =
+          (altitudeDoc.data()?['altitude'] as num?)?.toStringAsFixed(2);
+      final groundSpeed =
+          (speedsDoc.data()?['ground_speed'] as num?)?.toStringAsFixed(2);
+      final airSpeed =
+          (speedsDoc.data()?['air_speed'] as num?)?.toStringAsFixed(2);
+      final battery = batteryDoc.data()?['level']?.toString();
+
+      return {
+        'altitude': altitude != null ? '$altitude m' : 'N/A',
+        'groundSpeed': groundSpeed != null ? '$groundSpeed m/s' : 'N/A',
+        'airSpeed': airSpeed != null ? '$airSpeed m/s' : 'N/A',
+        'battery': battery != null
+            ? '$battery%'
+            : 'N/A', // Assuming battery level is in percentage
+      };
+    } catch (e) {
+      print('Error fetching drone details: $e');
+      return {
+        'altitude': 'N/A',
+        'groundSpeed': 'N/A',
+        'airSpeed': 'N/A',
+        'battery': 'N/A',
+      };
+    }
   }
 
   void toggleMapVisibility() {
@@ -27,47 +95,50 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        backgroundColor: Colors.transparent,
-        leading: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 5, 5, 5),
-          child: CircleAvatar(
-            backgroundColor: Colors.white,
-            child: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: Icon(Icons.arrow_back),
-              color: Colors.black,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          surfaceTintColor: Colors.transparent,
+          backgroundColor: Colors.transparent,
+          leading: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 5, 5, 5),
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HomePage(),
+                    ),
+                  );
+                },
+                icon: Icon(Icons.arrow_back),
+                color: Colors.black,
+              ),
             ),
           ),
         ),
-      ),
-      backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(0.0), // Add padding here
-            // child: GoogleMapWidget(onMapTap: toggleMapVisibility),
-            child: Tracking(),
-          ),
-          const Positioned(
-            top: 30,
-            right: 10,
-            child: EstimatedTimeWidget(),
-          ),
-          Container(
-            color: const Color(0xFFEEEFF5),
-            child: DraggableScrollableSheet(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: Tracking(),
+            ),
+            const Positioned(
+              top: 30,
+              right: 10,
+              child: EstimatedTimeWidget(),
+            ),
+            DraggableScrollableSheet(
                 initialChildSize: 0.3,
                 minChildSize: 0.3,
                 maxChildSize: 0.65,
                 builder: (BuildContext context, scrollController) {
                   return Container(
-                    padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
                     decoration: BoxDecoration(
                       color: const Color(0xFFEEEFF5),
                       borderRadius: BorderRadius.circular(16.0),
@@ -82,137 +153,221 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                     ),
                     child: SingleChildScrollView(
                         controller: scrollController,
-                        child: const OrderDetailsWidget()),
+                        child: OrderDetailsWidget(
+                          requestId: widget.requestId,
+                          droneAltitude: droneDetails['altitude'],
+                          droneGspeed: droneDetails['groundSpeed'],
+                          droneAspeed: droneDetails['airSpeed'],
+                          droneBattery: droneDetails['battery'],
+                        )),
                   );
-                }),
-          )
-        ],
+                })
+          ],
+        ),
       ),
     );
   }
 }
 
-class OrderDetailsWidget extends StatelessWidget {
-  const OrderDetailsWidget({super.key});
+class OrderDetailsWidget extends StatefulWidget {
+  final String? droneAltitude;
+  final String? droneGspeed;
+  final String? droneAspeed;
+  final String? droneBattery;
+  final String requestId;
+  const OrderDetailsWidget({
+    super.key,
+    this.droneAltitude,
+    this.droneGspeed,
+    this.droneAspeed,
+    this.droneBattery, required this.requestId,
+  });
+
+  @override
+  State<OrderDetailsWidget> createState() => _OrderDetailsWidgetState();
+}
+
+class _OrderDetailsWidgetState extends State<OrderDetailsWidget> {
+  String? address;
+  String? emergencyText;
+  bool isLoading = false;
+
+  Future<void> requestDetails() async {
+    setState(() {
+      isLoading = true;
+      print('set to true');
+    });
+    QuerySnapshot snap = await FirebaseFirestore.instance
+        .collection('closedRequests')
+        .where('requestId', isEqualTo: widget.requestId)
+        .get();
+
+    try{
+      DocumentSnapshot doc = snap.docs.first;
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      address = data['address'];
+      emergencyText = data['emergencyText'];
+    } catch(e){
+      print(e.toString());
+    }
+    setState(() {
+      isLoading = false;
+      print('set to false');
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    requestDetails();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: Color.fromARGB(255, 236, 237, 240),
-        borderRadius: BorderRadius.circular(14.0),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Container(
-            child: OrderTracking(),
-          ),
-          Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Arrival estimation',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    '08:00 PM - 08:12 PM',
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: Color.fromARGB(255, 122, 121, 121)),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: OutlinedButton(
-                    onPressed: () {},
-                    child: Text(
-                      '23 Min',
-                      style: TextStyle(color: Colors.black),
-                    )),
-              )
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
-          SizedBox(
-            height: 10,
-          ),
-          Text(
-            'Address',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Text('1234 NW Bobcat Lane, St. Robert, MO 65584-5678'),
-          SizedBox(
-            height: 10,
-          ),
-          Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
-          SizedBox(
-            height: 10,
-          ),
-          Text(
-            'Order Details',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-            child: OrderItemsTable(),
-          ),
-          Divider(height: 1, color: Color.fromARGB(255, 210, 205, 205)),
-          SizedBox(
-            height: 10,
-          ),
-        ]),
-      ),
-    );
+    return isLoading == true
+        ? Center(
+            child: CircularProgressIndicator(),
+          )
+        : Container(
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 236, 237, 240),
+              borderRadius: BorderRadius.circular(14.0),
+            ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      child: OrderTracking(),
+                    ),
+                    Divider(
+                        height: 1, color: Color.fromARGB(255, 210, 205, 205)),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Arrival estimation',
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.w900),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              '08:00 PM - 08:12 PM',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Color.fromARGB(255, 122, 121, 121)),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: OutlinedButton(
+                              onPressed: () {},
+                              child: Text(
+                                '23 Min',
+                                style: TextStyle(color: Colors.black),
+                              )),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Divider(
+                        height: 1, color: Color.fromARGB(255, 210, 205, 205)),
+                    SizedBox(height: 10),
+                    Text(
+                      'Address',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+                    ),
+                    SizedBox(height: 10),
+                    Text(address!),
+                    SizedBox(height: 10),
+                    Divider(
+                        height: 1, color: Color.fromARGB(255, 210, 205, 205)),
+                    SizedBox(height: 10),
+                    Text(
+                      'Request Details',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+                    ),
+                    SizedBox(height: 10),
+                    Text(emergencyText!), // fetch emergency controller
+                    SizedBox(height: 10),
+                    Divider(
+                        height: 1, color: Color.fromARGB(255, 210, 205, 205)),
+                    SizedBox(height: 10),
+                    Text(
+                      'Drone Details',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+                      child: OrderItemsTable(
+                        droneAltitude: widget.droneAltitude,
+                        droneGspeed: widget.droneGspeed,
+                        droneAspeed: widget.droneAspeed,
+                        droneBattery: widget.droneBattery,
+                      ),
+                    ),
+                    Divider(
+                        height: 1, color: Color.fromARGB(255, 210, 205, 205)),
+                    SizedBox(height: 10),
+                  ]),
+            ),
+          );
   }
 }
 
 class OrderItemsTable extends StatelessWidget {
-  final List<OrderItem> items = [
-    OrderItem(name: 'Heart', quantity: 10, weight: 1.2),
-    OrderItem(name: 'O+ Blood 5L', quantity: 1, weight: 1.1),
-    OrderItem(name: 'Liver', quantity: 1, weight: 1.5),
-    OrderItem(name: 'Lungs', quantity: 1, weight: 2.0),
-    OrderItem(name: 'Nuts', quantity: 2, weight: 0.8),
-  ];
+  final String? droneAltitude;
+  final String? droneGspeed;
+  final String? droneAspeed;
+  final String? droneBattery;
+
+  const OrderItemsTable({
+    super.key,
+    this.droneAltitude,
+    this.droneGspeed,
+    this.droneAspeed,
+    this.droneBattery,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final List<OrderItem> items = [
+      OrderItem(name: 'Altitude', details: droneAltitude ?? 'N/A'),
+      OrderItem(name: 'Ground Speed', details: droneGspeed ?? 'N/A'),
+      OrderItem(name: 'Air Speed', details: droneAspeed ?? 'N/A'),
+      OrderItem(name: 'Battery', details: droneBattery ?? 'N/A'),
+    ];
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
+        width: MediaQuery.of(context).size.width * 0.89,
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(30)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          // boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 10.0)]
+        ),
         child: DataTable(
+          columnSpacing: MediaQuery.of(context).size.width * 0.35,
           columns: [
-            DataColumn(label: Text('Name')),
-            DataColumn(label: Text('Quantity')),
-            DataColumn(label: Text('Weight (kg)')),
+            DataColumn(label: Text('Drone1')),
+            DataColumn(label: Text('Details')),
           ],
           rows: items.map((item) {
             return DataRow(cells: [
               DataCell(Text(item.name)),
-              DataCell(Text(item.quantity.toString())),
-              DataCell(Text(item.weight.toString())),
+              DataCell(Text(item.details)),
             ]);
           }).toList(),
         ),
@@ -223,10 +378,9 @@ class OrderItemsTable extends StatelessWidget {
 
 class OrderItem {
   final String name;
-  final int quantity;
-  final double weight;
+  final String details;
 
-  OrderItem({required this.name, required this.quantity, required this.weight});
+  OrderItem({required this.name, required this.details});
 }
 
 class GoogleMapWidget extends StatelessWidget {
@@ -376,7 +530,7 @@ class TrackingStep extends StatelessWidget {
           SizedBox(height: 10),
           Icon(
             icon,
-            color: Colors.black,
+            color: kPrimaryColor,
             size: 25,
           ),
           SizedBox(height: 5),

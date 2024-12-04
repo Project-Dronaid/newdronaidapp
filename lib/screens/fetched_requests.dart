@@ -58,6 +58,23 @@ class _FetchedRequestsState extends State<FetchedRequests> {
     return null;
   }
 
+  Future<bool> _showAuthenticationDialog() async {
+    bool isAuthenticated = false;
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AuthenticationDialog(
+          onAuthenticated: (authenticated) {
+            isAuthenticated = authenticated;
+          },
+        );
+      },
+    );
+
+    return isAuthenticated;
+  }
+
   Future<void> _rejectRequest(String requestId) async {
     try {
       final requestDoc =
@@ -108,7 +125,7 @@ class _FetchedRequestsState extends State<FetchedRequests> {
           FirebaseFirestore.instance
               .collection('drone')
               .doc('drone1')
-              .update({'orderFlag': 1});
+              .update({'orderFlag': 1, 'droneFlag': 1});
         });
       }
     } catch (e) {

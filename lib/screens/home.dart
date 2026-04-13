@@ -3,11 +3,10 @@ import 'package:dronaid_app/screens/fetched_requests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../provider/user_provider.dart';
 import '../utils/colors.dart';
 import 'ProfilePage.dart';
-import 'home_page2.dart';
+import 'info_page.dart';
 import 'login/login.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _widgetOptions = <Widget>[
     FetchedEmergency(),
     FetchedRequests(),
-    HomePage2(),
+    InfoPage(),
     ProfilePage(),
   ];
 
@@ -43,6 +42,9 @@ class _HomePageState extends State<HomePage> {
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            scaffoldBackgroundColor: const Color(0xFFEEEFF5),
+          ),
           home: StreamBuilder(
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: (context, snapshot) {
@@ -51,6 +53,7 @@ class _HomePageState extends State<HomePage> {
                     return Scaffold(
                       body: _widgetOptions.elementAt(_selectedIndex),
                       bottomNavigationBar: BottomNavigationBar(
+                        backgroundColor: Color(0xFFEEEFF5),
                         items: const <BottomNavigationBarItem>[
                           BottomNavigationBarItem(
                             icon: Icon(
@@ -90,7 +93,7 @@ class _HomePageState extends State<HomePage> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
                     child: CircularProgressIndicator(
-                      color: primaryColor,
+                      color: kPrimaryColor,
                     ),
                   );
                 }
